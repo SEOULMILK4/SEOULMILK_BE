@@ -9,7 +9,16 @@ public enum ErrorCode {
 
 
     //NOT_VALID
-    NOT_VALID_ERROR(404, "잘못된 파라미터입니다.");
+    NOT_VALID_ERROR(404, "잘못된 파라미터입니다."),
+
+    //MEMBER
+    USER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
+
+    LOGIN_FAILED(401, "사원번호 또는 비밀번호가 잘못되었습니다."),
+
+    //TOKEN
+    TOKEN_EXPIRED(400, "만료된 토큰입니다"),
+    TOKEN_INVALID(400, "유효하지 않은 토큰입니다.");
 
 
     private final int status;
