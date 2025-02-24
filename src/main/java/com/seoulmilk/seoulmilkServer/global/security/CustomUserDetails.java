@@ -1,4 +1,4 @@
-package com.seoulmilk.seoulmilkServer.global.jwt;
+package com.seoulmilk.seoulmilkServer.global.security;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import java.util.Collection;
@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final Member member; // Member 엔티티를 담을 필드
+    private final Member member;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -20,17 +20,21 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword(); // Member 엔티티에서 비밀번호 가져오기
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail(); // Member 엔티티에서 이메일(ID 역할)을 가져오기
+        return member.getEmail();
     }
 
-    public String getEmployeeNum(){return member.getEmployeeNum();}
+    public String getEmployeeNum() {
+        return member.getEmployeeNum();
+    }
 
-    public Long getMemberId(){return member.getId();}
+    public Long getMemberId() {
+        return member.getId();
+    }
 
     @Override
     public boolean isAccountNonExpired() {

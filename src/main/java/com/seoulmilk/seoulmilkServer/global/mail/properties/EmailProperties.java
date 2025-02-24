@@ -2,17 +2,17 @@ package com.seoulmilk.seoulmilkServer.global.mail.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
+@Setter
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "mail")
-public class MailProperties {
+public class EmailProperties {
 
-    private final String host;
-    private final String port;
-    private final String username;
-    private final String password;
-
+    private String host;
+    private String username;
+    private String password;
 
 }

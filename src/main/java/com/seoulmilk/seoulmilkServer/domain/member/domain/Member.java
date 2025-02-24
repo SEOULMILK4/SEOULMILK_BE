@@ -41,15 +41,20 @@ public class Member extends BaseEntity {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Role role;
 
-    @Builder
-    private Member(Long id,String employeeNum,String password,String email,String name,Role role){
-        this.id=id;
-        this.employeeNum=employeeNum;
-        this.password=password;
-        this.email=email;
-        this.name=name;
-        this.role=role;
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 
+    @Builder
+    private Member(Long id, String employeeNum, String password, String email, String name,
+        Role role) {
+        this.id = id;
+        this.employeeNum = employeeNum;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.role = role;
+    }
 
 }

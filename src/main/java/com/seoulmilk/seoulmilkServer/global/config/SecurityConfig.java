@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,19 +27,19 @@ public class SecurityConfig {
         http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(
-                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//            .sessionManagement(
+//                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/home", "swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()
-                .requestMatchers("/api/login","/api/refresh/**")
+                .requestMatchers("/api/auth/login", "/api/auth/refresh/**")
                 .permitAll()
-//                .requestMatchers("/getMemberInfo").hasRole("NORMAL")
+                .requestMatchers("/api/auth/password/**")
+                .permitAll()
                 .anyRequest().authenticated())
             .formLogin(AbstractAuthenticationFilterConfigurer::disable)
             .logout(LogoutConfigurer::permitAll);
 
-        // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 이전에 실행되도록 설정)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -48,6 +47,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // 입력한 비밀번호를 암호화하여, DB에 저장된 비밀번호와 비교대조
+        return new BCryptPasswordEncoder();
     }
 }

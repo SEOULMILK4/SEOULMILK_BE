@@ -1,8 +1,10 @@
-package com.seoulmilk.seoulmilkServer.global.jwt.service;
+package com.seoulmilk.seoulmilkServer.global.security;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
-import com.seoulmilk.seoulmilkServer.global.jwt.CustomUserDetails;
+import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
+import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,14 +19,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String employeeNum) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmployeeNum(employeeNum)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다: " + employeeNum));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         return new CustomUserDetails(member);
     }
 
     public UserDetails loadUserById(Long userId) {
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다: " + userId));
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         return new CustomUserDetails(member);
     }

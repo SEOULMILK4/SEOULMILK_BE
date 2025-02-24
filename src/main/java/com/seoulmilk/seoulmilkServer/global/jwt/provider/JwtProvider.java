@@ -77,21 +77,22 @@ public class JwtProvider {
     public String getMemberEmployeeNumFromToken(String token) {
 
         return Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+            .setSigningKey(
+                Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)))
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
     }
 
     public String getMemberRoleFromToken(String token) {
-           return (String) Jwts.parserBuilder()
-               .setSigningKey(Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtDTO.getSecretKey())))
-               .build()
-               .parseClaimsJws(token)
-               .getBody()
-               .get("role");
-       }
+        return (String) Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtDTO.getSecretKey())))
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("role");
+    }
 
 
     public Claims parseClaims(String token) {
@@ -99,28 +100,14 @@ public class JwtProvider {
             return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes())) // 서명 키 설정
                 .build()
-                .parseClaimsJws(token) // 토큰을 파싱하고 서명 검증
-                .getBody(); // Claims(토큰의 데이터) 반환
-        } catch (ExpiredJwtException e) { // 만료된 토큰 예외 처리
-            return e.getClaims(); // 만료된 토큰도 Claims 정보를 반환할 수 있음
-        } catch (JwtException e) { // 기타 JWT 관련 예외 처리
+                .parseClaimsJws(token)
+                .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        } catch (JwtException e) {
             throw new RuntimeException("유효하지 않은 JWT 토큰입니다.");
         }
     }
-
-
-//    public String generateNewToken(Member member, String refreshToken) {
-//        if (!validateToken(refreshToken)) {
-//            throw new RuntimeException("Invalid refresh token");
-//        }
-//
-//        String employeeNum = getMemberEmployeeNumFromToken(refreshToken);
-//        String role = getMemberRoleFromToken(refreshToken);
-//
-//        String newAccessToken = generateAccessToken(member);
-//        String newRefreshToken = generateRefreshToken(member);
-//
-//    }
 
 
 }

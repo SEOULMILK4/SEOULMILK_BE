@@ -1,5 +1,6 @@
-package com.seoulmilk.seoulmilkServer.global.jwt;
+package com.seoulmilk.seoulmilkServer.global.security;
 
+import com.seoulmilk.seoulmilkServer.global.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

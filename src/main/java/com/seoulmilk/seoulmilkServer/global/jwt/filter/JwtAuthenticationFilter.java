@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.global.jwt.filter;
 
 import com.seoulmilk.seoulmilkServer.global.jwt.provider.JwtProvider;
-import com.seoulmilk.seoulmilkServer.global.jwt.service.CustomUserDetailsService;
+import com.seoulmilk.seoulmilkServer.global.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,15 +26,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain)
         throws ServletException, IOException {
 
-        // 클라이언트가 보낸 JWT 추출
-        String token = resolveToken(request);
-
+        String token = resolveToken(request); // 클라이언트가 보낸 JWT 추출
 
         // 토큰이 유효하다면 SecurityContext 에 사용자 정보 저장
         if (token != null && jwtProvider.validateToken(token)) {
             System.out.println("토큰 유효함");
 
-            // 토큰에서 memberId 추출
             String employeeNum = jwtProvider.getMemberEmployeeNumFromToken(token);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(employeeNum);
