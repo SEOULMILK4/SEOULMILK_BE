@@ -8,7 +8,7 @@ import lombok.Getter;
 public class UpdatePasswordRequestDTO {
 
     @NotBlank
-    @Schema(description = "사번", example = "123456")
+    @Schema(description = "사원", example = "123456")
     private String employeeNum;
 
     @NotBlank

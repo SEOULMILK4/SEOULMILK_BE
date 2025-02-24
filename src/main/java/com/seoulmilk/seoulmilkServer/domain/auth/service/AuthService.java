@@ -1,20 +1,21 @@
 package com.seoulmilk.seoulmilkServer.domain.auth.service;
 
+import com.seoulmilk.seoulmilkServer.domain.auth.domain.RefreshTokenEntity;
+import com.seoulmilk.seoulmilkServer.domain.auth.dto.CreateOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetNewTokenResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.auth.dto.UpdatePasswordRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.auth.dto.PostOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.PostVerifyOtpRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.auth.dto.UpdatePasswordRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.auth.repository.RefreshTokenRepository;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
-import com.seoulmilk.seoulmilkServer.global.security.SecurityUtils;
 import com.seoulmilk.seoulmilkServer.global.jwt.provider.JwtProvider;
 import com.seoulmilk.seoulmilkServer.global.mail.service.EmailService;
 import com.seoulmilk.seoulmilkServer.global.mail.service.OTPService;
-import jakarta.servlet.http.HttpSession;
+import com.seoulmilk.seoulmilkServer.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,12 +31,13 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final EmailService emailService;
     private final OTPService otpService;
+    private final AuthVerifyService authVerifyService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public GetNewTokenResponseDTO getNewToken(String refreshToken) {
 
-        Member member = memberRepository.findById(getCurrentMemberId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = getCurrentMember();
 
         jwtProvider.validateToken(refreshToken);
         String createdAccessToken = jwtProvider.generateAccessToken(member);
@@ -45,12 +47,15 @@ public class AuthService {
     }
 
 
+    @Transactional
     public void getMemberLogout() {
-        // 현재 로그인된 사용자를 불러오고, 해당 사용자의 리프레시 토큰을 삭제한다.
+        Member member = getCurrentMember();
+        refreshTokenRepository.deleteById(member.getEmployeeNum());
     }
 
-    public Long getCurrentMemberId() {
-        return SecurityUtils.getCurrentMemberId();
+    public Member getCurrentMember() {
+        return memberRepository.findById(SecurityUtils.getCurrentMemberId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public void verifyToken(String token) {
@@ -74,14 +79,18 @@ public class AuthService {
 
         String createdAccessToken = jwtProvider.generateAccessToken(member);
         String createdRefreshToken = jwtProvider.generateRefreshToken(member);
+
         // redis에 저장
+        refreshTokenRepository.save(
+            new RefreshTokenEntity(member.getEmployeeNum(), createdRefreshToken));
+
         return GetLoginResponseDTO.of(member, createdAccessToken, createdRefreshToken);
 
     }
 
 
     @Transactional
-    public void postOtp(PostOtpRequestDTO requestDTO) {
+    public void createOtp(CreateOtpRequestDTO requestDTO) {
 
         String employeeNum = requestDTO.getEmployeeNum();
         String email = requestDTO.getEmail();
@@ -89,32 +98,39 @@ public class AuthService {
         Member member = memberRepository.findByEmployeeNumAndEmail(employeeNum, email)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_EMAIL_MISMATCH));
 
-        emailService.sendOtp(email, otpService.generateOtp(employeeNum));
+        String createdOtp = otpService.generateOtp(employeeNum);
+        emailService.sendOtp(email, createdOtp);
+
+        //redis에 사번이랑 인증번호 저장
+        authVerifyService.storeVerifiedUser(employeeNum, createdOtp);
 
     }
 
     @Transactional
-    public void postVerifyOtp(PostVerifyOtpRequestDTO requestDTO, HttpSession session) {
+    public void postVerifyOtp(PostVerifyOtpRequestDTO requestDTO) {
+
+        //        if (!otpService.validateOtp(employeeNum, otpNum)) {
+        //            throw new BusinessException(ErrorCode.OTP_INVALID);
+        //        }
+        //        session.setAttribute("verifiedEmployee", employeeNum);
 
         String employeeNum = requestDTO.getEmployeeNum();
         String otpNum = requestDTO.getOtpNumber();
 
-        if (!otpService.validateOtp(employeeNum, otpNum)) {
-            throw new BusinessException(ErrorCode.OTP_INVALID);
-        }
-        session.setAttribute("verifiedEmployee", employeeNum);
-
-
+        authVerifyService.verifyUser(employeeNum, otpNum);
     }
 
     @Transactional
-    public void updatePassword(UpdatePasswordRequestDTO requestDTO, HttpSession session) {
+    public void updatePassword(UpdatePasswordRequestDTO requestDTO) {
+        //String employeeNum = (String) session.getAttribute("verifiedEmployee");
+        //        if (employeeNum == null) {
+        //            throw new BusinessException(ErrorCode.MEMBER_UNAUTHORIZED);
+        //        }
+//        session.removeAttribute("verifiedEmployee");
+        //redis
+        String employeeNum = requestDTO.getEmployeeNum();
+        authVerifyService.isUserVerified(employeeNum);
 
-        String employeeNum = (String) session.getAttribute("verifiedEmployee");
-
-        if (employeeNum == null) {
-            throw new BusinessException(ErrorCode.MEMBER_UNAUTHORIZED);
-        }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword = requestDTO.getPassword();
 
@@ -124,7 +140,7 @@ public class AuthService {
         member.updatePassword(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
 
-        session.removeAttribute("verifiedEmployee");
+        authVerifyService.removeVerifiedUser(employeeNum);
 
     }
 

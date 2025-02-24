@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class PostOtpRequestDTO {
+public class CreateOtpRequestDTO {
 
     @NotBlank
     @Schema(description = "사번", example = "123456")

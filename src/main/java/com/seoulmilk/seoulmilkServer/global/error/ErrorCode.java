@@ -23,7 +23,10 @@ public enum ErrorCode {
     //EMAIL
     MEMBER_EMAIL_MISMATCH(400,"사원번호 또는 이메일이 잘못되었습니다."),
     OTP_INVALID(400,"유효하지 않은 인증번호입니다."),
-    MEMBER_UNAUTHORIZED(401,"인증되지 않았습니다.");
+    MEMBER_UNAUTHORIZED(401,"인증되지 않았습니다."),
+
+    //REDIS
+    VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다.");
 
 
     private final int status;
