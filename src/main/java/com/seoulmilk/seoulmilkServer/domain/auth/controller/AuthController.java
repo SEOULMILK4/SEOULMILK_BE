@@ -4,6 +4,7 @@ import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
+import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,9 +26,9 @@ public class AuthController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<GetLoginResponseDTO> getMemberLogin(
+    public ApiResponse<GetLoginResponseDTO> getMemberLogin(
         @RequestBody @Valid GetLoginRequestDTO loginRequest) {
-        return ResponseEntity.ok().body(authService.getMemberLogin(loginRequest));
+        return ApiResponse.success(authService.getMemberLogin(loginRequest));
     }
 
     @Operation(summary = "로그아웃")
@@ -39,22 +40,12 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급")
     @PostMapping("/refresh/{refreshToken}")
-    public ResponseEntity<GetNewTokenResponseDTO> getTokenRefreshed(
+    public ApiResponse<GetNewTokenResponseDTO> getTokenRefreshed(
         @PathVariable("refreshToken") String refreshToken) {
-        return ResponseEntity.ok().body(authService.getNewToken(refreshToken));
+        return ApiResponse.success(authService.getNewToken(refreshToken));
     }
 
-
-
-//    @Operation(summary = "현재 로그인한 회원정보 조회")
-//    @GetMapping("/api/getMemberInfo")
-//    public ResponseEntity getMemberInfo() {
-//        Long id = authService.getCurrentMemberId();
-//        System.out.println("현재 로그인 멤버 id:" + id);
-//        return ResponseEntity.ok().body(null);
-//    }
-
-//    @Operation(summary = "비밀번호 해싱") //DB에 사용자 저장시 사용
+//    @Operation(summary = "비밀번호 해싱") // DB에 사용자 저장시 사용
 //    @GetMapping("/api/getPassword")
 //    public ResponseEntity getMemberLogin() {
 //        authService.getHashedPassword();

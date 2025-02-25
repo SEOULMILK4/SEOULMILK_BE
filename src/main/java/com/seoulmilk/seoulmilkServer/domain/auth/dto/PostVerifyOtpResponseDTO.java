@@ -11,9 +11,10 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostVerifyOtpResponseDTO {
 
-    @Schema(description = "사원번호")
+    @Schema(description = "사원번호", example = "123456")
     private final String employeeNum;
 
+    @Schema(description = "메세지", example = "인증이 완료되었습니다.")
     private final String message;
 
     public static PostVerifyOtpResponseDTO from(String employeeNum) {

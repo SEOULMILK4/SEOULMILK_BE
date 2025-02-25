@@ -58,6 +58,7 @@ public class AuthService {
         return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
     }
 
+    @Transactional(readOnly = true)
     public Member getCurrentMember() {
         return memberRepository.findById(SecurityUtils.getCurrentMemberId())
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -76,12 +77,7 @@ public class AuthService {
 
     }
 
-//    public void verifyToken(String token) {
-//        System.out.println(jwtProvider.getMemberEmployeeNumFromToken(token));
-//    }
-
-    // 비번 해싱
-//    public void getHashedPassword() {
+//    public void getHashedPassword() {     // 비번 해싱
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //
 //        String rawPassword = "12345"; // 저장할 비밀번호
@@ -89,5 +85,6 @@ public class AuthService {
 //
 //        System.out.println("Hashed Password: " + hashedPassword);
 //    }
+
 }
 

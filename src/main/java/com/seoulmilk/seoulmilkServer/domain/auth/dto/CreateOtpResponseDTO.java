@@ -14,6 +14,7 @@ public class CreateOtpResponseDTO {
     @Schema(description = "사번", example = "123456")
     private final String employeeNum;
 
+    @Schema(description = "메세지", example = "인증번호 발송 완료")
     private final String message;
 
     public static CreateOtpResponseDTO from(String employeeNum) {

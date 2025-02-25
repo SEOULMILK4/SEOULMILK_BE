@@ -12,6 +12,6 @@ public class PostVerifyOtpRequestDTO {
     private String employeeNum;
 
     @NotBlank
-    @Schema(description = "OTP번호", example = "123456")
+    @Schema(description = "인증코드", example = "123456")
     private String otpNumber;
 }

@@ -28,8 +28,6 @@ public class AuthVerifyService {
     private final MemberRepository memberRepository;
     private final EmailService emailService;
     private final OTPService otpService;
-    private final AuthVerifyService authVerifyService;
-
 
     @Transactional
     public CreateOtpResponseDTO createOtp(CreateOtpRequestDTO requestDTO) {
@@ -64,7 +62,7 @@ public class AuthVerifyService {
     public UpdatePasswordResponseDTO updatePassword(UpdatePasswordRequestDTO requestDTO) {
 
         String employeeNum = requestDTO.getEmployeeNum();
-        authVerifyService.isUserVerified(employeeNum);
+        isUserVerified(employeeNum);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword = requestDTO.getPassword();
@@ -75,7 +73,7 @@ public class AuthVerifyService {
         member.updatePassword(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
 
-        authVerifyService.removeVerifiedUser(employeeNum);
+        removeVerifiedUser(employeeNum);
 
         return UpdatePasswordResponseDTO.from(employeeNum);
 
