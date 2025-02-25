@@ -9,18 +9,18 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostVerifyOtpResponseDTO {
+public class UpdatePasswordResponseDTO {
 
-    @Schema(description = "사원번호")
+    @Schema(description = "사원번호", example = "123456")
     private final String employeeNum;
 
+    @Schema(description = "메세지", example = "비밀번호 변경이 완료되었습니다.")
     private final String message;
 
-    public static PostVerifyOtpResponseDTO from(String employeeNum) {
-        return PostVerifyOtpResponseDTO.builder()
+    public static UpdatePasswordResponseDTO from(String employeeNum) {
+        return UpdatePasswordResponseDTO.builder()
             .employeeNum(employeeNum)
-            .message("인증이 완료되었습니다.")
+            .message("비밀번호 변경이 완료되었습니다.")
             .build();
     }
-
 }

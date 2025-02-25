@@ -9,17 +9,17 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostVerifyOtpResponseDTO {
+public class CreateOtpResponseDTO {
 
-    @Schema(description = "사원번호")
+    @Schema(description = "사번", example = "123456")
     private final String employeeNum;
 
     private final String message;
 
-    public static PostVerifyOtpResponseDTO from(String employeeNum) {
-        return PostVerifyOtpResponseDTO.builder()
+    public static CreateOtpResponseDTO from(String employeeNum) {
+        return CreateOtpResponseDTO.builder()
             .employeeNum(employeeNum)
-            .message("인증이 완료되었습니다.")
+            .message("인증번호 발송 완료")
             .build();
     }
 

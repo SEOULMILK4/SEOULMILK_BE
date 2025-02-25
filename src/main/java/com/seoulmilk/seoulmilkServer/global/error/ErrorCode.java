@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
-
     //NOT_VALID
     NOT_VALID_ERROR(404, "잘못된 파라미터입니다."),
 
@@ -29,7 +28,7 @@ public enum ErrorCode {
     VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다.");
 
 
-    private final int status;
+    private final int code;
     private final String message;
 
 }
