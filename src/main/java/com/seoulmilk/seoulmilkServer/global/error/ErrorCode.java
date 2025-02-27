@@ -32,7 +32,8 @@ public enum ErrorCode {
     OCR_PARSE_FAILED(500, "OCR 파싱에 실패했습니다."),
 
     //NTS_TAX
-    NTS_TAX_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다.");
+    NTS_TAX_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다."),
+    NTS_TAX_INVALID_FILE(400, "유효하지 않은 파일 형식입니다.");
 
     private final int code;
     private final String message;

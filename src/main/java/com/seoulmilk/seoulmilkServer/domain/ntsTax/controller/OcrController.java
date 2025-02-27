@@ -1,6 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrTestResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcr;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
@@ -31,14 +31,14 @@ public class OcrController {
     @Value("${ocr.api.secret-key}")
     private static String secretKey;
 
-    @Operation(summary = "세금 계산서 파일 OCR 처리")
-    @PostMapping(value = "/nts-tax-ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<GetOcrResponseDTO> getNtsTaxOcr (@RequestParam("files") List<MultipartFile> files) {
+    @Operation(summary = "OCR 테스트")
+    @PostMapping(value = "/ocr-test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<List<GetOcrTestResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
 
-        return null;
+        return ApiResponse.success(ntsTaxService.ocrTestResponse(files));
     }
 }

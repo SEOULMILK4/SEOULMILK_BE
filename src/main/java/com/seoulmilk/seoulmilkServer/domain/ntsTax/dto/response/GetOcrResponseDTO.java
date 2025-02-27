@@ -4,15 +4,17 @@ import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@AllArgsConstructor
 public class GetOcrResponseDTO {
 
     @Schema(description = "사용자 ID", example = "1")

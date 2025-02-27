@@ -1,5 +1,10 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
-public interface NtsTaxService {
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrTestResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+public interface NtsTaxService {
+    List<GetOcrTestResponseDTO> ocrTestResponse(List<MultipartFile> files);
 }

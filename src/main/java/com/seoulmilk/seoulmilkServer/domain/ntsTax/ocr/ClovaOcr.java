@@ -31,7 +31,7 @@ public class ClovaOcr {
     }
 
     public List<String> callApi(String type, MultipartFile file, String key, String ext) throws IOException {
-        List<String> parseData = null;
+        List<String> parseData;
 
         // HTTP 연결
         URL url = new URL(clovaUrl);
@@ -43,7 +43,7 @@ public class ClovaOcr {
         connection.setRequestMethod(type);
 
         String boundary = "----" + UUID.randomUUID().toString().replaceAll("-", "");
-        connection.setRequestProperty("Content-Type", "multipart/form-data; `boundary=" + boundary);
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
         connection.setRequestProperty("X-OCR-SECRET", secretKey);
 
         // JSON 메시지 생성
