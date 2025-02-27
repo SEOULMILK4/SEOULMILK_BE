@@ -20,7 +20,7 @@ public class NtsTax extends BaseEntity {
     private Long id;
 
     @Column(name = "issue_id", nullable = false)
-    private Long issueId;
+    private String issueId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class NtsTax extends BaseEntity {
     private String imageUrl;
 
     @Builder
-    private NtsTax (Long id, Long issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, Long chargeTotal, Long taxTotal, Long grandTotal, LocalTime createdTime, String imageUrl) {
+    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, Long chargeTotal, Long taxTotal, Long grandTotal, LocalTime createdTime, String imageUrl) {
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;

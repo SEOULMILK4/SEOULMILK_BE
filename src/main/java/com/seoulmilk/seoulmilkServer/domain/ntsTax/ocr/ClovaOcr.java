@@ -5,6 +5,7 @@ import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,9 +68,22 @@ public class ClovaOcr {
 
         // 응답 처리
         int responseCode = connection.getResponseCode();
+        BufferedReader br;
+
         if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new BusinessException(ErrorCode.OCR_REQUEST_FAILED);
+        } else {
+            br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         }
+
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = br.readLine()) != null) {
+            response.append(inputLine);
+        }
+        br.close();
+
+        parseData = parseOcrResponse(response.toString());
 
         return parseData;
     }
@@ -104,5 +119,33 @@ public class ClovaOcr {
             out.write(("--" + boundary + "--\r\n").getBytes("UTF-8"));
         }
         out.flush();
+    }
+
+    // OCR 응답 -> JSON 파싱
+    private List<String> parseOcrResponse(String jsonResponse) {
+        List<String> extractedTexts = new ArrayList<>();
+
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject responseJson = (JSONObject) parser.parse(jsonResponse);
+            JSONArray imagesArray = (JSONArray) responseJson.get("images");
+
+            if (imagesArray != null && !imagesArray.isEmpty()) {
+                JSONObject imageResult = (JSONObject) imagesArray.get(0);
+                JSONArray fieldsArray = (JSONArray) imageResult.get("fields");
+
+                if (fieldsArray != null) {
+                    for (Object fieldObj : fieldsArray) {
+                        JSONObject field = (JSONObject) fieldObj;
+                        String inferText = (String) field.get("inferText");
+                        extractedTexts.add(inferText);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.OCR_PARSE_FAILED);
+        }
+
+        return extractedTexts;
     }
 }

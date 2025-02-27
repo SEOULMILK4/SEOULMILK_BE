@@ -28,7 +28,11 @@ public enum ErrorCode {
     VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다."),
 
     //OCR
-    OCR_REQUEST_FAILED(500, "OCR 요청에 실패했습니다.");
+    OCR_REQUEST_FAILED(500, "OCR 요청에 실패했습니다."),
+    OCR_PARSE_FAILED(500, "OCR 파싱에 실패했습니다."),
+
+    //NTS_TAX
+    NTS_TAX_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다.");
 
     private final int code;
     private final String message;
