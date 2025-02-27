@@ -5,7 +5,7 @@ import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -27,13 +27,13 @@ public class NtsTax extends BaseEntity {
     private ARAP ARAP;
 
     @Column(name = "issue_date", nullable = false)
-    private LocalDateTime issueDate;
+    private LocalDate issueDate;
 
     @Column(name = "su_id", nullable = false)
-    private Long suId;
+    private String suId;
 
     @Column(name = "ip_id", nullable = false)
-    private Long ipId;
+    private String ipId;
 
     @Column(name = "charge_total", nullable = false)
     private Long chargeTotal;
@@ -51,7 +51,7 @@ public class NtsTax extends BaseEntity {
     private String imageUrl;
 
     @Builder
-    private NtsTax (Long id, Long issueId, ARAP ARAP, LocalDateTime issueDate, Long suId, Long ipId, Long chargeTotal, Long taxTotal, Long grandTotal, LocalTime createdTime, String imageUrl) {
+    private NtsTax (Long id, Long issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, Long chargeTotal, Long taxTotal, Long grandTotal, LocalTime createdTime, String imageUrl) {
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;

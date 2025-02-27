@@ -25,8 +25,10 @@ public enum ErrorCode {
     MEMBER_UNAUTHORIZED(401,"인증되지 않았습니다."),
 
     //REDIS
-    VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다.");
+    VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다."),
 
+    //OCR
+    OCR_REQUEST_FAILED(500, "OCR 요청에 실패했습니다.");
 
     private final int code;
     private final String message;
