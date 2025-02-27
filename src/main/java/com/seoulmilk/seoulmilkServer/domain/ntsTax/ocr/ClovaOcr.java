@@ -89,6 +89,7 @@ public class ClovaOcr {
     }
 
     private static void writeMultiPart(OutputStream out, String jsonMessage, MultipartFile file, String boundary) throws IOException {
+        // JSON 데이터 전송
         StringBuilder sb = new StringBuilder();
         sb.append("--").append(boundary).append("\r\n");
         sb.append("Content-Disposition:form-data; name=\"message\"\r\n\r\n");
@@ -98,6 +99,7 @@ public class ClovaOcr {
         out.write(sb.toString().getBytes("UTF-8"));
         out.flush();
 
+        // MultipartFile 데이터 전송
         if (!file.isEmpty()) {
             out.write(("--" + boundary + "\r\n").getBytes("UTF-8"));
             StringBuilder fileString = new StringBuilder();
