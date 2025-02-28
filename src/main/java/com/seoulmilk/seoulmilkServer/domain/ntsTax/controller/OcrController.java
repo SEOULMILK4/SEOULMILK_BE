@@ -1,7 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrTestResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcr;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -9,7 +8,6 @@ import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,15 +23,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class OcrController {
 
-    private final ClovaOcr clovaOcr;
     private final NtsTaxService ntsTaxService;
-
-    @Value("${ocr.api.secret-key}")
-    private static String secretKey;
 
     @Operation(summary = "OCR 테스트")
     @PostMapping(value = "/ocr-test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<List<GetOcrTestResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
+    public ApiResponse<List<GetOcrResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);

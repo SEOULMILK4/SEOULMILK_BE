@@ -1,11 +1,11 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -30,9 +30,7 @@ public class ClovaOcr {
         this.secretKey = secretKey;
     }
 
-    public List<String> callApi(String type, MultipartFile file, String key, String ext) throws IOException {
-        List<String> parseData;
-
+    public NtsTax callApi(String type, MultipartFile file, String key, String ext) throws IOException {
         // HTTP 연결
         URL url = new URL(clovaUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -83,9 +81,7 @@ public class ClovaOcr {
         }
         br.close();
 
-        parseData = parseOcrResponse(response.toString());
-
-        return parseData;
+        return OcrExtractor.parseOcrResponse(response.toString());
     }
 
     private static void writeMultiPart(OutputStream out, String jsonMessage, MultipartFile file, String boundary) throws IOException {
@@ -121,33 +117,5 @@ public class ClovaOcr {
             out.write(("--" + boundary + "--\r\n").getBytes("UTF-8"));
         }
         out.flush();
-    }
-
-    // OCR 응답 -> JSON 파싱
-    private List<String> parseOcrResponse(String jsonResponse) {
-        List<String> extractedTexts = new ArrayList<>();
-
-        try {
-            JSONParser parser = new JSONParser();
-            JSONObject responseJson = (JSONObject) parser.parse(jsonResponse);
-            JSONArray imagesArray = (JSONArray) responseJson.get("images");
-
-            if (imagesArray != null && !imagesArray.isEmpty()) {
-                JSONObject imageResult = (JSONObject) imagesArray.get(0);
-                JSONArray fieldsArray = (JSONArray) imageResult.get("fields");
-
-                if (fieldsArray != null) {
-                    for (Object fieldObj : fieldsArray) {
-                        JSONObject field = (JSONObject) fieldObj;
-                        String inferText = (String) field.get("inferText");
-                        extractedTexts.add(inferText);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OCR_PARSE_FAILED);
-        }
-
-        return extractedTexts;
     }
 }

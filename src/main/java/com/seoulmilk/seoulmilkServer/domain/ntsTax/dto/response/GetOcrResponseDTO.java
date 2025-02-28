@@ -1,6 +1,5 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,9 +41,8 @@ public class GetOcrResponseDTO {
     @Schema(description = "생성시간")
     private LocalTime erzEt;
 
-    public static GetOcrResponseDTO from(Member member, NtsTax ntsTax) {
+    public static GetOcrResponseDTO from(NtsTax ntsTax) {
         return GetOcrResponseDTO.builder()
-                .memberId(member.getId())
                 .ntsTaxId(ntsTax.getId())
                 .issueId(ntsTax.getIssueId())
                 .issueDate(ntsTax.getIssueDate())

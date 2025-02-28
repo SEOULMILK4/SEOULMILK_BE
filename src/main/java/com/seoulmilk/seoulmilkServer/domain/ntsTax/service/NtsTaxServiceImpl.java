@@ -1,8 +1,8 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrTestResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcr;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.OcrExtractor;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
@@ -25,7 +25,6 @@ import java.util.List;
 public class NtsTaxServiceImpl implements NtsTaxService {
 
     private final ClovaOcr clovaOcr;
-    private final OcrExtractor ocrExtractor;
     private final NtsTaxRepository ntsTaxRepository;
 
     @Value("${ocr.api.secret-key}")
@@ -33,8 +32,8 @@ public class NtsTaxServiceImpl implements NtsTaxService {
 
     @Override
     @Transactional
-    public List<GetOcrTestResponseDTO> ocrTestResponse (List<MultipartFile> files) {
-        List<GetOcrTestResponseDTO> responseList = new ArrayList<>();
+    public List<GetOcrResponseDTO> ocrTestResponse (List<MultipartFile> files) {
+        List<GetOcrResponseDTO> responseList = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
@@ -44,11 +43,13 @@ public class NtsTaxServiceImpl implements NtsTaxService {
                 LocalDateTime startTime = LocalDateTime.now();
                 log.info("OCR 요청 시작 시간: {}", startTime);
 
-                // OCR API 호출
-                List<String> extractedOcr = clovaOcr.callApi("POST", file, secretKey, fileExtension);
+                // OCR API 호출 및 추출 후, NtsTax로 변환
+                NtsTax ntsTax = clovaOcr.callApi("POST", file, secretKey, fileExtension);
+
+                ntsTaxRepository.save(ntsTax);
 
                 // DTO 변환 후 리스트에 추가
-                responseList.add(new GetOcrTestResponseDTO(extractedOcr));
+                responseList.add(GetOcrResponseDTO.from(ntsTax));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);
