@@ -46,10 +46,15 @@ public class NtsTaxServiceImpl implements NtsTaxService {
                 // OCR API 호출 및 추출 후, NtsTax로 변환
                 NtsTax ntsTax = clovaOcr.callApi("POST", file, secretKey, fileExtension);
 
+                // 필수 값 X -> 저장 X, 실패 응답 추가
+                if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
+                    responseList.add(GetOcrResponseDTO.from(ntsTax, false, "OCR 실패"));
+                    continue; // 다음 파일 처리
+                }
                 ntsTaxRepository.save(ntsTax);
 
                 // DTO 변환 후 리스트에 추가
-                responseList.add(GetOcrResponseDTO.from(ntsTax));
+                responseList.add(GetOcrResponseDTO.from(ntsTax, true, "OCR 성공"));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);
@@ -59,7 +64,6 @@ public class NtsTaxServiceImpl implements NtsTaxService {
                 throw new BusinessException(ErrorCode.OCR_REQUEST_FAILED);
             }
         }
-
         return responseList;
     }
 
@@ -68,5 +72,14 @@ public class NtsTaxServiceImpl implements NtsTaxService {
             throw new BusinessException(ErrorCode.NTS_TAX_INVALID_FILE);
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    private boolean isInvalidNtsTax(NtsTax ntsTax) {
+        return ntsTax.getIssueId() == null ||
+                ntsTax.getSuId() == null ||
+                ntsTax.getIpId() == null ||
+                ntsTax.getGrandTotal() == null ||
+                ntsTax.getChargeTotal() == null ||
+                ntsTax.getTaxTotal() == null;
     }
 }

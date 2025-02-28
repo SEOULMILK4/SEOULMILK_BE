@@ -16,6 +16,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class GetOcrResponseDTO {
 
+    private boolean success;
+    private String message;
+
     @Schema(description = "사용자 ID", example = "1")
     private Long memberId;
     @Schema(description = "세금 계산서 ID", example = "1")
@@ -43,20 +46,22 @@ public class GetOcrResponseDTO {
     @Schema(description = "생성시간")
     private LocalTime erzEt;
 
-    public static GetOcrResponseDTO from(NtsTax ntsTax) {
+    public static GetOcrResponseDTO from(NtsTax ntsTax, boolean success, String message) {
         return GetOcrResponseDTO.builder()
-                .ntsTaxId(ntsTax.getId())
-                .issueId(ntsTax.getIssueId())
-                .issueDate(ntsTax.getIssueDate())
-                .suId(ntsTax.getSuId())
-                .ipId(ntsTax.getIpId())
-                .AR(ntsTax.getARAP())
-                .grandTotal(ntsTax.getGrandTotal())
-                .chargeTotal(ntsTax.getChargeTotal())
-                .taxTotal(ntsTax.getTaxTotal())
-                .imageUrl(ntsTax.getImageUrl())
-                .erdAt(ntsTax.getCreatedAt())
-                .erzEt(ntsTax.getCreatedTime())
+                .success(success)
+                .message(message)
+                .ntsTaxId(ntsTax != null ? ntsTax.getId() : null)
+                .issueId(ntsTax != null ? ntsTax.getIssueId() : null)
+                .issueDate(ntsTax != null ? ntsTax.getIssueDate() : null)
+                .suId(ntsTax != null ? ntsTax.getSuId() : null)
+                .ipId(ntsTax != null ? ntsTax.getIpId() : null)
+                .AR(ntsTax != null ? ntsTax.getARAP() : null)
+                .grandTotal(ntsTax != null ? ntsTax.getGrandTotal() : null)
+                .chargeTotal(ntsTax != null ? ntsTax.getChargeTotal() : null)
+                .taxTotal(ntsTax != null ? ntsTax.getTaxTotal() : null)
+                .imageUrl(ntsTax != null ? ntsTax.getImageUrl() : null)
+                .erdAt(ntsTax != null ? ntsTax.getCreatedAt() : null)
+                .erzEt(ntsTax != null ? ntsTax.getCreatedTime() : null)
                 .build();
     }
 }

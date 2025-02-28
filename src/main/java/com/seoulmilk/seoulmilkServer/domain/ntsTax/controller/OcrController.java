@@ -34,7 +34,6 @@ public class OcrController {
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
-
         return ApiResponse.success(ntsTaxService.ocrTestResponse(files));
     }
 }
