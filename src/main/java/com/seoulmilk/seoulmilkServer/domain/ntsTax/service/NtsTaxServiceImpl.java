@@ -32,7 +32,7 @@ public class NtsTaxServiceImpl implements NtsTaxService {
 
     @Override
     @Transactional
-    public List<GetOcrResponseDTO> ocrTestResponse (List<MultipartFile> files) {
+    public List<GetOcrResponseDTO> ocrTestResponse (List<MultipartFile> files) { // 세금계산서 업로드 + OCR
         List<GetOcrResponseDTO> responseList = new ArrayList<>();
 
         for (MultipartFile file : files) {
