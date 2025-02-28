@@ -36,13 +36,13 @@ public class NtsTax extends BaseEntity {
     private String ipId;
 
     @Column(name = "charge_total", nullable = false)
-    private Long chargeTotal;
+    private String chargeTotal;
 
     @Column(name = "tax_total", nullable = false)
-    private Long taxTotal;
+    private String taxTotal;
 
     @Column(name = "grand_total", nullable = false)
-    private Long grandTotal;
+    private String grandTotal;
 
     @Column(name = "created_time", nullable = false)
     private LocalTime createdTime;
@@ -51,7 +51,7 @@ public class NtsTax extends BaseEntity {
     private String imageUrl;
 
     @Builder
-    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, Long chargeTotal, Long taxTotal, Long grandTotal, LocalTime createdTime, String imageUrl) {
+    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal, LocalTime createdTime, String imageUrl) {
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;

@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.Long.parseLong;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -24,6 +22,8 @@ public class OcrExtractor {
 
     public static NtsTax parseOcrResponse(String jsonResponse) {
         Map<String, String> extractedData = new HashMap<>();
+        List<String> registrationNumbers = new ArrayList<>();
+        String lastLabel = "";
 
         try {
             JSONParser parser = new JSONParser();
@@ -38,31 +38,48 @@ public class OcrExtractor {
                     for (Object fieldObj : fields) {
                         JSONObject field = (JSONObject) fieldObj;
                         String inferText = (String) field.get("inferText"); // OCR 추출 값
-                        String boundingText = getBoundingText(field); // OCR 박스 주변 텍스트
 
                         // 승인번호
                         if (!extractedData.containsKey("승인번호") && inferText.matches("\\d{8}-\\d{8}-\\d{8}")) {
                             extractedData.put("승인번호", inferText);
                         }
 
-                        // 등록번호 (공급자 & 공급받는자)
+                        // 공급자, 공급 받는 자
                         if (inferText.matches("\\d{3}-\\d{2}-\\d{5}")) {
-                            extractedData.put("등록번호", inferText);
+                            registrationNumbers.add(inferText);
                         }
 
-                        String normalizedText = boundingText.replaceAll("\\s", ""); // 공백 제거
-                        if (normalizedText.contains("공급가액")) {
-                            String numericValue = inferText.replaceAll("[^0-9,]", ""); // 숫자만 추출
-                            extractedData.put("공급가액", numericValue);
-                        } else if (normalizedText.contains("세액")) {
-                            extractedData.put("세액", inferText.replaceAll("[^0-9,]", ""));
-                        } else if (normalizedText.contains("합계금액")) {
-                            extractedData.put("합계금액", inferText.replaceAll("[^0-9,]", ""));
-                        } else if (normalizedText.contains("발행일자")) {
+                        if (registrationNumbers.size() >= 2) {
+                            extractedData.put("공급자 등록번호", registrationNumbers.get(0));
+                            extractedData.put("공급받는자 등록번호", registrationNumbers.get(1));
+                        }
+
+                        // 발행일자
+                        if (inferText.matches("\\d{4}-\\d{2}-\\d{2}")){
                             extractedData.put("발행일자", inferText);
                         }
 
-                        log.info("OCR 추출 데이터: {}", extractedData);
+                        // 발행일자
+                        if (inferText.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                            extractedData.put("발행일자", inferText);
+                        }
+
+                        // 금액 라벨 감지
+                        if (inferText.contains("공급가액")) {
+                            lastLabel = "공급가액";
+                        } else if (inferText.contains("세액")) {
+                            lastLabel = "세액";
+                        } else if (inferText.contains("합계금액")) {
+                            lastLabel = "합계금액";
+                        }
+
+                        // 숫자 감지
+                        if (inferText.matches("\\d{1,3}(,\\d{3})+")) {
+                            if (!lastLabel.isEmpty() && !extractedData.containsValue(lastLabel)) {
+                                extractedData.put(lastLabel, inferText.replaceAll("[^0-9,]", ""));
+                                lastLabel = ""; // 저장 후 초기화
+                            }
+                        }
                     }
                 }
             }
@@ -74,27 +91,18 @@ public class OcrExtractor {
                 .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : null)
                 .suId(extractedData.getOrDefault("공급자 등록번호", null))
                 .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
-                .grandTotal(extractedData.containsKey("합계금액") ? parseLong(extractedData.get("합계금액")) : null)
-                .chargeTotal(extractedData.containsKey("공급가액") ? parseLong(extractedData.get("공급가액")) : null)
-                .taxTotal(extractedData.containsKey("세액") ? parseLong(extractedData.get("세액")) : null)
+                .ARAP(ARAP.AR)
+                .grandTotal(String.valueOf(extractedData.containsKey("합계금액") ? parseLong(extractedData.get("합계금액")) : null))
+                .chargeTotal(String.valueOf(extractedData.containsKey("공급가액") ? parseLong(extractedData.get("공급가액")) : null))
+                .taxTotal(String.valueOf(extractedData.containsKey("세액") ? parseLong(extractedData.get("세액")) : null))
                 .createdTime(LocalTime.now())
                 .build();
     }
 
-    /**
-     * OCR 필드 주변의 텍스트를 가져오는 메서드
-     */
-    private static String getBoundingText(JSONObject field) {
-        JSONArray boundingWords = (JSONArray) field.get("boundingWords");
-        StringBuilder sb = new StringBuilder();
-
-        if (boundingWords != null) {
-            for (Object obj : boundingWords) {
-                JSONObject word = (JSONObject) obj;
-                sb.append((String) word.get("inferText")).append(" ");
-            }
+    private static Long parseLong(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
         }
-
-        return sb.toString().trim();
+        return Long.parseLong(value.replaceAll("[^0-9]", "")); // 숫자만 추출 후, 변환
     }
 }
