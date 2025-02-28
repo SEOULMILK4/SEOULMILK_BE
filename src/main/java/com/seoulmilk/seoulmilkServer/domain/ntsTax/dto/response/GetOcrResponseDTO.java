@@ -36,6 +36,8 @@ public class GetOcrResponseDTO {
     private String chargeTotal;
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
+    @Schema(description = "세금계산서 파일 URL")
+    private String imageUrl;
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
     @Schema(description = "생성시간")
@@ -52,6 +54,7 @@ public class GetOcrResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
+                .imageUrl(ntsTax.getImageUrl())
                 .erdAt(ntsTax.getCreatedAt())
                 .erzEt(ntsTax.getCreatedTime())
                 .build();
