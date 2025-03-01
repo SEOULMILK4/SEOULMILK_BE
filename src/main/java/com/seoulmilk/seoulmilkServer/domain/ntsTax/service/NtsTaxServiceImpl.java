@@ -2,7 +2,9 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcr;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -82,5 +84,30 @@ public class NtsTaxServiceImpl implements NtsTaxService {
                 ntsTax.getGrandTotal() == null ||
                 ntsTax.getChargeTotal() == null ||
                 ntsTax.getTaxTotal() == null;
+    }
+
+    @Override
+    @Transactional
+    public UpdateNtsTaxResponseDTO updateNtsTax(Member member, Long ntsTaxId, UpdateNtsTaxRequestDTO request) {
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        // 담당 사원 & 대리점일 경우에만 수정 가능
+        if (!ntsTax.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
+        }
+
+        // 세금계산서 수정
+        ntsTax.updateNtsTax(
+                request.getIssueId(),
+                request.getIssueDate(),
+                request.getSuId(),
+                request.getIpId(),
+                request.getChargeTotal(),
+                request.getTaxTotal(),
+                request.getGrandTotal()
+        );
+
+        return UpdateNtsTaxResponseDTO.from(ntsTax);
     }
 }

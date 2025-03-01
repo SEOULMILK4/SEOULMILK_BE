@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.domain;
 
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,24 @@ public class NtsTax extends BaseEntity {
 
     @Column(name = "imageUrl")
     private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "agency_id")
+//    private Agency agency;
+
+    public void updateNtsTax(String issueId, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal) {
+        this.issueId = issueId;
+        this.issueDate = issueDate;
+        this.suId = suId;
+        this.ipId = ipId;
+        this.chargeTotal = chargeTotal;
+        this.taxTotal = taxTotal;
+        this.grandTotal = grandTotal;
+    }
 
     @Builder
     private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal, LocalTime createdTime, String imageUrl) {
