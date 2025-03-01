@@ -110,4 +110,17 @@ public class NtsTaxServiceImpl implements NtsTaxService {
 
         return UpdateNtsTaxResponseDTO.from(ntsTax);
     }
+
+    @Override
+    @Transactional
+    public void deleteNtsTax(Member member, Long ntsTaxId) {
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        // 담당 사원 & 대리점일 경우에만 삭제 가능
+        if (!ntsTax.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
+        }
+        ntsTaxRepository.delete(ntsTax);
+    }
 }

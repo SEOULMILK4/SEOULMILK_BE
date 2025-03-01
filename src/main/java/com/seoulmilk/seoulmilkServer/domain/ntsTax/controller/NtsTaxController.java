@@ -48,4 +48,14 @@ public class NtsTaxController {
 
         return ApiResponse.success(ntsTaxService.updateNtsTax(member, ntsTaxId, request));
     }
+
+    @Operation(summary = "세금계산서 삭제")
+    @DeleteMapping("/nts-tax/{nts_tax_id}")
+    public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
+        Member member = authService.getCurrentMember();
+
+        ntsTaxService.deleteNtsTax(member, ntsTaxId);
+
+        return ApiResponse.success("Deletion successful");
+    }
 }
