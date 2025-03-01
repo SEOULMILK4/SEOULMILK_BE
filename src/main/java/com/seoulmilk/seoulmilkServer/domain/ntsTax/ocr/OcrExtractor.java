@@ -11,8 +11,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -117,9 +115,9 @@ public class OcrExtractor {
                 .suId(extractedData.getOrDefault("공급자 등록번호", null))
                 .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
                 .ARAP(ARAP.AR)
-                .grandTotal(extractedData.getOrDefault("합계금액", null)) // 그대로 저장 (변환 X)
-                .chargeTotal(extractedData.getOrDefault("공급가액", null)) // 그대로 저장 (변환 X)
-                .taxTotal(extractedData.getOrDefault("세액", null)) // 그대로 저장 (변환 X)
+                .grandTotal(extractedData.getOrDefault("합계금액", null))
+                .chargeTotal(extractedData.getOrDefault("공급가액", null))
+                .taxTotal(extractedData.getOrDefault("세액", null))
                 .createdTime(LocalTime.now())
                 .build();
 
