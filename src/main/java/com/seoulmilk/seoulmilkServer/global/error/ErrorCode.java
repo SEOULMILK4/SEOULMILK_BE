@@ -37,6 +37,7 @@ public enum ErrorCode {
     NTS_TAX_NOT_FOUND(404, "세금계산서를 찾을 수 없습니다."),
     NTS_TAX_UPDATE_UNAUTHORIZED(401, "세금계산서 수정 권한이 없습니다."),
     NTS_TAX_DELETE_UNAUTHORIZED(401, "세금계산서 삭제 권한이 없습니다.");
+
     private final int code;
     private final String message;
 

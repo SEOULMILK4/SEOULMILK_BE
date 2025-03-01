@@ -51,13 +51,13 @@ public class NtsTaxServiceImpl implements NtsTaxService {
 
                 // 필수 값 X -> 저장 X, 실패 응답 추가
                 if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
-                    responseList.add(GetOcrResponseDTO.from(ntsTax, false, "OCR 실패"));
+                    responseList.add(GetOcrResponseDTO.from(ntsTax, false));
                     continue; // 다음 파일 처리
                 }
                 ntsTaxRepository.save(ntsTax);
 
                 // DTO 변환 후 리스트에 추가
-                responseList.add(GetOcrResponseDTO.from(ntsTax, true, "OCR 성공"));
+                responseList.add(GetOcrResponseDTO.from(ntsTax, true));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);

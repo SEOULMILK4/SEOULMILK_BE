@@ -113,12 +113,13 @@ public class OcrExtractor {
                 .issueId(extractedData.getOrDefault("승인번호", null))
                 .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : null)
                 .suId(extractedData.getOrDefault("공급자 등록번호", null))
+                .suName(extractedData.getOrDefault("공급자 사업체명", null))
                 .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
+                .ipName(extractedData.getOrDefault("공급받는자 사업체명", null))
                 .ARAP(ARAP.AR)
                 .grandTotal(extractedData.getOrDefault("합계금액", null))
                 .chargeTotal(extractedData.getOrDefault("공급가액", null))
                 .taxTotal(extractedData.getOrDefault("세액", null))
-                .createdTime(LocalTime.now())
                 .build();
 
         return ntsTax;

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -32,8 +31,14 @@ public class NtsTax extends BaseEntity {
     @Column(name = "su_id", nullable = false)
     private String suId;
 
+    @Column(name = "su_name", nullable = false)
+    private String suName;
+
     @Column(name = "ip_id", nullable = false)
     private String ipId;
+
+    @Column(name = "ip_name", nullable = false)
+    private String ipName;
 
     @Column(name = "charge_total", nullable = false)
     private String chargeTotal;
@@ -43,9 +48,6 @@ public class NtsTax extends BaseEntity {
 
     @Column(name = "grand_total", nullable = false)
     private String grandTotal;
-
-    @Column(name = "created_time", nullable = false)
-    private LocalTime createdTime;
 
     @Column(name = "imageUrl")
     private String imageUrl;
@@ -69,17 +71,18 @@ public class NtsTax extends BaseEntity {
     }
 
     @Builder
-    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal, LocalTime createdTime, String imageUrl) {
+    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, String imageUrl) {
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;
         this.issueDate = issueDate;
         this.suId = suId;
+        this.suName = suName;
         this.ipId = ipId;
+        this.ipName = ipName;
         this.chargeTotal = chargeTotal;
         this.taxTotal = taxTotal;
         this.grandTotal = grandTotal;
-        this.createdTime = createdTime;
         this.imageUrl = imageUrl;
     }
 }
