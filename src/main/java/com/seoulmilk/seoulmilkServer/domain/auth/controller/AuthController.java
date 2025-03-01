@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.auth.controller;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.auth.dto.GetNewTokenResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyService;
 import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final AgencyService authRegisterService;
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
@@ -44,6 +46,8 @@ public class AuthController {
         @PathVariable("refreshToken") String refreshToken) {
         return ApiResponse.success(authService.getNewToken(refreshToken));
     }
+
+
 
 //    @Operation(summary = "비밀번호 해싱") // DB에 사용자 저장시 사용
 //    @GetMapping("/api/getPassword")

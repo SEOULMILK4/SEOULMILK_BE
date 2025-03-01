@@ -6,9 +6,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils {
 
-    public static Long getCurrentMemberId() {
+    public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
+        return ((CustomUserDetails) authentication.getPrincipal()).getUserId();
 
     }
 }

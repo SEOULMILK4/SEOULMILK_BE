@@ -52,30 +52,34 @@ public class AuthService {
         Member member = getCurrentMember();
 
         jwtProvider.validateToken(refreshToken);
-        String createdAccessToken = jwtProvider.generateAccessToken(member);
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member);
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
 
         return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
     }
 
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
-        return memberRepository.findById(SecurityUtils.getCurrentMemberId())
+        return memberRepository.findById(SecurityUtils.getCurrentUserId())
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
 
     private GetLoginResponseDTO createToken(Member member) {
 
-        String createdAccessToken = jwtProvider.generateAccessToken(member);
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member);
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(member.getEmployeeNum(), createdRefreshToken));
+            new RefreshTokenEntity(String.valueOf(member.getId()), createdRefreshToken,"employee"));
 
         return GetLoginResponseDTO.of(member, createdAccessToken, createdRefreshToken);
 
     }
+
+
+
+
 
 //    public void getHashedPassword() {     // 비번 해싱
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

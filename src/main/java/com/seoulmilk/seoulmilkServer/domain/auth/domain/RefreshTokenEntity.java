@@ -12,16 +12,19 @@ import org.springframework.data.redis.core.TimeToLive;
 public class RefreshTokenEntity {
 
     @Id
-    private String employeeNum;
+    private String userId;
 
     private String refreshToken;
+
+    private String role;
 
     @TimeToLive
     private Long ttl = 604800L;
 
-    public RefreshTokenEntity(String employeeNum, String refreshToken) {
-        this.employeeNum = employeeNum;
+    public RefreshTokenEntity(String userId, String refreshToken, String role) {
+        this.userId = userId;
         this.refreshToken = refreshToken;
+        this.role = role;
     }
 
 

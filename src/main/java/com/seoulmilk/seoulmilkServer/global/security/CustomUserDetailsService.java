@@ -1,5 +1,9 @@
 package com.seoulmilk.seoulmilkServer.global.security;
 
+import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
+import com.seoulmilk.seoulmilkServer.domain.admin.repository.AdminRepository;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -13,21 +17,45 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService //implements UserDetailsService
+{
+
     private final MemberRepository memberRepository;
+    private final AgencyRepository agencyRepository;
+    private final AdminRepository adminRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String employeeNum) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmployeeNum(employeeNum)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    public CustomUserDetails loadUserByIdAndRole(String userId, String role) {
+        Object user;
+        String userType;
 
-        return new CustomUserDetails(member);
+        switch (role) {
+            case "employee":
+                user = memberRepository.findById(Long.parseLong(userId))
+                    .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                userType = "employee";
+                break;
+            case "agency":
+                user = agencyRepository.findById(Long.parseLong(userId))
+                    .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+                userType = "agency";
+                break;
+            case "admin":
+                user = adminRepository.findById(Long.parseLong(userId))
+                    .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
+                userType = "admin";
+                break;
+            default:
+                throw new BusinessException(ErrorCode.ROLE_INVALID);
+        }
+        return new CustomUserDetails(user, userType);
     }
 
-    public UserDetails loadUserById(Long userId) {
-        Member member = memberRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    //    @Override
+    //    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    //        Member member = memberRepository.findByEmployeeNum(employeeNum)
+    //                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    //
+    //        return new CustomUserDetails(member);
+    //    }
 
-        return new CustomUserDetails(member);
-    }
 }

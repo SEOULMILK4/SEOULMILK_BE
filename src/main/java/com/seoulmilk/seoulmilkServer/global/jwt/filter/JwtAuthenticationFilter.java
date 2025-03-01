@@ -30,11 +30,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰이 유효하다면 SecurityContext 에 사용자 정보 저장
         if (token != null && jwtProvider.validateToken(token)) {
-            System.out.println("토큰 유효함");
 
-            String employeeNum = jwtProvider.getMemberEmployeeNumFromToken(token);
+            String userId = jwtProvider.getUserIdFromToken(token);
+            String role = jwtProvider.getUserRoleFromToken(token);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(employeeNum);
+            UserDetails userDetails = userDetailsService.loadUserByIdAndRole(userId,role);
 
             UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null,

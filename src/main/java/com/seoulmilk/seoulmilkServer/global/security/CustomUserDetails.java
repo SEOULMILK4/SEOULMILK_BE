@@ -1,5 +1,7 @@
 package com.seoulmilk.seoulmilkServer.global.security;
 
+import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,29 +13,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final Member member;
+    private final Object user;
+    private final String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(member.getRole().name()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        if (user instanceof Member) return ((Member) user).getPassword();
+        if (user instanceof Agency) return ((Agency) user).getPassword();
+        if (user instanceof Admin) return ((Admin) user).getMasterKey();
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        if (user instanceof Member) return ((Member) user).getName();
+        return null;
     }
 
     public String getEmployeeNum() {
-        return member.getEmployeeNum();
+        if (user instanceof Member) return ((Member) user).getEmployeeNum();
+        return null;
     }
 
-    public Long getMemberId() {
-        return member.getId();
+    public Long getUserId() {
+        if (user instanceof Member) return ((Member) user).getId();
+        if (user instanceof Agency) return ((Agency) user).getId();
+        if (user instanceof Admin) return ((Admin) user).getId();
+        return null;
     }
 
     @Override
@@ -56,7 +67,7 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    public Member getMember() {
-        return member;
-    }
+//    public Member getMember() {
+//        return member;
+//    }
 }

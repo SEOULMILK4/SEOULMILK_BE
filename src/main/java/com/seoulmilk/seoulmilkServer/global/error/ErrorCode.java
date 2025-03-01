@@ -11,9 +11,19 @@ public enum ErrorCode {
     NOT_VALID_ERROR(404, "잘못된 파라미터입니다."),
 
     //MEMBER
-    MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
-
+    MEMBER_NOT_FOUND(404, "존재하지 않는 사원입니다."),
     LOGIN_FAILED(401, "사원번호 또는 비밀번호가 잘못되었습니다."),
+
+    //AGENCY
+    AGENCY_EMAIL_INVALID(401,"잘못된 이메일입니다"),
+    AGENCY_NOT_FOUND(404,"존재하지 않는 대리점입니다."),
+
+    //ADMIN
+    MASTERKEY_INVALID(404,"유효하지 않은 마스터키입니다."),
+    ADMIN_NOT_FOUND(404,"존재하지 않는 관리자입니다."),
+
+    //ROLE
+    ROLE_INVALID(404,"존재하지 않는 회원유형입니다."),
 
     //TOKEN
     TOKEN_EXPIRED(400, "만료된 토큰입니다"),
