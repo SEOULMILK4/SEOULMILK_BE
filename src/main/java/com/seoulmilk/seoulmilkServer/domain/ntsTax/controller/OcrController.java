@@ -1,5 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
+import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
@@ -9,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,16 +25,18 @@ import java.util.List;
 @RequestMapping("/api")
 public class OcrController {
 
+    private final AuthService authService;
     private final NtsTaxService ntsTaxService;
 
     @Operation(summary = "세금 계산서 OCR")
     @PostMapping(value = "/nts-tax", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<List<GetOcrResponseDTO>> getOcrTest(//@AuthenticationPrincipal Long userId,
-                                                           @RequestParam("files") List<MultipartFile> files) {
+    public ApiResponse<List<GetOcrResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
-        return ApiResponse.success(ntsTaxService.ocrTestResponse(files));
+        Member member = authService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxService.ocrTestResponse(member, files));
     }
 }

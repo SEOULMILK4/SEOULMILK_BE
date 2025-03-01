@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcr;
@@ -32,7 +33,7 @@ public class NtsTaxServiceImpl implements NtsTaxService {
 
     @Override
     @Transactional
-    public List<GetOcrResponseDTO> ocrTestResponse (List<MultipartFile> files) { // 세금계산서 업로드 + OCR
+    public List<GetOcrResponseDTO> ocrTestResponse (Member member, List<MultipartFile> files) { // 세금계산서 업로드 + OCR
         List<GetOcrResponseDTO> responseList = new ArrayList<>();
 
         for (MultipartFile file : files) {
