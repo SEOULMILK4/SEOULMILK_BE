@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class OcrController {
+public class NtsTaxController {
 
     private final AuthService authService;
     private final NtsTaxService ntsTaxService;
