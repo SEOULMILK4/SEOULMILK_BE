@@ -55,9 +55,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    //redis
+    // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // ocr
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 tasks.named('test') {
