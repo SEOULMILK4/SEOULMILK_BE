@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Tag(name = "세금 계산서 및 OCR")
+@Tag(name = "[세금 계산서 및 OCR]")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

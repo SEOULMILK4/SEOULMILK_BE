@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.ARAP;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -111,7 +111,6 @@ public class ClovaOcr {
                 }
                 out.write("\r\n".getBytes());
             }
-
             out.write(("--" + boundary + "--\r\n").getBytes("UTF-8"));
         }
         out.flush();

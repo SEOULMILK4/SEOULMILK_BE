@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.ARAP;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;

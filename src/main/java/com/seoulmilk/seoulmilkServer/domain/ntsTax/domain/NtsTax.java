@@ -1,6 +1,5 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.domain;
 
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
