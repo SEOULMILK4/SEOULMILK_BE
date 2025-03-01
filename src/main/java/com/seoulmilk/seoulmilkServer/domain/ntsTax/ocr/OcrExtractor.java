@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -115,19 +117,12 @@ public class OcrExtractor {
                 .suId(extractedData.getOrDefault("공급자 등록번호", null))
                 .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
                 .ARAP(ARAP.AR)
-                .grandTotal(String.valueOf(extractedData.containsKey("합계금액") ? parseLong(extractedData.get("합계금액")) : null))
-                .chargeTotal(String.valueOf(extractedData.containsKey("공급가액") ? parseLong(extractedData.get("공급가액")) : null))
-                .taxTotal(String.valueOf(extractedData.containsKey("세액") ? parseLong(extractedData.get("세액")) : null))
+                .grandTotal(extractedData.getOrDefault("합계금액", null)) // 그대로 저장 (변환 X)
+                .chargeTotal(extractedData.getOrDefault("공급가액", null)) // 그대로 저장 (변환 X)
+                .taxTotal(extractedData.getOrDefault("세액", null)) // 그대로 저장 (변환 X)
                 .createdTime(LocalTime.now())
                 .build();
 
         return ntsTax;
-    }
-
-    private static Long parseLong(String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        return Long.parseLong(value.replaceAll("[^0-9]", "")); // 숫자만 추출 후, 변환
     }
 }
