@@ -43,7 +43,7 @@ public class AuthService {
     @Transactional
     public void getMemberLogout() {
         Member member = getCurrentMember();
-        refreshTokenRepository.deleteById(member.getEmployeeNum());
+        refreshTokenRepository.deleteById(String.valueOf(member.getId()) + ":" + "employee");
     }
 
     @Transactional
@@ -60,6 +60,10 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
+
+        if (!"employee".equals(SecurityUtils.getCurrentUserRole())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
         return memberRepository.findById(SecurityUtils.getCurrentUserId())
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
@@ -71,7 +75,7 @@ public class AuthService {
         String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(String.valueOf(member.getId()), createdRefreshToken,"employee"));
+            new RefreshTokenEntity(String.valueOf(member.getId()), "employee",createdRefreshToken));
 
         return GetLoginResponseDTO.of(member, createdAccessToken, createdRefreshToken);
 

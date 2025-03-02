@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetEmployeeListResponseDTO {
+public class GetEmployeeResponseDTO {
 
     @Schema(description = "DB상 id", example = "12")
     private final Long id;
@@ -24,8 +24,8 @@ public class GetEmployeeListResponseDTO {
     @Schema(description = "이메일", example = "milksago@gmail.com")
     private final String email;
 
-    public static GetEmployeeListResponseDTO from(Member member) {
-        return GetEmployeeListResponseDTO.builder()
+    public static GetEmployeeResponseDTO from(Member member) {
+        return GetEmployeeResponseDTO.builder()
             .id(member.getId())
             .name(member.getName())
             .employeeNum(member.getEmployeeNum())

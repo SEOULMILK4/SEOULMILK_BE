@@ -23,27 +23,56 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        if (user instanceof Member) return ((Member) user).getPassword();
-        if (user instanceof Agency) return ((Agency) user).getPassword();
-        if (user instanceof Admin) return ((Admin) user).getMasterKey();
+        if (user instanceof Member) {
+            return ((Member) user).getPassword();
+        }
+        if (user instanceof Agency) {
+            return ((Agency) user).getPassword();
+        }
+        if (user instanceof Admin) {
+            return ((Admin) user).getMasterKey();
+        }
         return null;
     }
 
     @Override
     public String getUsername() {
-        if (user instanceof Member) return ((Member) user).getName();
+        if (user instanceof Member) {
+            return ((Member) user).getName();
+        }
         return null;
     }
 
     public String getEmployeeNum() {
-        if (user instanceof Member) return ((Member) user).getEmployeeNum();
+        if (user instanceof Member) {
+            return ((Member) user).getEmployeeNum();
+        }
         return null;
     }
 
     public Long getUserId() {
-        if (user instanceof Member) return ((Member) user).getId();
-        if (user instanceof Agency) return ((Agency) user).getId();
-        if (user instanceof Admin) return ((Admin) user).getId();
+        if (user instanceof Member) {
+            return ((Member) user).getId();
+        }
+        if (user instanceof Agency) {
+            return ((Agency) user).getId();
+        }
+        if (user instanceof Admin) {
+            return ((Admin) user).getId();
+        }
+        return null;
+    }
+
+    public String getUserRole() {
+        if (user instanceof Member) {
+            return "employee";
+        }
+        if (user instanceof Agency) {
+            return "agency";
+        }
+        if (user instanceof Admin) {
+            return "admin";
+        }
         return null;
     }
 

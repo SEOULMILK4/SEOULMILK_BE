@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.global.jwt.filter;
 
 import com.seoulmilk.seoulmilkServer.global.jwt.provider.JwtProvider;
+import com.seoulmilk.seoulmilkServer.global.security.CustomUserDetails;
 import com.seoulmilk.seoulmilkServer.global.security.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,9 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String userId = jwtProvider.getUserIdFromToken(token);
             String role = jwtProvider.getUserRoleFromToken(token);
-            System.out.println("역할"+role);
 
-            UserDetails userDetails = userDetailsService.loadUserByIdAndRole(userId,role);
+            CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByIdAndRole(userId, role);
+
 
             UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null,

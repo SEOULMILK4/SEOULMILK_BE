@@ -1,11 +1,13 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.service;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetOneEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.UpdateAgencyRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.repository.AdminRepository;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
@@ -56,6 +58,9 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public Admin getCurrentAdmin() {
+        if (!"admin".equals(SecurityUtils.getCurrentUserRole())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
 
         return adminRepository.findById(SecurityUtils.getCurrentUserId())
             .orElseThrow(() -> new BusinessException(ErrorCode.ADMIN_NOT_FOUND));
@@ -76,33 +81,69 @@ public class AdminService {
 
     // 그 외 기능
     @Transactional(readOnly = true)
-    public List<GetEmployeeListResponseDTO> getEmployeeList() {
+    public List<GetEmployeeWithAgencyResponseDTO> getEmployeeList() {
 
-        List<Member> memberList = memberRepository.findAll();
+        Admin admin = getCurrentAdmin();
 
-        return memberList.stream()
-            .map(GetEmployeeListResponseDTO::from)
-            .toList();
+        List<GetEmployeeWithAgencyResponseDTO> employees = memberRepository.findAllMembersWithAgencyCount();
+
+        return employees;
     }
 
     @Transactional(readOnly = true)
-    public GetOneEmployeeResponseDTO getOneEmployee(Long employeeId) {
+    public GetEmployeeResponseDTO getOneEmployee(Long employeeId) {
+
+        Admin admin = getCurrentAdmin();
 
         Member member = memberRepository.findById(employeeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return GetOneEmployeeResponseDTO.from(member);
+        return GetEmployeeResponseDTO.from(member);
     }
 
+
     @Transactional(readOnly = true)
-    public List<GetAgencyListResponseDTO> getAgencyList() {
+    public List<GetAgencyResponseDTO> getAgencyList() {
+
+        Admin admin = getCurrentAdmin();
 
         List<Agency> agency = agencyRepository.findAll();
 
         return agency.stream()
-            .map(GetAgencyListResponseDTO::from)
+            .map(GetAgencyResponseDTO::from)
             .toList();
     }
+
+    // 개별 대리점 조회
+    @Transactional(readOnly = true)
+    public GetAgencyResponseDTO getOneAgency(Long agencyId) {
+
+        Admin admin = getCurrentAdmin();
+
+        Agency agency = agencyRepository.findById(agencyId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+
+        return GetAgencyResponseDTO.from(agency);
+    }
+
+    // 사원에게 대리점 할당
+
+
+    // 대리점 이메일 편집
+    @Transactional
+    public UpdateAgencyResponseDTO updateAgencyInfo(UpdateAgencyRequestDTO requestDTO) {
+
+        Admin admin = getCurrentAdmin();
+
+        Agency agency = agencyRepository.findById(requestDTO.getId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+
+        agency.updateAgencyEmail(requestDTO.getEmail());
+
+        return UpdateAgencyResponseDTO.of(agency,requestDTO.getEmail());
+    }
+
+
 
 }
 

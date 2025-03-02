@@ -1,10 +1,12 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetOneEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.UpdateAgencyRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,24 +47,39 @@ public class AdminController {
 
     @Operation(summary = "사원 목록 조회")
     @GetMapping("/employee")
-    public ApiResponse<List<GetEmployeeListResponseDTO>> getEmployeeList() {
+    public ApiResponse<List<GetEmployeeWithAgencyResponseDTO>> getEmployeeList() {
         return ApiResponse.success(adminService.getEmployeeList());
     }
 
     @Operation(summary = "개별 사원 조회")
     @GetMapping("/employee/{employeeId}")
-    public ApiResponse<GetOneEmployeeResponseDTO> getOneEmployee(
+    public ApiResponse<GetEmployeeResponseDTO> getOneEmployee(
         @PathVariable("employeeId") Long employeeId) {
         return ApiResponse.success(adminService.getOneEmployee(employeeId));
     }
 
     @Operation(summary = "대리점 목록 조회")
     @GetMapping("/agency")
-    public ApiResponse<List<GetAgencyListResponseDTO>> getAgencyList() {
+    public ApiResponse<List<GetAgencyResponseDTO>> getAgencyList() {
         return ApiResponse.success(adminService.getAgencyList());
     }
 
+    @Operation(summary = "개별 대리점 조회")
+    @GetMapping("/agency/{agencyId}")
+    public ApiResponse<GetAgencyResponseDTO> getOneAgency(
+        @PathVariable("agencyId") Long agencyId) {
+        return ApiResponse.success(adminService.getOneAgency(agencyId));
+    }
+
+    @Operation(summary = "개별 대리점 이메일 수정")
+    @PatchMapping("/agency/{agencyId}")
+    public ApiResponse<UpdateAgencyResponseDTO> updateAgencyInfo(
+        @RequestBody @Valid UpdateAgencyRequestDTO requestDTO) {
+        return ApiResponse.success(adminService.updateAgencyInfo(requestDTO));
+    }
+
     // 사원, 대리점 등록
+
 
 
 }

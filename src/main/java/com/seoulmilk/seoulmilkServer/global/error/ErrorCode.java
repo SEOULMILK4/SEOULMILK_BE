@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    //UNAUTHORIZED
+    UNAUTHORIZED(403,"접근 권한이 없습니다."),
+
     //NOT_VALID
     NOT_VALID_ERROR(404, "잘못된 파라미터입니다."),
 

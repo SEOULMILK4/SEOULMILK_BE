@@ -62,7 +62,7 @@ public class AgencyAuthService {
 
         Agency agency = getCurrentAgency();
 
-        refreshTokenRepository.deleteById(String.valueOf(agency.getId())+":"+"agency");
+        refreshTokenRepository.deleteById(String.valueOf(agency.getId()) + ":" + "agency");
     }
 
     @Transactional
@@ -80,6 +80,10 @@ public class AgencyAuthService {
     @Transactional(readOnly = true)
     public Agency getCurrentAgency() {
 
+        if (!"agency".equals(SecurityUtils.getCurrentUserRole())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
         return agencyRepository.findById(SecurityUtils.getCurrentUserId())
             .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
     }
@@ -91,7 +95,7 @@ public class AgencyAuthService {
         String createdRefreshToken = jwtProvider.generateRefreshToken(agency.getId(), "agency");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(String.valueOf(agency.getId()),"agency",createdRefreshToken));
+            new RefreshTokenEntity(String.valueOf(agency.getId()), "agency", createdRefreshToken));
 
         return GetAgencyLoginResponseDTO.of(agency, createdAccessToken, createdRefreshToken);
 
