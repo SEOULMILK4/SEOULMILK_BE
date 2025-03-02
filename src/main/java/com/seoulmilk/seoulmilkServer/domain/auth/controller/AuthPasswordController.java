@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/password")
-@Tag(name = "[인증 - 비밀번호 찾기 및 변경]")
+@Tag(name = "[사원 - 비밀번호 찾기 및 변경]")
 public class AuthPasswordController {
 
     private final AuthVerifyService authVerifyService;

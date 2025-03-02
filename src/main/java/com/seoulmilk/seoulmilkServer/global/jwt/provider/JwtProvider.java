@@ -87,7 +87,8 @@ public class JwtProvider {
 
     public String getUserRoleFromToken(String token) {
         return (String) Jwts.parserBuilder()
-            .setSigningKey(Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtDTO.getSecretKey())))
+            .setSigningKey(
+                    Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)))
             .build()
             .parseClaimsJws(token)
             .getBody()

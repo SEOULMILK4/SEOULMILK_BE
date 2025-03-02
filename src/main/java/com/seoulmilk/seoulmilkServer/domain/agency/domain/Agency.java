@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.agency.domain;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,6 +31,7 @@ public class Agency {
     @NotNull
     private String agencyName;
 
+    @Column(name = "agency_id",unique = true)
     private String agencyId;
 
     private String password;

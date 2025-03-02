@@ -16,15 +16,12 @@ public class RefreshTokenEntity {
 
     private String refreshToken;
 
-    private String role;
-
     @TimeToLive
     private Long ttl = 604800L;
 
-    public RefreshTokenEntity(String userId, String refreshToken, String role) {
-        this.userId = userId;
+    public RefreshTokenEntity(String userId, String role, String refreshToken) {
+        this.userId = userId+":"+role;
         this.refreshToken = refreshToken;
-        this.role = role;
     }
 
 

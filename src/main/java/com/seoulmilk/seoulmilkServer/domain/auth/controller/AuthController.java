@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-@Tag(name = "[인증 - 로그인, 로그아웃, 토큰 재발급]")
+@Tag(name = "[사원 - 로그인, 로그아웃, 토큰 재발급]")
 public class AuthController {
 
     private final AuthService authService;

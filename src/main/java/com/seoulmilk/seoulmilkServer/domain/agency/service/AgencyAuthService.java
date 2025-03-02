@@ -33,11 +33,9 @@ public class AgencyAuthService {
     public PostAgencyRegisterResponseDTO postAgencyRegister(
         PostAgencyRegisterRequestDTO requestDTO) {
 
-        // 잘못된 이메일인 경우 예외 처리
         Agency agency = agencyRepository.findByEmail(requestDTO.getEmail())
             .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_EMAIL_INVALID));
 
-        // 아이디랑 비번 설정
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword = requestDTO.getPassword();
 
@@ -64,7 +62,7 @@ public class AgencyAuthService {
 
         Agency agency = getCurrentAgency();
 
-        refreshTokenRepository.deleteByUserIdAndRole(String.valueOf(agency.getId()), "employee");
+        refreshTokenRepository.deleteById(String.valueOf(agency.getId())+":"+"agency");
     }
 
     @Transactional
@@ -93,7 +91,7 @@ public class AgencyAuthService {
         String createdRefreshToken = jwtProvider.generateRefreshToken(agency.getId(), "agency");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(String.valueOf(agency.getId()), createdRefreshToken, "agency"));
+            new RefreshTokenEntity(String.valueOf(agency.getId()),"agency",createdRefreshToken));
 
         return GetAgencyLoginResponseDTO.of(agency, createdAccessToken, createdRefreshToken);
 

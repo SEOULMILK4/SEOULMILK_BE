@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/agency")
-@Tag(name = "[대리점 - 회원가입, 로그인, 인증]")
+@Tag(name = "[대리점 API]")
 public class AgencyController {
 
     private final AgencyAuthService agencyAuthService;
@@ -32,7 +32,7 @@ public class AgencyController {
     }
 
     @Operation(summary = "대리점 로그인")
-    @PostMapping("/register")
+    @PostMapping("/login")
     public ApiResponse<GetAgencyLoginResponseDTO> getAgencyLogin(
         @RequestBody @Valid GetAgencyLoginRequestDTO registerDTO) {
         return ApiResponse.success(agencyAuthService.getAgencyLogin(registerDTO));
@@ -42,7 +42,7 @@ public class AgencyController {
     @PostMapping("/logout")
     public ResponseEntity getAgencyLogout() {
         agencyAuthService.getAgencyLogout();
-        return ResponseEntity.ok().body("로그아웃 완료");
+        return ResponseEntity.ok().body("대리점 로그아웃 완료");
     }
 
 

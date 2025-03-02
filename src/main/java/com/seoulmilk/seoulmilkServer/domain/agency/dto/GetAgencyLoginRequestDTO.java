@@ -8,7 +8,7 @@ import lombok.Getter;
 public class GetAgencyLoginRequestDTO {
 
     @NotBlank
-    @Schema(description = "아이디", example = "milksago1234")
+    @Schema(description = "아이디", example = "milksajo1")
     private String agencyId;
 
     @NotBlank

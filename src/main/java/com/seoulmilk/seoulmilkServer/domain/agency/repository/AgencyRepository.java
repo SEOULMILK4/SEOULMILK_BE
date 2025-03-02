@@ -1,7 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.agency.repository;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

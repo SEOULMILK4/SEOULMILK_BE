@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String userId = jwtProvider.getUserIdFromToken(token);
             String role = jwtProvider.getUserRoleFromToken(token);
+            System.out.println("역할"+role);
 
             UserDetails userDetails = userDetailsService.loadUserByIdAndRole(userId,role);
 
