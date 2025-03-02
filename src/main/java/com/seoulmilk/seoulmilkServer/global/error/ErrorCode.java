@@ -30,6 +30,7 @@ public enum ErrorCode {
     //OCR
     OCR_REQUEST_FAILED(500, "OCR 요청에 실패했습니다."),
     OCR_PARSE_FAILED(500, "OCR 파싱에 실패했습니다."),
+    FIELD_IS_EMPTY(400, "비어있는 필드입니다."),
 
     //NTS_TAX
     NTS_TAX_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다."),

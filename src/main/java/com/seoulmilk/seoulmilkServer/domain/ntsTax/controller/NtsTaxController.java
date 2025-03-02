@@ -3,9 +3,10 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.OcrService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
@@ -25,18 +26,19 @@ import java.util.List;
 public class NtsTaxController {
 
     private final AuthService authService;
-    private final NtsTaxService ntsTaxService;
+    private final NtsTaxCommandService ntsTaxService;
+    private final OcrService ocrService;
 
     @Operation(summary = "세금 계산서 OCR")
     @PostMapping(value = "/nts-tax", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<List<GetOcrResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
+    public ApiResponse<List<GetNtsTaxResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
         Member member = authService.getCurrentMember();
 
-        return ApiResponse.success(ntsTaxService.ocrTestResponse(member, files));
+        return ApiResponse.success(ocrService.getOcrResponse(member, files));
     }
 
     @Operation(summary = "세금 계산서 수정")
