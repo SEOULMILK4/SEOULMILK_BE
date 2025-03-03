@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class NtsTaxController {
 
-    private final AuthService authService;
+    private final MemberAuthService memberAuthService;
     private final NtsTaxCommandService ntsTaxService;
     private final OcrService ocrService;
 
@@ -36,7 +36,7 @@ public class NtsTaxController {
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
-        Member member = authService.getCurrentMember();
+        Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ocrService.getOcrResponse(member, files));
     }
@@ -46,7 +46,7 @@ public class NtsTaxController {
     public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(@RequestBody UpdateNtsTaxRequestDTO request,
                                                              @PathVariable("nts_tax_id") Long ntsTaxId) {
 
-        Member member = authService.getCurrentMember();
+        Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ntsTaxService.updateNtsTax(member, ntsTaxId, request));
     }
@@ -54,7 +54,7 @@ public class NtsTaxController {
     @Operation(summary = "세금계산서 삭제")
     @DeleteMapping("/nts-tax/{nts_tax_id}")
     public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
-        Member member = authService.getCurrentMember();
+        Member member = memberAuthService.getCurrentMember();
 
         ntsTaxService.deleteNtsTax(member, ntsTaxId);
 

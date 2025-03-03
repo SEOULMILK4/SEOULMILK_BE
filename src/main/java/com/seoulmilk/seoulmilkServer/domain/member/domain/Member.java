@@ -1,19 +1,19 @@
 package com.seoulmilk.seoulmilkServer.domain.member.domain;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,10 +36,8 @@ public class Member extends BaseEntity {
     @NotNull
     private String name;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    private Role role;
+    @OneToMany(mappedBy = "member")
+   	private List<Agency> agencies = new ArrayList<>();
 
 
     public void updatePassword(String newPassword) {
@@ -47,14 +45,13 @@ public class Member extends BaseEntity {
     }
 
     @Builder
-    private Member(Long id, String employeeNum, String password, String email, String name,
-        Role role) {
+    private Member(Long id, String employeeNum, String password, String email, String name
+    ) {
         this.id = id;
         this.employeeNum = employeeNum;
         this.password = password;
         this.email = email;
         this.name = name;
-        this.role = role;
     }
 
 }
