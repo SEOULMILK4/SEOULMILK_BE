@@ -33,11 +33,15 @@ public enum ErrorCode {
     FIELD_IS_EMPTY(400, "비어있는 필드입니다."),
 
     //NTS_TAX
-    NTS_TAX_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다."),
+    NTS_TAX_NOT_UPLOAD(400, "세금계산서 파일이 업로드 되지 않았습니다."),
     NTS_TAX_INVALID_FILE(400, "유효하지 않은 파일 형식입니다."),
     NTS_TAX_NOT_FOUND(404, "세금계산서를 찾을 수 없습니다."),
     NTS_TAX_UPDATE_UNAUTHORIZED(401, "세금계산서 수정 권한이 없습니다."),
-    NTS_TAX_DELETE_UNAUTHORIZED(401, "세금계산서 삭제 권한이 없습니다.");
+    NTS_TAX_DELETE_UNAUTHORIZED(401, "세금계산서 삭제 권한이 없습니다."),
+
+    //S3
+    FILE_IS_EMPTY(400, "비어있는 파일입니다."),
+    FILE_IS_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다.");
 
     private final int code;
     private final String message;

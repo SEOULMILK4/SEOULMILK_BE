@@ -50,6 +50,9 @@ public class GetNtsTaxResponseDTO {
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
 
+    @Schema(description = "파일 URL")
+    private String imageUrl;
+
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
 
@@ -68,6 +71,7 @@ public class GetNtsTaxResponseDTO {
                 .chargeTotal(ntsTax != null ? ntsTax.getChargeTotal() : null)
                 .taxTotal(ntsTax != null ? ntsTax.getTaxTotal() : null)
                 .erdAt(LocalDateTime.now())
+                .imageUrl(ntsTax != null ? ntsTax.getImageUrl(): null)
                 .build();
     }
 }

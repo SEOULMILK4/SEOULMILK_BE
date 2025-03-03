@@ -12,6 +12,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.OcrParser;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.global.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,7 @@ public class OcrServiceImpl implements OcrService{
     private final NtsTaxRepository ntsTaxRepository;
     private final ClovaOcrClient clovaOcrClient;
     private final ObjectMapper objectMapper;
+    private final S3Service s3Service;
 
     @Value("${ocr.api.secret-key}")
     private String secretKey;
@@ -46,8 +48,12 @@ public class OcrServiceImpl implements OcrService{
 
         for (MultipartFile file : files) {
             try {
-                // 파일 확장자 추출
+                // S3에 업로드할 고유한 파일명 생성
                 String fileExtension = getFileExtension(file.getOriginalFilename());
+                String keyName = "ocr-uploads/" + UUID.randomUUID() + "." + fileExtension; // 고유한 keyName 생성
+
+                // 개별 파일 업로드 후 URL 획득
+                String imageUrl = s3Service.uploadFile(keyName, file);
 
                 LocalDateTime startTime = LocalDateTime.now();
                 log.info("OCR 요청 시작 시간: {}", startTime);
@@ -70,7 +76,7 @@ public class OcrServiceImpl implements OcrService{
                                     GetOcrImageRequestDTO.builder()
                                             .format(fileExtension)
                                             .name(file.getOriginalFilename())
-                                            .data(base64Data)
+                                            .url(imageUrl)
                                             .templateIds(Collections.singletonList(templateId))
                                             .build()
                             ))
@@ -85,16 +91,17 @@ public class OcrServiceImpl implements OcrService{
                     log.info("OCR API 응답 (템플릿 {} 적용): {}", templateId, objectMapper.writeValueAsString(getOcrResponse));
 
                     // OCR 파싱
-                    ntsTax = OcrParser.parseOcrResponse(objectMapper.writeValueAsString(getOcrResponse));
+                    ntsTax = OcrParser.parseOcrResponse(objectMapper.writeValueAsString(getOcrResponse), imageUrl);
 
                     // 유효한 데이터 -> 종료
                     if (ntsTax != null && !isInvalidNtsTax(ntsTax)) {
                         break;
                     }
                 }
-                // 필수 값 X -> 저장 X, 실패 응답 추가
-                if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
+                // 필수 값 X -> 실패 응답 추가
+                if (isInvalidNtsTax(ntsTax)) {
                     responseList.add(GetNtsTaxResponseDTO.from(ntsTax,false));
+                    ntsTaxRepository.save(ntsTax);
                     continue; // 다음 파일 처리
                 }
                 ntsTaxRepository.save(ntsTax);

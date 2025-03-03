@@ -12,6 +12,6 @@ import java.util.List;
 public class GetOcrImageRequestDTO {
     private String format;
     private String name;
-    private String data;
+    private String url;
     private List<Integer> templateIds;
 }
