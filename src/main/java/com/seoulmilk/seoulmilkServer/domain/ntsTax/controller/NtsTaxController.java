@@ -30,7 +30,7 @@ public class NtsTaxController {
     private final OcrService ocrService;
 
     @Operation(summary = "세금 계산서 OCR")
-    @PostMapping(value = "/nts-tax", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<List<GetNtsTaxResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
