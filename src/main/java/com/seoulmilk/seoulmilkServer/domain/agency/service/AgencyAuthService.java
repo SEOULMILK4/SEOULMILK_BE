@@ -1,0 +1,173 @@
+package com.seoulmilk.seoulmilkServer.domain.agency.service;
+
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.ApprovedState;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyOTPRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyVerifyOTPRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
+import com.seoulmilk.seoulmilkServer.global.auth.domain.AuthVerifiedMember;
+import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
+import com.seoulmilk.seoulmilkServer.global.auth.repository.AuthVerifyRepository;
+import com.seoulmilk.seoulmilkServer.global.auth.repository.RefreshTokenRepository;
+import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
+import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.global.jwt.provider.JwtProvider;
+import com.seoulmilk.seoulmilkServer.global.mail.service.EmailService;
+import com.seoulmilk.seoulmilkServer.global.mail.service.OTPService;
+import com.seoulmilk.seoulmilkServer.global.security.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class AgencyAuthService {
+
+    private final AgencyRepository agencyRepository;
+    private final PasswordEncoder encoder;
+    private final JwtProvider jwtProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final OTPService otpService;
+    private final EmailService emailService;
+    private final AuthVerifyRepository authVerifyRepository;
+
+
+    @Transactional
+    public PostAgencyRegisterResponseDTO postAgencyRegister(
+        PostAgencyRegisterRequestDTO requestDTO) {
+
+        Agency agency = agencyRepository.findByEmail(requestDTO.getEmail())
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_EMAIL_INVALID));
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String newPassword = requestDTO.getPassword();
+
+        agency.updateAgencyInfo(requestDTO.getAgencyId(), passwordEncoder.encode(newPassword));
+
+        AuthVerifiedMember verifiedAgency = authVerifyRepository.findById(agency.getEmail())
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_VERIFIED));
+
+        if (!verifiedAgency.isVerified()){
+            throw new BusinessException(ErrorCode.AGENCY_NOT_VERIFIED);
+        }
+
+        removeVerifiedUser(agency.getEmail());
+        return PostAgencyRegisterResponseDTO.from(agency);
+    }
+
+
+    private void removeVerifiedUser(String email) {
+        authVerifyRepository.deleteById(email);
+    }
+
+    @Transactional
+    public GetAgencyLoginResponseDTO getAgencyLogin(GetAgencyLoginRequestDTO requestDTO) {
+
+        Agency agency = agencyRepository.findByAgencyId(requestDTO.getAgencyId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+
+        if (!encoder.matches(requestDTO.getPassword(), agency.getPassword())) {
+            throw new BusinessException(ErrorCode.AGENCY_LOGIN_FAILED);
+
+        }
+        return createToken(agency);
+    }
+
+
+    @Transactional
+    public void getAgencyLogout() {
+        Agency agency = getCurrentAgency();
+        refreshTokenRepository.deleteById(String.valueOf(agency.getId()) + ":" + "agency");
+    }
+
+
+    public void postAgencyCreateOtp(PostAgencyOTPRequestDTO requestDTO) {
+
+        String agencyEmail = requestDTO.getEmail();
+
+        Agency agency = agencyRepository.findByEmail(agencyEmail)
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_EMAIL_INVALID));
+
+        // 회원가입 이력이 있는지 체크
+        if (agency.getAgencyId() != null) {
+            throw new BusinessException(ErrorCode.AGENCY_ALREADY_REGISTERED);
+        }
+        // 승인된 상태인지 체크
+        if (agency.getApprovedState() == ApprovedState.DISAPPROVED) {
+            throw new BusinessException(ErrorCode.AGENCY_DISAPPROVED);
+        }
+
+        String createdOtp = otpService.generateOtp(agencyEmail);
+        emailService.sendOtp(agencyEmail, createdOtp);
+
+        storeVerifiedUser(agencyEmail, createdOtp);
+    }
+
+    private void storeVerifiedUser(String id, String otpCode) {
+        authVerifyRepository.save(new AuthVerifiedMember(id, otpCode));
+    }
+
+    @Transactional
+    public void postVerifyOtp(PostAgencyVerifyOTPRequestDTO requestDTO) {
+
+        String agencyEmail = requestDTO.getEmail();
+        String otpNum = requestDTO.getOtpNumber();
+
+        verifyUser(agencyEmail, otpNum);
+    }
+
+    private void verifyUser(String email, String otpCode) {
+        AuthVerifiedMember agency = authVerifyRepository.findById(email)
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+
+        if (!agency.getOtpCode().equals(otpCode)) {
+            throw new BusinessException(ErrorCode.OTP_INVALID);
+        }
+
+        agency.updateVerified();
+        authVerifyRepository.save(agency);
+    }
+
+    @Transactional
+    public GetNewTokenResponseDTO getNewToken(String refreshToken) {
+
+        Agency agency = getCurrentAgency();
+
+        jwtProvider.validateToken(refreshToken);
+        String createdAccessToken = jwtProvider.generateAccessToken(agency.getId(), "agency");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(agency.getId(), "agency");
+
+        return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
+    }
+
+    @Transactional(readOnly = true)
+    public Agency getCurrentAgency() {
+
+        if (!"agency".equals(SecurityUtils.getCurrentUserRole())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        return agencyRepository.findById(SecurityUtils.getCurrentUserId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+    }
+
+
+    private GetAgencyLoginResponseDTO createToken(Agency agency) {
+
+        String createdAccessToken = jwtProvider.generateAccessToken(agency.getId(), "agency");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(agency.getId(), "agency");
+
+        refreshTokenRepository.save(
+            new RefreshTokenEntity(String.valueOf(agency.getId()), "agency", createdRefreshToken));
+
+        return GetAgencyLoginResponseDTO.of(agency, createdAccessToken, createdRefreshToken);
+
+    }
+}

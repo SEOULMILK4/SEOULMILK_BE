@@ -23,13 +23,13 @@ public class JwtProvider {
 
     private final JwtProperties jwtDTO;
 
-    public String generateAccessToken(Member member) {
+    public String generateAccessToken(Long id,String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtDTO.getAccessExp());
 
         return Jwts.builder()
-            .setSubject(member.getEmployeeNum())
-            .claim("role", member.getRole().name())
+            .setSubject(id.toString())
+            .claim("role", role)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)),
@@ -38,14 +38,14 @@ public class JwtProvider {
 
     }
 
-    public String generateRefreshToken(Member member) {
+    public String generateRefreshToken(Long id,String role) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtDTO.getRefreshExp());
 
         return Jwts.builder()
-            .setSubject(member.getEmployeeNum())
-            .claim("role", member.getRole().name())
+            .setSubject(id.toString())
+            .claim("role", role)
             .setIssuedAt(new Date())
             .setExpiration(expiryDate)
             .signWith(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)),
@@ -55,6 +55,7 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
+        System.out.println("현재 토큰:"+ token);
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(
@@ -74,7 +75,7 @@ public class JwtProvider {
     }
 
 
-    public String getMemberEmployeeNumFromToken(String token) {
+    public String getUserIdFromToken(String token) {
 
         return Jwts.parserBuilder()
             .setSigningKey(
@@ -85,9 +86,10 @@ public class JwtProvider {
             .getSubject();
     }
 
-    public String getMemberRoleFromToken(String token) {
+    public String getUserRoleFromToken(String token) {
         return (String) Jwts.parserBuilder()
-            .setSigningKey(Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtDTO.getSecretKey())))
+            .setSigningKey(
+                    Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(StandardCharsets.UTF_8)))
             .build()
             .parseClaimsJws(token)
             .getBody()
