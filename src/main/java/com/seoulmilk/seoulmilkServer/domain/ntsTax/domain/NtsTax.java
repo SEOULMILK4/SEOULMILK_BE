@@ -1,6 +1,9 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.domain;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +26,7 @@ public class NtsTax extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ARAP ARAP;
+    private com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP ARAP;
 
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
@@ -49,16 +52,20 @@ public class NtsTax extends BaseEntity {
     @Column(name = "grand_total", nullable = false)
     private String grandTotal;
 
-    @Column(name = "imageUrl")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "agency_id")
-//    private Agency agency;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     public void updateNtsTax(String issueId, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal) {
         this.issueId = issueId;
@@ -71,7 +78,7 @@ public class NtsTax extends BaseEntity {
     }
 
     @Builder
-    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, String imageUrl) {
+    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl) {
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;
@@ -83,6 +90,7 @@ public class NtsTax extends BaseEntity {
         this.chargeTotal = chargeTotal;
         this.taxTotal = taxTotal;
         this.grandTotal = grandTotal;
+        this.status = status;
         this.imageUrl = imageUrl;
     }
 }

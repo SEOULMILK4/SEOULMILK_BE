@@ -2,7 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;

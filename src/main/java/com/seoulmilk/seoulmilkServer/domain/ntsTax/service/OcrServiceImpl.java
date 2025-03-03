@@ -99,9 +99,8 @@ public class OcrServiceImpl implements OcrService{
                     }
                 }
                 // 필수 값 X -> 실패 응답 추가
-                if (isInvalidNtsTax(ntsTax)) {
+                if (ntsTax == null && isInvalidNtsTax(ntsTax)) {
                     responseList.add(GetNtsTaxResponseDTO.from(ntsTax,false));
-                    ntsTaxRepository.save(ntsTax);
                     continue; // 다음 파일 처리
                 }
                 ntsTaxRepository.save(ntsTax);
