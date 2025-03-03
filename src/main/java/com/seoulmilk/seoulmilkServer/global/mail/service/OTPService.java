@@ -14,25 +14,25 @@ public class OTPService {
     private static final int EXPIRY_TIME_MINUTES = 5;
 
     // OTP 생성 및 저장
-    public String generateOtp(String employeeNum) {
+    public String generateOtp(String userId) {
 
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-        otpStorage.put(employeeNum, otp);
-        otpExpiry.put(employeeNum, LocalDateTime.now().plusMinutes(EXPIRY_TIME_MINUTES));
+        otpStorage.put(userId, otp);
+        otpExpiry.put(userId, LocalDateTime.now().plusMinutes(EXPIRY_TIME_MINUTES));
         return otp;
     }
 
     // OTP 검증
-    public boolean validateOtp(String employeeNum, String otp) {
+    public boolean validateOtp(String userId, String otp) {
 
-        if (!otpStorage.containsKey(employeeNum) || otpExpiry.get(employeeNum)
+        if (!otpStorage.containsKey(userId) || otpExpiry.get(userId)
             .isBefore(LocalDateTime.now())) {
             return false;
         }
-        boolean isValid = otpStorage.get(employeeNum).equals(otp);
+        boolean isValid = otpStorage.get(userId).equals(otp);
         if (isValid) {
-            otpStorage.remove(employeeNum);
-            otpExpiry.remove(employeeNum);
+            otpStorage.remove(userId);
+            otpExpiry.remove(userId);
         }
         return isValid;
     }

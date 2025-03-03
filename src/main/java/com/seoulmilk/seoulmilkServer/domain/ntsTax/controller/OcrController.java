@@ -1,6 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.auth.service.AuthService;
+import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxService;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class OcrController {
 
-    private final AuthService authService;
+    private final MemberAuthService authService;
     private final NtsTaxService ntsTaxService;
 
     @Operation(summary = "세금 계산서 OCR")

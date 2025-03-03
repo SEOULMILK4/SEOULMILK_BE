@@ -6,12 +6,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetEmployeeWithAgencyResponseDTO {
+public class GetOneEmployeeResponseDTO {
 
     @Schema(description = "DB상 id", example = "12")
     private final Long id;
@@ -25,17 +24,12 @@ public class GetEmployeeWithAgencyResponseDTO {
     @Schema(description = "이메일", example = "milksago@gmail.com")
     private final String email;
 
-    @Schema(description = "담당 대리점 수 ", example = "10")
-    private final long agencyNum;
-
-
-    public static GetEmployeeWithAgencyResponseDTO of(Member member,long agencyNum) {
-        return GetEmployeeWithAgencyResponseDTO.builder()
+    public static GetOneEmployeeResponseDTO from(Member member) {
+        return GetOneEmployeeResponseDTO.builder()
             .id(member.getId())
             .name(member.getName())
             .employeeNum(member.getEmployeeNum())
             .email(member.getEmail())
-            .agencyNum(agencyNum)
             .build();
     }
 

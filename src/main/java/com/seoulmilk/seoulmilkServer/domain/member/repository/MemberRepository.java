@@ -13,9 +13,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByEmployeeNumAndEmail(String employeeNum, String email);
 
-    @Query("SELECT m.id AS id, m.name AS name, m.email AS email, COUNT(a) AS agencyCount " +
-        "FROM Member m LEFT JOIN Agency a ON m.id = a.member.id " +
-        "GROUP BY m.id")
+    @Query("SELECT new com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeWithAgencyResponseDTO(m.id, m.name,m.employeeNum, m.email, COUNT(a.id)) " +
+           "FROM Member m LEFT JOIN m.agencies a " +
+           "GROUP BY m.id, m.employeeNum, m.name, m.email")
     List<GetEmployeeWithAgencyResponseDTO> findAllMembersWithAgencyCount();
 
 }

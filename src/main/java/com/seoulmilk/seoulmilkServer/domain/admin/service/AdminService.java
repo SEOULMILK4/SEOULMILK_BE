@@ -2,7 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.admin.service;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetOneEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
@@ -11,8 +11,8 @@ import com.seoulmilk.seoulmilkServer.domain.admin.dto.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.repository.AdminRepository;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
-import com.seoulmilk.seoulmilkServer.domain.auth.domain.RefreshTokenEntity;
-import com.seoulmilk.seoulmilkServer.domain.auth.repository.RefreshTokenRepository;
+import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
+import com.seoulmilk.seoulmilkServer.global.auth.repository.RefreshTokenRepository;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -91,14 +91,17 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public GetEmployeeResponseDTO getOneEmployee(Long employeeId) {
+    public GetOneEmployeeResponseDTO getOneEmployee(Long employeeId) {
 
         Admin admin = getCurrentAdmin();
 
         Member member = memberRepository.findById(employeeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return GetEmployeeResponseDTO.from(member);
+
+
+
+        return GetOneEmployeeResponseDTO.from(member);
     }
 
 
