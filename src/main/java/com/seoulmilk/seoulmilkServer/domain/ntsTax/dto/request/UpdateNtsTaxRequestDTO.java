@@ -8,8 +8,8 @@ import java.time.LocalDate;
 @Getter
 public class UpdateNtsTaxRequestDTO {
 
-//    @Schema(description = "대리점 ID", example = "1")
-//    private Long agencyId;
+    @Schema(description = "세금계산서 ID", example = "1")
+    private Long ntsTaxId;
 
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
@@ -20,8 +20,14 @@ public class UpdateNtsTaxRequestDTO {
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
     private String suId;
 
+    @Schema(description = "공급자 사업체명", example = "서울우유 대전 대리점")
+    private String suName;
+
     @Schema(description = "공급 받는 자 사업자등록번호", example = "305-04-02042")
     private String ipId;
+
+    @Schema(description = "공급 받는 자 사업체명", example = "부산 동구 참외 마트 왕십리점")
+    private String ipName;
 
     @Schema(description = "합계 금액", example = "305,000")
     private String grandTotal;
