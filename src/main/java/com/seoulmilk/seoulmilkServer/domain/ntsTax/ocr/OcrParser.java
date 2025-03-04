@@ -25,14 +25,14 @@ public class OcrParser {
             GetOcrResponseDTO response = new ObjectMapper().readValue(jsonResponse, GetOcrResponseDTO.class);
 
             if (response.getImages() == null || response.getImages().isEmpty()) {
-                throw new BusinessException(ErrorCode.FILE_IS_EMPTY);
+                return null;
             }
 
             GetOcrResponseDTO.ImageResult imageResult = response.getImages().get(0);
             List<GetOcrResponseDTO.Field> fields = imageResult.getFields();
 
             if (fields == null || fields.isEmpty()) {
-                throw new BusinessException(ErrorCode.FIELD_IS_EMPTY);
+                return null;
             }
 
             Map<String, String> extractedData = new HashMap<>();
@@ -48,7 +48,7 @@ public class OcrParser {
                 normalizedText = normalizedText.replace(".", ",");
 
                 // 숫자, ','만 유지
-                if (normalizedText.matches("\\d{1,3}(,\\d{3})*")) {
+                if (normalizedText.matches("\\d{1,3}(,\\d{3})+")) {
                     normalizedText = normalizedText.replaceAll("[^0-9,]", "");
                 }
 
@@ -75,9 +75,9 @@ public class OcrParser {
                     .suName(extractedData.getOrDefault("공급자 사업체명", null))
                     .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
                     .ipName(extractedData.getOrDefault("공급받는자 사업체명", null))
-                    .grandTotal(extractedData.getOrDefault("합계금액", null))
                     .chargeTotal(extractedData.getOrDefault("공급가액", null))
                     .taxTotal(extractedData.getOrDefault("세액", null))
+                    .grandTotal(extractedData.getOrDefault("합계금액", null))
                     .imageUrl(imageUrl)
                     .build();
 

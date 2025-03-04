@@ -3,6 +3,8 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetOcrImageRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetOcrRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -57,9 +60,6 @@ public class OcrServiceImpl implements OcrService{
 
                 LocalDateTime startTime = LocalDateTime.now();
                 log.info("OCR 요청 시작 시간: {}", startTime);
-
-                // 파일 -> Base64로 변환
-                String base64Data = Base64.getEncoder().encodeToString(file.getBytes());
 
                 NtsTax ntsTax = null;
 
@@ -98,15 +98,27 @@ public class OcrServiceImpl implements OcrService{
                         break;
                     }
                 }
-                // 필수 값 X -> 실패 응답 추가
-                if (ntsTax == null && isInvalidNtsTax(ntsTax)) {
-                    responseList.add(GetNtsTaxResponseDTO.from(ntsTax,false));
-                    continue; // 다음 파일 처리
+                if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
+                    ntsTax = NtsTax.builder()
+                            .imageUrl(imageUrl)
+                            .issueId("OCR 실패")
+                            .issueDate(LocalDate.now())
+                            .suId("OCR 실패")
+                            .suName("OCR 실패")
+                            .ipId("OCR 실패")
+                            .ipName("OCR 실패")
+                            .grandTotal("OCR 실패")
+                            .chargeTotal("OCR 실패")
+                            .taxTotal("OCR 실패")
+                            .ARAP(ARAP.AR)
+                            .status(Status.WAITING)
+                            .build();
                 }
-                ntsTaxRepository.save(ntsTax);
+                ntsTax = ntsTaxRepository.save(ntsTax);
 
-                // DTO 변환 후 응답 리스트에 추가
-                responseList.add(GetNtsTaxResponseDTO.from(ntsTax, true));
+                // 성공 여부 판별 후 DTO 변환
+                boolean success = !(ntsTax.getIssueId() == null || "OCR 실패".equals(ntsTax.getIssueId()));
+                responseList.add(GetNtsTaxResponseDTO.from(ntsTax, success));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);
