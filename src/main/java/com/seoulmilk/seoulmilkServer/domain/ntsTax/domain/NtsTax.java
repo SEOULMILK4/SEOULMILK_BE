@@ -1,11 +1,14 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.domain;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -23,7 +26,7 @@ public class NtsTax extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ARAP ARAP;
+    private com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP ARAP;
 
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
@@ -31,8 +34,14 @@ public class NtsTax extends BaseEntity {
     @Column(name = "su_id", nullable = false)
     private String suId;
 
+    @Column(name = "su_name", nullable = false)
+    private String suName;
+
     @Column(name = "ip_id", nullable = false)
     private String ipId;
+
+    @Column(name = "ip_name", nullable = false)
+    private String ipName;
 
     @Column(name = "charge_total", nullable = false)
     private String chargeTotal;
@@ -43,24 +52,45 @@ public class NtsTax extends BaseEntity {
     @Column(name = "grand_total", nullable = false)
     private String grandTotal;
 
-    @Column(name = "created_time", nullable = false)
-    private LocalTime createdTime;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
-    @Column(name = "imageUrl")
+    @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
-    @Builder
-    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal, LocalTime createdTime, String imageUrl) {
-        this.id = id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
+
+    public void updateNtsTax(String issueId, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal) {
         this.issueId = issueId;
-        this.ARAP = ARAP;
         this.issueDate = issueDate;
         this.suId = suId;
         this.ipId = ipId;
         this.chargeTotal = chargeTotal;
         this.taxTotal = taxTotal;
         this.grandTotal = grandTotal;
-        this.createdTime = createdTime;
+    }
+
+    @Builder
+    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl) {
+        this.id = id;
+        this.issueId = issueId;
+        this.ARAP = ARAP;
+        this.issueDate = issueDate;
+        this.suId = suId;
+        this.suName = suName;
+        this.ipId = ipId;
+        this.ipName = ipName;
+        this.chargeTotal = chargeTotal;
+        this.taxTotal = taxTotal;
+        this.grandTotal = grandTotal;
+        this.status = status;
         this.imageUrl = imageUrl;
     }
 }
