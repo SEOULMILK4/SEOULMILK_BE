@@ -4,6 +4,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
@@ -67,6 +68,7 @@ public class OcrParser {
 
             return NtsTax.builder()
                     .ARAP(ARAP.AR)
+                    .status(Status.WAITING)
                     .issueId(extractedData.getOrDefault("승인번호", null))
                     .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : null)
                     .suId(extractedData.getOrDefault("공급자 등록번호", null))

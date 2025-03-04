@@ -2,6 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,12 +54,17 @@ public class GetNtsTaxResponseDTO {
     @Schema(description = "파일 URL")
     private String imageUrl;
 
+    @Schema(description = "승인상태")
+    private Status status;
+
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
 
     public static GetNtsTaxResponseDTO from(NtsTax ntsTax, boolean success) {
         return GetNtsTaxResponseDTO.builder()
                 .success(success)
+                .AR(ntsTax != null ? ntsTax.getARAP() : null)
+                .status(ntsTax != null ? ntsTax.getStatus() : null)
                 .ntsTaxId(ntsTax != null ? ntsTax.getId() : null)
                 .issueId(ntsTax != null ? ntsTax.getIssueId() : null)
                 .issueDate(ntsTax != null ? ntsTax.getIssueDate() : null)
@@ -66,7 +72,6 @@ public class GetNtsTaxResponseDTO {
                 .suName(ntsTax != null ? ntsTax.getSuName() : null)
                 .ipId(ntsTax != null ? ntsTax.getIpId() : null)
                 .ipName(ntsTax != null ? ntsTax.getIpName() : null)
-                .AR(ntsTax != null ? ntsTax.getARAP() : null)
                 .grandTotal(ntsTax != null ? ntsTax.getGrandTotal() : null)
                 .chargeTotal(ntsTax != null ? ntsTax.getChargeTotal() : null)
                 .taxTotal(ntsTax != null ? ntsTax.getTaxTotal() : null)
