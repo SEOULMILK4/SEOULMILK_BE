@@ -1,5 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -26,6 +28,7 @@ import java.util.List;
 public class NtsTaxController {
 
     private final MemberAuthService memberAuthService;
+    private final AgencyAuthService agencyAuthService;
     private final NtsTaxCommandService ntsTaxService;
     private final OcrService ocrService;
 
@@ -42,21 +45,28 @@ public class NtsTaxController {
     }
 
     @Operation(summary = "세금 계산서 수정")
-    @PutMapping("/nts-tax/{nts_tax_id}")
-    public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(@RequestBody UpdateNtsTaxRequestDTO request,
-                                                             @PathVariable("nts_tax_id") Long ntsTaxId) {
+    @PutMapping("/nts-tax/edit")
+    public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(@RequestBody UpdateNtsTaxRequestDTO request) {
 
-        Member member = memberAuthService.getCurrentMember();
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-        return ApiResponse.success(ntsTaxService.updateNtsTax(member, ntsTaxId, request));
+        return ApiResponse.success(ntsTaxService.updateNtsTax(agency, request));
+    }
+
+    @Operation(summary = "세금 계산서 목록 조회")
+    @GetMapping("/nts-tax")
+    public ApiResponse<?> getNtsTax(@RequestParam(name = "page") Integer page) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        return null;
     }
 
     @Operation(summary = "세금계산서 삭제")
     @DeleteMapping("/nts-tax/{nts_tax_id}")
     public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
-        Member member = memberAuthService.getCurrentMember();
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-        ntsTaxService.deleteNtsTax(member, ntsTaxId);
+        ntsTaxService.deleteNtsTax(agency, ntsTaxId);
 
         return ApiResponse.success("Deletion successful");
     }
