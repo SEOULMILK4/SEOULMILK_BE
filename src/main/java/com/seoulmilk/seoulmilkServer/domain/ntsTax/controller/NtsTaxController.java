@@ -21,10 +21,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "[세금 계산서 및 OCR]")
@@ -66,6 +70,19 @@ public class NtsTaxController {
         Agency agency = agencyAuthService.getCurrentAgency();
 
         Page<NtsTax> ntsTaxList = ntsTaxQueryService.getNtsTaxList(agency, page);
+
+        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
+    }
+
+    @Operation(summary = "세금 계산서 통합 조회 - 조건 설정 후 탐색")
+    @GetMapping("/nts-tax/search")
+    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> searchNtsTaxList(@RequestParam(name = "page") Integer page,
+                                                                                        @RequestParam(required = false) LocalDate startDate,
+                                                                                        @RequestParam(required = false) LocalDate endDate,
+                                                                                        @RequestParam(required = false) List<String> ipNameList) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        Page<NtsTax> ntsTaxList = ntsTaxQueryService.searchNtsTaxList(agency, page, startDate, endDate, ipNameList);
 
         return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
     }

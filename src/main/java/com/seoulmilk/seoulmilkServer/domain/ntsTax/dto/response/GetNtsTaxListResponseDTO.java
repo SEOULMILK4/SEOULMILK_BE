@@ -54,7 +54,7 @@ public class GetNtsTaxListResponseDTO {
 
         return NtsTaxListResponseDTO.builder()
                 .ntsTaxList(getNtsTaxList)
-                .listSize(ntsTaxList.getSize())
+                .listSize(getNtsTaxList.size())
                 .totalPage(ntsTaxList.getTotalPages())
                 .totalElements(ntsTaxList.getTotalElements())
                 .isFirst(ntsTaxList.isFirst())
