@@ -18,7 +18,7 @@ public class EmailService {
 
     public void sendOtp(String email, String otp) {
         try {
-            String subject = "비밀번호 변경 인증 코드";
+            String subject = "[서울우유협동조합] 인증 코드";
 
             Context context = new Context();
             context.setVariable("otpCode", otp);

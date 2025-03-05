@@ -4,6 +4,8 @@ import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.repository.AdminRepository;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
 import com.seoulmilk.seoulmilkServer.global.auth.repository.RefreshTokenRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -67,5 +69,16 @@ public class AdminAuthService {
         return PostAdminLoginResponseDTO.of(createdAccessToken, createdRefreshToken);
     }
 
+    @Transactional
+    public GetNewTokenResponseDTO getNewToken(String refreshToken) {
+
+        Admin admin = getCurrentAdmin();
+
+        jwtProvider.validateToken(refreshToken);
+        String createdAccessToken = jwtProvider.generateAccessToken(admin.getId(), "admin");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(admin.getId(), "admin");
+
+        return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
+    }
 
 }

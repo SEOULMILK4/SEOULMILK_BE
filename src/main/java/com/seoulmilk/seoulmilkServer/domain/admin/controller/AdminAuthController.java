@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminAuthService;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,5 +36,12 @@ public class AdminAuthController {
     public ResponseEntity getAdminLogout() {
         adminAuthService.getAdminLogout();
         return ResponseEntity.ok().body("관리자 로그아웃 완료");
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("/refresh")
+    public ApiResponse<GetNewTokenResponseDTO> getTokenRefreshed(
+        @RequestHeader(value = "refreshToken", required = false) String refreshToken) {
+        return ApiResponse.success(adminAuthService.getNewToken(refreshToken));
     }
 }

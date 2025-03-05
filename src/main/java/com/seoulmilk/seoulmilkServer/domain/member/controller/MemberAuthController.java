@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,29 +47,29 @@ public class MemberAuthController {
     }
 
     @Operation(summary = "토큰 재발급")
-    @PostMapping("/refresh/{refreshToken}")
+    @PostMapping("/refresh")
     public ApiResponse<GetNewTokenResponseDTO> getTokenRefreshed(
-        @PathVariable("refreshToken") String refreshToken) {
+        @RequestHeader(value = "refreshToken", required = false) String refreshToken){
         return ApiResponse.success(memberAuthService.getNewToken(refreshToken));
     }
 
 
     @Operation(summary = "비밀번호 찾기 (로그인 안한 상태) - 인증코드 요청")
-    @PostMapping("/password/otp")
+    @PostMapping("/find-password/otp")
     public ApiResponse<CreateOtpResponseDTO> createOTP(
         @RequestBody @Valid CreateOtpRequestDTO postOtpRequestDTO) {
         return ApiResponse.success(memberAuthService.createOtp(postOtpRequestDTO));
     }
 
     @Operation(summary = "비밀번호 찾기 (로그인 안한 상태) - 인증코드 입력")
-    @PostMapping("/password/otp/verify")
+    @PostMapping("/find-password/otp/verify")
     public ApiResponse<PostVerifyOtpResponseDTO> verifyOTP(
         @RequestBody @Valid PostVerifyOtpRequestDTO postVerifyOtpRequestDTO) {
         return ApiResponse.success(memberAuthService.postVerifyOtp(postVerifyOtpRequestDTO));
     }
 
     @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/password")
+    @PatchMapping("/update-password")
     public ApiResponse<UpdatePasswordResponseDTO> updatePassword(
         @RequestBody @Valid UpdatePasswordRequestDTO updatePasswordRequestDTO) {
         return ApiResponse.success(memberAuthService.updatePassword(updatePasswordRequestDTO));

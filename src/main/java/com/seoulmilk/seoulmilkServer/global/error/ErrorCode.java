@@ -28,6 +28,7 @@ public enum ErrorCode {
     //ADMIN
     MASTERKEY_INVALID(404,"유효하지 않은 마스터키입니다."),
     ADMIN_NOT_FOUND(404,"존재하지 않는 관리자입니다."),
+    AGENCY_EMAIL_MISMATCH(400,"아이디 또는 이메일이 잘못되었습니다"),
 
     //ROLE
     ROLE_INVALID(404,"존재하지 않는 회원유형입니다."),
@@ -43,6 +44,7 @@ public enum ErrorCode {
 
     //REDIS
     VERIFIED_MEMBER_NOT_FOUND(404,"인증된 사원이 존재하지 않습니다."),
+    VERIFIED_AGENCY_NOT_FOUND(404,"인증된 대리점이 존재하지 않습니다."),
 
     //OCR
     OCR_REQUEST_FAILED(500, "OCR 요청에 실패했습니다."),
