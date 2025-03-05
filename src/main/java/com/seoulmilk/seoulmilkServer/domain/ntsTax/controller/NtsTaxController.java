@@ -4,10 +4,13 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.OcrService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -15,6 +18,7 @@ import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +33,9 @@ public class NtsTaxController {
 
     private final MemberAuthService memberAuthService;
     private final AgencyAuthService agencyAuthService;
-    private final NtsTaxCommandService ntsTaxService;
+    private final NtsTaxCommandService ntsTaxCommandService;
     private final OcrService ocrService;
+    private final NtsTaxQueryService ntsTaxQueryService;
 
     @Operation(summary = "세금 계산서 OCR")
     @PostMapping(value = "/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -50,24 +55,34 @@ public class NtsTaxController {
 
         Agency agency = agencyAuthService.getCurrentAgency();
 
-        return ApiResponse.success(ntsTaxService.updateNtsTax(agency, request));
+        return ApiResponse.success(ntsTaxCommandService.updateNtsTax(agency, request));
     }
 
     @Operation(summary = "세금 계산서 목록 조회")
     @GetMapping("/nts-tax")
-    public ApiResponse<?> getNtsTax(@RequestParam(name = "page") Integer page) {
+    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getNtsTaxList(@RequestParam(name = "page") Integer page) {
         Agency agency = agencyAuthService.getCurrentAgency();
 
-        return null;
+        Page<NtsTax> ntsTaxList = ntsTaxQueryService.getNtsTaxList(agency, page);
+
+        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
     }
 
-    @Operation(summary = "세금계산서 삭제")
+    @Operation(summary = "세금계산서 단건 삭제")
     @DeleteMapping("/nts-tax/{nts_tax_id}")
     public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
         Agency agency = agencyAuthService.getCurrentAgency();
 
-        ntsTaxService.deleteNtsTax(agency, ntsTaxId);
+        ntsTaxCommandService.deleteNtsTax(agency, ntsTaxId);
 
         return ApiResponse.success("Deletion successful");
+    }
+
+    @Operation(summary = "세금 계산서 페이지 내 전체 삭제")
+    @DeleteMapping("/nts-tax/list")
+    public ApiResponse<String> deleteNtsTaxList() {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        return ApiResponse.success("NtsTaxList Deletion successful");
     }
 }
