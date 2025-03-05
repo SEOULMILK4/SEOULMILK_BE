@@ -2,9 +2,12 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.HomeTaxService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.OcrService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
@@ -28,6 +31,7 @@ public class NtsTaxController {
     private final MemberAuthService memberAuthService;
     private final NtsTaxCommandService ntsTaxService;
     private final OcrService ocrService;
+    private final HomeTaxService homeTaxService;
 
     @Operation(summary = "세금 계산서 OCR")
     @PostMapping(value = "/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -59,5 +63,17 @@ public class NtsTaxController {
         ntsTaxService.deleteNtsTax(member, ntsTaxId);
 
         return ApiResponse.success("Deletion successful");
+    }
+
+    @Operation(summary = "세금계산서 홈택스 진위 여부 확인 [개별]")
+    @PostMapping("/nts-tax/hometax")
+    public ApiResponse<OcrTaxInvoiceResponseDTO> getOneVerify(@RequestBody OcrTaxInvoiceRequestDTO request) {
+        return ApiResponse.success(homeTaxService.verifyTaxInvoice(request));
+    }
+
+    @Operation(summary = "세금계산서 홈택스 진위 여부 확인 [여러개]")
+    @PostMapping("/nts-tax/hometax/multiple")
+    public ApiResponse<List<OcrTaxInvoiceResponseDTO>> getMultipleVerify(@RequestBody List<OcrTaxInvoiceRequestDTO> requests) {
+        return ApiResponse.success(homeTaxService.verifyMultipleTaxInvoice(requests));
     }
 }
