@@ -2,8 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
-import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
@@ -34,7 +33,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class NtsTaxController {
 
-    private final MemberAuthService memberAuthService;
     private final AgencyAuthService agencyAuthService;
     private final NtsTaxCommandService ntsTaxCommandService;
     private final OcrService ocrService;
@@ -48,9 +46,9 @@ public class NtsTaxController {
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
-        Member member = memberAuthService.getCurrentMember();
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-        return ApiResponse.success(ocrService.getOcrResponse(member, files));
+        return ApiResponse.success(ocrService.getOcrResponse(agency, files));
     }
 
     @Operation(summary = "세금 계산서 수정")
@@ -82,10 +80,12 @@ public class NtsTaxController {
         return ApiResponse.success("Deletion successful");
     }
 
-    @Operation(summary = "세금 계산서 페이지 내 전체 삭제")
-    @DeleteMapping("/nts-tax/list")
-    public ApiResponse<String> deleteNtsTaxList() {
+    @Operation(summary = "세금 계산서 페이지 내 다건 삭제")
+    @DeleteMapping("/nts-tax/multiple")
+    public ApiResponse<String> deleteNtsTaxList(@RequestBody List<DeleteNtsTaxRequestDTO> request) {
         Agency agency = agencyAuthService.getCurrentAgency();
+
+        ntsTaxCommandService.deleteNtsTaxList(agency, request);
 
         return ApiResponse.success("NtsTaxList Deletion successful");
     }

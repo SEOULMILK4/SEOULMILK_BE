@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
@@ -46,7 +47,7 @@ public class OcrServiceImpl implements OcrService{
 
     @Override
     @Transactional
-    public List<GetNtsTaxResponseDTO> getOcrResponse(Member member, List<MultipartFile> files) {
+    public List<GetNtsTaxResponseDTO> getOcrResponse(Agency agency, List<MultipartFile> files) {
         List<GetNtsTaxResponseDTO> responseList = new ArrayList<>();
 
         for (MultipartFile file : files) {
