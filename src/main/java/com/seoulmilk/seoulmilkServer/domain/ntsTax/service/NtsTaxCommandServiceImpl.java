@@ -30,7 +30,7 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
         NtsTax ntsTax = ntsTaxRepository.findById(request.getNtsTaxId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
 
-        // 담당 사원 & 대리점일 경우에만 수정 가능
+        // 담당 대리점일 경우에만 수정 가능
         if (!ntsTax.getAgency().equals(agency)) {
             throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
         }
@@ -55,7 +55,7 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
         NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
 
-        // 담당 사원 & 대리점일 경우에만 삭제 가능
+        // 담당 대리점일 경우에만 삭제 가능
         if (!ntsTax.getAgency().equals(agency)) {
             throw new BusinessException(ErrorCode.NTS_TAX_DELETE_UNAUTHORIZED);
         }

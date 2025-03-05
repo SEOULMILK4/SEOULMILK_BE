@@ -1,8 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
-import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
-import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     private final NtsTaxRepository ntsTaxRepository;
-    private final AgencyAuthService agencyAuthService;
 
     @Override
     @Transactional(readOnly = true)
