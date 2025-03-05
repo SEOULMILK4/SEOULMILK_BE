@@ -58,7 +58,12 @@ public enum ErrorCode {
 
     //S3
     FILE_IS_EMPTY(400, "비어있는 파일입니다."),
-    FILE_IS_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다.");
+    FILE_IS_NOT_UPLOAD(400, "파일이 업로드 되지 않았습니다."),
+
+    //CODEF
+    CREATE_ACCESSTOKEN_CODEF_FAILED(500,"codef 토큰 요청 실패"),
+    ENCODING_PASSWORD_FAILED(500,"인증서 비밀번호 암호화 실패"),
+    VERIFY_TAX_INVOICE_FALIED(500,"전자세금계산서 검증 API 호출 실패");
 
     private final int code;
     private final String message;
