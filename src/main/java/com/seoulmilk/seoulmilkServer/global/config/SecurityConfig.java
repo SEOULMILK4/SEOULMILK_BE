@@ -34,11 +34,13 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/api/employee/login", "/api/employee/refresh/**")
                 .permitAll()
-                .requestMatchers("/api/employee/password/**")
+                .requestMatchers("/api/employee/find-password/**", "/api/employee/update-password")
                 .permitAll()
-                .requestMatchers("/api/admin/login")
+                .requestMatchers("/api/admin/login", "/api/admin/refresh/**")
                 .permitAll()
-                .requestMatchers("/api/agency/register/**","/api/agency/login")
+                .requestMatchers("/api/agency/register/**", "/api/agency/login",
+                    "/api/agency/refresh/**",
+                    "/api/agency/find-password/**", "/api/agency/update-password")
                 .permitAll()
                 .anyRequest().authenticated())
             .formLogin(AbstractAuthenticationFilterConfigurer::disable)

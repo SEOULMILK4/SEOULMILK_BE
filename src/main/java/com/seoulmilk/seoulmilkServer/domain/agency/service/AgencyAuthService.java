@@ -2,13 +2,20 @@ package com.seoulmilk.seoulmilkServer.domain.agency.service;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.ApprovedState;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.UpdateAgencyPasswordRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.UpdateAgencyPasswordResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyOTPRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyVerifyOTPRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.AuthVerifiedMember;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
@@ -54,7 +61,7 @@ public class AgencyAuthService {
         AuthVerifiedMember verifiedAgency = authVerifyRepository.findById(agency.getEmail())
             .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_VERIFIED));
 
-        if (!verifiedAgency.isVerified()){
+        if (!verifiedAgency.isVerified()) {
             throw new BusinessException(ErrorCode.AGENCY_NOT_VERIFIED);
         }
 
@@ -84,10 +91,50 @@ public class AgencyAuthService {
     @Transactional
     public void getAgencyLogout() {
         Agency agency = getCurrentAgency();
-        refreshTokenRepository.deleteById(String.valueOf(agency.getId()) + ":" + "agency");
+        refreshTokenRepository.deleteById(agency.getId().toString() + ":" + "agency");
+    }
+
+    // 비밀번호 찾기
+    @Transactional
+    public CreateAgencyOtpResponseDTO createOTP(CreateAgencyOtpRequestDTO requestDTO) {
+        String agencyId = requestDTO.getAgencyId();
+        String agencyEmail = requestDTO.getEmail();
+
+        Agency agency = agencyRepository.findByAgencyIdAndEmail(agencyId, agencyEmail)
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_EMAIL_MISMATCH));
+
+        String createdOtp = otpService.generateOtp(agencyId);
+
+        emailService.sendOtp(agencyEmail, createdOtp);
+        storeVerifiedUser(agencyId, createdOtp);
+
+        return CreateAgencyOtpResponseDTO.from(agencyId);
+    }
+
+    @Transactional
+    public UpdateAgencyPasswordResponseDTO updatePassword(
+        UpdateAgencyPasswordRequestDTO requestDTO) {
+
+        String agencyId = requestDTO.getAgencyId();
+        isUserVerified(agencyId);
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String newPassword = requestDTO.getPassword();
+
+        Agency agency = agencyRepository.findByAgencyId(agencyId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
+
+        agency.updatePassword(passwordEncoder.encode(newPassword));
+        agencyRepository.save(agency);
+
+        removeVerifiedUser(agencyId);
+
+        return UpdateAgencyPasswordResponseDTO.from(agencyId);
+
     }
 
 
+    // 회원가입
     public void postAgencyCreateOtp(PostAgencyOTPRequestDTO requestDTO) {
 
         String agencyEmail = requestDTO.getEmail();
@@ -107,20 +154,20 @@ public class AgencyAuthService {
         String createdOtp = otpService.generateOtp(agencyEmail);
         emailService.sendOtp(agencyEmail, createdOtp);
 
-        storeVerifiedUser(agencyEmail, createdOtp);
+        storeVerifiedUser(agency.getAgencyId(), createdOtp);
     }
 
-    private void storeVerifiedUser(String id, String otpCode) {
-        authVerifyRepository.save(new AuthVerifiedMember(id, otpCode));
+    private void storeVerifiedUser(String agencyId, String otpCode) {
+        authVerifyRepository.save(new AuthVerifiedMember(agencyId, otpCode));
     }
 
     @Transactional
     public void postVerifyOtp(PostAgencyVerifyOTPRequestDTO requestDTO) {
 
-        String agencyEmail = requestDTO.getEmail();
+        String agencyId = requestDTO.getAgencyId();
         String otpNum = requestDTO.getOtpNumber();
 
-        verifyUser(agencyEmail, otpNum);
+        verifyUser(agencyId, otpNum);
     }
 
     private void verifyUser(String email, String otpCode) {
@@ -133,6 +180,15 @@ public class AgencyAuthService {
 
         agency.updateVerified();
         authVerifyRepository.save(agency);
+    }
+
+    private void isUserVerified(String agencyId) {
+        AuthVerifiedMember agency = authVerifyRepository.findById(agencyId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.VERIFIED_AGENCY_NOT_FOUND));
+
+        if (!agency.isVerified()) {
+            throw new BusinessException(ErrorCode.VERIFIED_MEMBER_NOT_FOUND);
+        }
     }
 
     @Transactional
