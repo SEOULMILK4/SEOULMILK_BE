@@ -24,8 +24,14 @@ public class UpdateNtsTaxResponseDTO {
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
     private String suId;
 
+    @Schema(description = "공급자 사업체명", example = "서울우유 대전 대리점")
+    private String suName;
+
     @Schema(description = "공급 받는 자 사업자등록번호", example = "305-04-02042")
     private String ipId;
+
+    @Schema(description = "공급 받는 자 사업체명", example = "부산 동구 참외 마트 왕십리점")
+    private String ipName;
 
     @Schema(description = "매출", example = "AR")
     private ARAP AR;
@@ -50,7 +56,9 @@ public class UpdateNtsTaxResponseDTO {
                 .issueId(ntsTax.getIssueId())
                 .issueDate(ntsTax.getIssueDate())
                 .suId(ntsTax.getSuId())
+                .suName(ntsTax.getSuName())
                 .ipId(ntsTax.getIpId())
+                .ipName(ntsTax.getIpName())
                 .AR(ntsTax.getARAP())
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())

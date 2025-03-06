@@ -1,5 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
@@ -7,16 +9,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetNtsTaxResponseDTO {
+public class GetOcrNtsTaxResponseDTO {
 
     private boolean success;
+
+    private Long memberId;
+
+    private Long agencyId;
 
     @Schema(description = "세금 계산서 ID", example = "1")
     private Long ntsTaxId;
@@ -60,23 +69,25 @@ public class GetNtsTaxResponseDTO {
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
 
-    public static GetNtsTaxResponseDTO from(NtsTax ntsTax, boolean success) {
-        return GetNtsTaxResponseDTO.builder()
+    public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax, boolean success) {
+        return GetOcrNtsTaxResponseDTO.builder()
                 .success(success)
-                .AR(ntsTax != null ? ntsTax.getARAP() : null)
-                .status(ntsTax != null ? ntsTax.getStatus() : null)
-                .ntsTaxId(ntsTax != null ? ntsTax.getId() : null)
-                .issueId(ntsTax != null ? ntsTax.getIssueId() : null)
-                .issueDate(ntsTax != null ? ntsTax.getIssueDate() : null)
-                .suId(ntsTax != null ? ntsTax.getSuId() : null)
-                .suName(ntsTax != null ? ntsTax.getSuName() : null)
-                .ipId(ntsTax != null ? ntsTax.getIpId() : null)
-                .ipName(ntsTax != null ? ntsTax.getIpName() : null)
-                .grandTotal(ntsTax != null ? ntsTax.getGrandTotal() : null)
-                .chargeTotal(ntsTax != null ? ntsTax.getChargeTotal() : null)
-                .taxTotal(ntsTax != null ? ntsTax.getTaxTotal() : null)
+                .AR(ntsTax.getARAP())
+                .memberId(agency.getMember().getId())
+                .agencyId(agency.getId())
+                .status(ntsTax.getStatus())
+                .ntsTaxId(ntsTax.getId())
+                .issueId(ntsTax.getIssueId())
+                .issueDate(ntsTax.getIssueDate())
+                .suId(ntsTax.getSuId())
+                .suName(ntsTax.getSuName())
+                .ipId(ntsTax.getIpId())
+                .ipName(ntsTax.getIpName())
+                .grandTotal(ntsTax.getGrandTotal())
+                .chargeTotal(ntsTax.getChargeTotal())
+                .taxTotal(ntsTax.getTaxTotal())
                 .erdAt(LocalDateTime.now())
-                .imageUrl(ntsTax != null ? ntsTax.getImageUrl(): null)
+                .imageUrl(ntsTax.getImageUrl())
                 .build();
     }
 }

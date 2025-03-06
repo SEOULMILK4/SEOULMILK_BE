@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetOcrRequestDTO {
+public class OcrRequestDTO {
 
     @Builder.Default
     private final String version = "V2";
@@ -21,5 +21,5 @@ public class GetOcrRequestDTO {
     @Builder.Default
     private final long timestamp = System.currentTimeMillis();
 
-    private final List<GetOcrImageRequestDTO> images;
+    private final List<OcrImageRequestDTO> images;
 }

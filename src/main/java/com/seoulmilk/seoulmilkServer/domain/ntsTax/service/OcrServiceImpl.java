@@ -1,12 +1,18 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetOcrImageRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetOcrRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrImageRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrNtsTaxListResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.ClovaOcrClient;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr.OcrParser;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
@@ -22,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,6 +41,7 @@ public class OcrServiceImpl implements OcrService{
     private final ClovaOcrClient clovaOcrClient;
     private final ObjectMapper objectMapper;
     private final S3Service s3Service;
+    private final AgencyAuthService agencyAuthService;
 
     @Value("${ocr.api.secret-key}")
     private String secretKey;
@@ -43,8 +51,12 @@ public class OcrServiceImpl implements OcrService{
 
     @Override
     @Transactional
-    public List<GetNtsTaxResponseDTO> getOcrResponse(Member member, List<MultipartFile> files) {
-        List<GetNtsTaxResponseDTO> responseList = new ArrayList<>();
+    public GetOcrNtsTaxListResponseDTO getOcrResponse(List<MultipartFile> files) {
+        List<GetOcrNtsTaxResponseDTO> responseList = new ArrayList<>();
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        // OCR 전체 시작 시간
+        LocalDateTime totalStartTime = LocalDateTime.now();
 
         for (MultipartFile file : files) {
             try {
@@ -58,9 +70,6 @@ public class OcrServiceImpl implements OcrService{
                 LocalDateTime startTime = LocalDateTime.now();
                 log.info("OCR 요청 시작 시간: {}", startTime);
 
-                // 파일 -> Base64로 변환
-                String base64Data = Base64.getEncoder().encodeToString(file.getBytes());
-
                 NtsTax ntsTax = null;
 
                 // 템플릿 ID 리스트 변환
@@ -71,9 +80,9 @@ public class OcrServiceImpl implements OcrService{
 
                 // 여러 개의 템플릿을 순차적으로 시도
                 for (Integer templateId : templateIdList) {
-                    GetOcrRequestDTO request = GetOcrRequestDTO.builder()
+                    OcrRequestDTO request = OcrRequestDTO.builder()
                             .images(Collections.singletonList(
-                                    GetOcrImageRequestDTO.builder()
+                                    OcrImageRequestDTO.builder()
                                             .format(fileExtension)
                                             .name(file.getOriginalFilename())
                                             .url(imageUrl)
@@ -87,26 +96,40 @@ public class OcrServiceImpl implements OcrService{
                     log.info("OCR 요청 (템플릿 {} 적용): {}", templateId, jsonMessage);
 
                     // OpenFeign을 사용하여 OCR API 호출
-                    GetOcrResponseDTO getOcrResponse = clovaOcrClient.callApi(secretKey, request);
+                    OcrResponseDTO getOcrResponse = clovaOcrClient.callApi(secretKey, request);
                     log.info("OCR API 응답 (템플릿 {} 적용): {}", templateId, objectMapper.writeValueAsString(getOcrResponse));
 
                     // OCR 파싱
-                    ntsTax = OcrParser.parseOcrResponse(objectMapper.writeValueAsString(getOcrResponse), imageUrl);
+                    ntsTax = OcrParser.parseOcrResponse(agency, objectMapper.writeValueAsString(getOcrResponse), imageUrl);
 
                     // 유효한 데이터 -> 종료
                     if (ntsTax != null && !isInvalidNtsTax(ntsTax)) {
                         break;
                     }
                 }
-                // 필수 값 X -> 실패 응답 추가
-                if (ntsTax == null && isInvalidNtsTax(ntsTax)) {
-                    responseList.add(GetNtsTaxResponseDTO.from(ntsTax,false));
-                    continue; // 다음 파일 처리
+                if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
+                    ntsTax = NtsTax.builder()
+                            .imageUrl(imageUrl)
+                            .issueId(" ")
+                            .issueDate(LocalDate.now())
+                            .suId(" ")
+                            .suName(" ")
+                            .ipId(" ")
+                            .ipName(" ")
+                            .grandTotal(" ")
+                            .chargeTotal(" ")
+                            .taxTotal(" ")
+                            .ARAP(ARAP.AR)
+                            .status(Status.WAITING)
+                            .member(agency.getMember())
+                            .agency(agency)
+                            .build();
                 }
-                ntsTaxRepository.save(ntsTax);
+                ntsTax = ntsTaxRepository.save(ntsTax);
 
-                // DTO 변환 후 응답 리스트에 추가
-                responseList.add(GetNtsTaxResponseDTO.from(ntsTax, true));
+                // 성공 여부 판별 후 DTO 변환
+                boolean success = !(ntsTax.getIssueId() == null || " ".equals(ntsTax.getIssueId()));
+                responseList.add(GetOcrNtsTaxResponseDTO.from(agency, ntsTax, success));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);
@@ -116,7 +139,12 @@ public class OcrServiceImpl implements OcrService{
                 throw new BusinessException(ErrorCode.OCR_REQUEST_FAILED);
             }
         }
-        return responseList;
+        // OCR 전체 종료 시간
+        LocalDateTime totalEndTime = LocalDateTime.now();
+        Duration totalDuration = Duration.between(totalStartTime, totalEndTime);
+        long totalTimes = totalDuration.toMillis();
+
+        return GetOcrNtsTaxListResponseDTO.from(responseList, totalTimes);
     }
 
     private String getFileExtension(String fileName) {

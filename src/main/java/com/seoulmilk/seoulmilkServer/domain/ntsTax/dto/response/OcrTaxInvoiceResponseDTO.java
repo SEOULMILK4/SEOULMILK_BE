@@ -1,7 +1,5 @@
-package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request;
+package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetAgencyResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

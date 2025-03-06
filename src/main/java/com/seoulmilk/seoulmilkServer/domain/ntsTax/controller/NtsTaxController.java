@@ -1,14 +1,15 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
-import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.*;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.HomeTaxService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.OcrService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -16,10 +17,12 @@ import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "[세금 계산서 및 OCR]")
@@ -28,41 +31,73 @@ import java.util.List;
 @RequestMapping("/api")
 public class NtsTaxController {
 
-    private final MemberAuthService memberAuthService;
-    private final NtsTaxCommandService ntsTaxService;
+    private final AgencyAuthService agencyAuthService;
+    private final NtsTaxCommandService ntsTaxCommandService;
     private final OcrService ocrService;
     private final HomeTaxService homeTaxService;
+    private final NtsTaxQueryService ntsTaxQueryService;
 
     @Operation(summary = "세금 계산서 OCR")
     @PostMapping(value = "/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<List<GetNtsTaxResponseDTO>> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
+    public ApiResponse<GetOcrNtsTaxListResponseDTO> getOcrTest(@RequestParam("files") List<MultipartFile> files) {
 
         if (files.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
         }
-        Member member = memberAuthService.getCurrentMember();
 
-        return ApiResponse.success(ocrService.getOcrResponse(member, files));
+        return ApiResponse.success(ocrService.getOcrResponse(files));
     }
 
     @Operation(summary = "세금 계산서 수정")
-    @PutMapping("/nts-tax/{nts_tax_id}")
-    public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(@RequestBody UpdateNtsTaxRequestDTO request,
-                                                             @PathVariable("nts_tax_id") Long ntsTaxId) {
+    @PutMapping("/nts-tax/edit")
+    public ApiResponse<List<UpdateNtsTaxResponseDTO>> updateNtsTax(@RequestBody List<UpdateNtsTaxRequestDTO> request) {
 
-        Member member = memberAuthService.getCurrentMember();
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-        return ApiResponse.success(ntsTaxService.updateNtsTax(member, ntsTaxId, request));
+        return ApiResponse.success(ntsTaxCommandService.updateNtsTax(agency, request));
     }
 
-    @Operation(summary = "세금계산서 삭제")
+    @Operation(summary = "세금 계산서 목록 조회")
+    @GetMapping("/nts-tax")
+    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getNtsTaxList(@RequestParam(name = "page") Integer page) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        Page<NtsTax> ntsTaxList = ntsTaxQueryService.getNtsTaxList(agency, page);
+
+        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
+    }
+
+    @Operation(summary = "세금 계산서 통합 조회 - 조건 설정 후 탐색")
+    @GetMapping("/nts-tax/search")
+    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> searchNtsTaxList(@RequestParam(name = "page") Integer page,
+                                                                                        @RequestParam(required = false) LocalDate startDate,
+                                                                                        @RequestParam(required = false) LocalDate endDate,
+                                                                                        @RequestParam(required = false) List<String> ipNameList) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        Page<NtsTax> ntsTaxList = ntsTaxQueryService.searchNtsTaxList(agency, page, startDate, endDate, ipNameList);
+
+        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
+    }
+
+    @Operation(summary = "세금계산서 단건 삭제")
     @DeleteMapping("/nts-tax/{nts_tax_id}")
     public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
-        Member member = memberAuthService.getCurrentMember();
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-        ntsTaxService.deleteNtsTax(member, ntsTaxId);
+        ntsTaxCommandService.deleteNtsTax(agency, ntsTaxId);
 
         return ApiResponse.success("Deletion successful");
+    }
+
+    @Operation(summary = "세금 계산서 페이지 내 다건 삭제")
+    @DeleteMapping("/nts-tax/multiple")
+    public ApiResponse<String> deleteNtsTaxList(@RequestBody List<DeleteNtsTaxRequestDTO> request) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        ntsTaxCommandService.deleteNtsTaxList(agency, request);
+
+        return ApiResponse.success("NtsTaxList Deletion successful");
     }
 
     @Operation(summary = "세금계산서 홈택스 진위 여부 확인 [단건]")

@@ -2,12 +2,11 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrResponseDTO;
-import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
-import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,23 +19,23 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OcrParser {
 
-    public static NtsTax parseOcrResponse(String jsonResponse, String imageUrl) {
+    public static NtsTax parseOcrResponse(Agency agency, String jsonResponse, String imageUrl) {
         try {
-            GetOcrResponseDTO response = new ObjectMapper().readValue(jsonResponse, GetOcrResponseDTO.class);
+            OcrResponseDTO response = new ObjectMapper().readValue(jsonResponse, OcrResponseDTO.class);
 
             if (response.getImages() == null || response.getImages().isEmpty()) {
-                throw new BusinessException(ErrorCode.FILE_IS_EMPTY);
+                return null;
             }
 
-            GetOcrResponseDTO.ImageResult imageResult = response.getImages().get(0);
-            List<GetOcrResponseDTO.Field> fields = imageResult.getFields();
+            OcrResponseDTO.ImageResult imageResult = response.getImages().get(0);
+            List<OcrResponseDTO.Field> fields = imageResult.getFields();
 
             if (fields == null || fields.isEmpty()) {
-                throw new BusinessException(ErrorCode.FIELD_IS_EMPTY);
+                return null;
             }
 
             Map<String, String> extractedData = new HashMap<>();
-            for (GetOcrResponseDTO.Field field : fields) {
+            for (OcrResponseDTO.Field field : fields) {
 
                 if (field.getInferText() == null) {
                     continue;
@@ -48,7 +47,7 @@ public class OcrParser {
                 normalizedText = normalizedText.replace(".", ",");
 
                 // 숫자, ','만 유지
-                if (normalizedText.matches("\\d{1,3}(,\\d{3})*")) {
+                if (normalizedText.matches("\\d{1,3}(,\\d{3})+")) {
                     normalizedText = normalizedText.replaceAll("[^0-9,]", "");
                 }
 
@@ -69,15 +68,17 @@ public class OcrParser {
             return NtsTax.builder()
                     .ARAP(ARAP.AR)
                     .status(Status.WAITING)
+                    .agency(agency)
+                    .member(agency.getMember())
                     .issueId(extractedData.getOrDefault("승인번호", null))
                     .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : null)
                     .suId(extractedData.getOrDefault("공급자 등록번호", null))
                     .suName(extractedData.getOrDefault("공급자 사업체명", null))
                     .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
                     .ipName(extractedData.getOrDefault("공급받는자 사업체명", null))
-                    .grandTotal(extractedData.getOrDefault("합계금액", null))
                     .chargeTotal(extractedData.getOrDefault("공급가액", null))
                     .taxTotal(extractedData.getOrDefault("세액", null))
+                    .grandTotal(extractedData.getOrDefault("합계금액", null))
                     .imageUrl(imageUrl)
                     .build();
 
