@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetOcrResponseDTO {
+public class OcrResponseDTO {
     private String version;
     private String requestId;
     private long timestamp;

@@ -29,7 +29,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         List<NtsTax> results = jpaQueryFactory
                 .selectFrom(ntsTax)
                 .where(
-
+                        ntsTax.agency.eq(agency),
                         betweenIssueDate(startDate, endDate),
                         inIpNames(ipNameList)
                 )
@@ -43,7 +43,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                         .select(ntsTax.count())
                         .from(ntsTax)
                         .where(
-
+                                ntsTax.agency.eq(agency),
                                 betweenIssueDate(startDate, endDate),
                                 inIpNames(ipNameList)
                         )

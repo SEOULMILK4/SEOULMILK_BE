@@ -77,7 +77,9 @@ public class NtsTax extends BaseEntity {
     }
 
     @Builder
-    private NtsTax (Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl) {
+    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl) {
+        this.member = member;
+        this.agency = agency;
         this.id = id;
         this.issueId = issueId;
         this.ARAP = ARAP;

@@ -1,5 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
@@ -7,16 +9,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetNtsTaxResponseDTO {
+public class GetOcrNtsTaxResponseDTO {
 
     private boolean success;
+
+    private Long memberId;
+
+    private Long agencyId;
 
     @Schema(description = "세금 계산서 ID", example = "1")
     private Long ntsTaxId;
@@ -60,10 +69,12 @@ public class GetNtsTaxResponseDTO {
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
 
-    public static GetNtsTaxResponseDTO from(NtsTax ntsTax, boolean success) {
-        return GetNtsTaxResponseDTO.builder()
+    public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax, boolean success) {
+        return GetOcrNtsTaxResponseDTO.builder()
                 .success(success)
                 .AR(ntsTax.getARAP())
+                .memberId(agency.getMember().getId())
+                .agencyId(agency.getId())
                 .status(ntsTax.getStatus())
                 .ntsTaxId(ntsTax.getId())
                 .issueId(ntsTax.getIssueId())

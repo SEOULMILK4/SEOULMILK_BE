@@ -3,7 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.codef.properties.CodefProperties;
 import com.seoulmilk.seoulmilkServer.global.codef.service.CodefAuthService;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;

@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
 import java.util.List;
 
 public interface HomeTaxService {

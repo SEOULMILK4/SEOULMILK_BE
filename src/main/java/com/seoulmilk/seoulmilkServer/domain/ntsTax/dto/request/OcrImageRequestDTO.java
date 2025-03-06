@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetOcrImageRequestDTO {
+public class OcrImageRequestDTO {
     private String format;
     private String name;
     private String url;
