@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.global.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +43,15 @@ public class S3Service {
     // 파일 삭제
     public void deleteFile(String fileName) {
         amazonS3.deleteObject(bucket, fileName);
+    }
+
+    // 파일 일괄 삭제
+    public void deleteFileList(List<String> fileNames) {
+        List<DeleteObjectsRequest.KeyVersion> keys = fileNames.stream()
+                .map(DeleteObjectsRequest.KeyVersion::new)
+                .collect(Collectors.toList());
+
+        DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(bucket).withKeys(keys);
+        amazonS3.deleteObjects(deleteRequest);
     }
 }

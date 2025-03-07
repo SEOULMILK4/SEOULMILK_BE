@@ -8,6 +8,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResp
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.global.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
     private final NtsTaxRepository ntsTaxRepository;
+    private final S3Service s3Service;
 
     @Override
     @Transactional
@@ -74,13 +76,13 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
         if (!ntsTax.getAgency().equals(agency)) {
             throw new BusinessException(ErrorCode.NTS_TAX_DELETE_UNAUTHORIZED);
         }
+        s3Service.deleteFile(ntsTax.getImageUrl());
         ntsTaxRepository.delete(ntsTax);
     }
 
     @Override
     @Transactional
     public void deleteNtsTaxList(Agency agency, List<DeleteNtsTaxRequestDTO> request) {
-
         List<Long> ntsTaxIds = request.stream()
                 .map(DeleteNtsTaxRequestDTO::getNtsTaxId)
                 .collect(Collectors.toList());
@@ -98,6 +100,13 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
                 throw new BusinessException(ErrorCode.NTS_TAX_DELETE_UNAUTHORIZED);
             }
         }
+
+        // S3에 저장된 파일명을 추출하여 리스트 생성
+        List<String> fileNames = ntsTaxeList.stream()
+                .map(NtsTax::getImageUrl)
+                .collect(Collectors.toList());
+
+        s3Service.deleteFileList(fileNames);
         ntsTaxRepository.deleteAll(ntsTaxeList);
     }
 }
