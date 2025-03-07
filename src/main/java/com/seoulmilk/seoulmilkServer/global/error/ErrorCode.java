@@ -16,6 +16,7 @@ public enum ErrorCode {
     //MEMBER
     MEMBER_NOT_FOUND(404, "존재하지 않는 사원입니다."),
     MEMBER_LOGIN_FAILED(401, "사원번호 또는 비밀번호가 잘못되었습니다."),
+    MEMBER_ALREADY_REGISTERED(404, "이미 승인처리된 사원입니다"),
 
     //AGENCY
     AGENCY_EMAIL_INVALID(401,"잘못된 이메일입니다"),

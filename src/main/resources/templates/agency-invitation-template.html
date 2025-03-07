@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>대리점 초대 메일</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9f9f9;">
+    <table width="600" align="left" style="background-color: white; padding: 20px; border-radius: 10px;">
+        <tr>
+            <td>
+                <img src="https://nts-tax.s3.ap-northeast-2.amazonaws.com/logo/seoulmilkLogo.png" alt="서울우유협동조합" style="width: 300px; height: auto; margin-bottom: 30px;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2 style="color: red;">서울우유협동조합에 가입해주세요</h2>
+                <p>서울우유협동조합에서 <strong th:text="${agencyName}"></strong>님을 초대하였습니다.</p>
+                <p>아래 사용자 정보를 확인한 뒤, 회원가입 버튼을 눌러 가입을 진행해주세요.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" style="border: 1px solid #ddd; padding: 15px; background-color: #f9f9f9;">
+                    <tr>
+                        <td style="color: green; font-weight: bold;">사용자 정보</td>
+                    </tr>
+                    <tr>
+                        <td><strong>대리점 명:</strong> <span th:text="${agencyName}"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>대리점 이메일:</strong> <span th:text="${agencyEmail}"></span></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" style="padding-top: 20px;">
+                   <a href="https://www.seoulmilk.store"
+                      style="display: block; width: 100%; text-align: center; padding: 15px 0; background-color: #28a745; color: white;
+                             text-decoration: none; border-radius: 5px; font-size: 16px;">
+                       회원가입 링크
+                   </a>
+               </td>
+        </tr>
+    </table>
+</body>
+</html>

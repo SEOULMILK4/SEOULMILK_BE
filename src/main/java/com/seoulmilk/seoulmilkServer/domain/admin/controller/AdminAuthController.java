@@ -1,7 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.auth.PostAdminLoginRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.auth.PostAdminLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;

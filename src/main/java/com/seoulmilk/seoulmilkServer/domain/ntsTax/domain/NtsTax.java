@@ -16,7 +16,8 @@ import java.time.LocalDate;
 public class NtsTax extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ntx_tax_seq_generator")
+    @SequenceGenerator(name = "ntxTax_seq_generator", sequenceName = "NTX_TAX_SEQ", allocationSize = 1)
     @Column(name = "nts_tax_id")
     private Long id;
 

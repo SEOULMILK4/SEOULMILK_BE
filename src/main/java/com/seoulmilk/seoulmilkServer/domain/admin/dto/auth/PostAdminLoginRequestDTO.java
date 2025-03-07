@@ -1,4 +1,4 @@
-package com.seoulmilk.seoulmilkServer.domain.admin.dto;
+package com.seoulmilk.seoulmilkServer.domain.admin.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

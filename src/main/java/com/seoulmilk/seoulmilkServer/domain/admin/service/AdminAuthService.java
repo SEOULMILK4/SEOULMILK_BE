@@ -1,10 +1,9 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.service;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.PostAdminLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.auth.PostAdminLoginRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.auth.PostAdminLoginResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.repository.AdminRepository;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
 import com.seoulmilk.seoulmilkServer.global.auth.repository.RefreshTokenRepository;

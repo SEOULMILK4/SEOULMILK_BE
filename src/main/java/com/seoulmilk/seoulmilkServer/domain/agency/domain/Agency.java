@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,13 +26,14 @@ import org.hibernate.type.SqlTypes;
 public class Agency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "agency_seq_generator")
+    @SequenceGenerator(name = "agency_seq_generator", sequenceName = "AGENCY_SEQ", allocationSize = 1)
     private Long id;
 
     @NotNull
     private String agencyName;
 
-    @Column(name = "agency_id",unique = true)
+    @Column(name = "agency_id", unique = true)
     private String agencyId;
 
     private String password;
@@ -54,29 +56,41 @@ public class Agency {
         this.password = password;
     }
 
-    public void updateAgencyEmail(String email){
-        this.email=email;
+    public void updateAgencyEmail(String email) {
+        this.email = email;
     }
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 
-    public void registerMember(Member member){ // 대리점 담당 사원 배정
-        this.member=member;
+    public void registerMember(Member member) { // 대리점 담당 사원 배정
+        this.member = member;
+    }
+
+    public void updateAgencyStatue() {
+        this.approvedState = ApprovedState.APPROVED;
     }
 
 
     @Builder
     private Agency(Long id, String agencyName, String agencyId, String password, String email,
-        ApprovedState approvedState,Member member) {
+        ApprovedState approvedState, Member member) {
         this.id = id;
         this.agencyName = agencyName;
         this.agencyId = agencyId;
         this.password = password;
         this.email = email;
         this.approvedState = approvedState;
-        this.member=member;
+        this.member = member;
+    }
+
+    public static Agency of(String agencyName, String email) {
+        return Agency.builder()
+            .agencyName(agencyName)
+            .email(email)
+            .approvedState(ApprovedState.DISAPPROVED)
+            .build();
     }
 
 

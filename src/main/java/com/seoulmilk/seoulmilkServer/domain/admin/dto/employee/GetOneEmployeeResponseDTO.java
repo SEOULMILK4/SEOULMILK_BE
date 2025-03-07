@@ -1,4 +1,4 @@
-package com.seoulmilk.seoulmilkServer.domain.admin.dto;
+package com.seoulmilk.seoulmilkServer.domain.admin.dto.employee;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
