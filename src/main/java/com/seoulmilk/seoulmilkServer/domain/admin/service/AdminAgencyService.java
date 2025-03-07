@@ -52,11 +52,11 @@ public class AdminAgencyService {
 
 
     @Transactional
-    public UpdateAgencyResponseDTO updateAgencyInfo(UpdateAgencyRequestDTO requestDTO) {
+    public UpdateAgencyResponseDTO updateAgencyInfo(Long agencyId, UpdateAgencyRequestDTO requestDTO) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
-        Agency agency = agencyRepository.findById(requestDTO.getId())
+        Agency agency = agencyRepository.findById(agencyId)
             .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_NOT_FOUND));
 
         agency.updateAgencyEmail(requestDTO.getEmail());

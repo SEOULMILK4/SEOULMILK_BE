@@ -1,8 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeResponseDTO;
@@ -23,20 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/employee")
 @Tag(name = "[관리자 API - 사원 관련]")
 public class AdminEmployeeController {
 
     private final AdminEmployeeService adminEmployeeService;
 
     @Operation(summary = "사원 목록 조회")
-    @GetMapping("/employee")
+    @GetMapping("")
     public ApiResponse<List<GetEmployeeWithAgencyResponseDTO>> getEmployeeList() {
         return ApiResponse.success(adminEmployeeService.getEmployeeList());
     }
 
     @Operation(summary = "개별 사원 조회")
-    @GetMapping("/employee/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ApiResponse<GetOneEmployeeResponseDTO> getOneEmployee(
         @PathVariable("employeeId") Long employeeId) {
         return ApiResponse.success(adminEmployeeService.getOneEmployee(employeeId));
@@ -44,7 +42,7 @@ public class AdminEmployeeController {
 
     // 사원 등록
     @Operation(summary = "사원 신규 등록")
-     @PostMapping("/employee/register-employee")
+     @PostMapping("/register-employee")
      public ApiResponse<PostEmployeeResponseDTO> registerOneEmployee(
          @RequestBody @Valid PostEmployeeRequestDTO requestDTO) {
          return ApiResponse.success(adminEmployeeService.postEmployeeRegister(requestDTO));

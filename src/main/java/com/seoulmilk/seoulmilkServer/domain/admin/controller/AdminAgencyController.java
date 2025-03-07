@@ -24,42 +24,42 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/agency")
 @Tag(name = "[관리자 API - 대리점 관련]")
 public class AdminAgencyController {
 
     private final AdminAgencyService adminAgencyService;
 
     @Operation(summary = "대리점 목록 조회")
-    @GetMapping("/agency")
+    @GetMapping("")
     public ApiResponse<List<GetAgencyResponseDTO>> getAgencyList() {
         return ApiResponse.success(adminAgencyService.getAgencyList());
     }
 
     @Operation(summary = "개별 대리점 조회")
-    @GetMapping("/agency/{agencyId}")
+    @GetMapping("/{agencyId}")
     public ApiResponse<GetAgencyResponseDTO> getOneAgency(
         @PathVariable("agencyId") Long agencyId) {
         return ApiResponse.success(adminAgencyService.getOneAgency(agencyId));
     }
 
     @Operation(summary = "개별 대리점 이메일 수정")
-    @PatchMapping("/agency/{agencyId}")
+    @PatchMapping("/{agencyId}")
     public ApiResponse<UpdateAgencyResponseDTO> updateAgencyInfo(
-        @RequestBody @Valid UpdateAgencyRequestDTO requestDTO) {
-        return ApiResponse.success(adminAgencyService.updateAgencyInfo(requestDTO));
+        @PathVariable("agencyId") Long agencyId, @RequestBody @Valid UpdateAgencyRequestDTO requestDTO) {
+        return ApiResponse.success(adminAgencyService.updateAgencyInfo(agencyId,requestDTO));
     }
 
     // 대리점 등록
     @Operation(summary = "대리점 신규 등록")
-    @PostMapping("/agency/register-agency")
+    @PostMapping("/register-agency")
     public ApiResponse<PostAgencyRegisterResponseDTO> registerOneAgency(
         @RequestBody @Valid PostAgencyRegisterRequestDTO requestDTO) {
         return ApiResponse.success(adminAgencyService.postAgencyRegister(requestDTO));
     }
 
     @Operation(summary = "대리점 일괄 등록")
-    @PostMapping("/agency/register-agencies")
+    @PostMapping("/register-agencies")
     public ApiResponse<List<PostAgencyRegisterResponseDTO>> registerAgencies(
         @RequestBody @Valid List<PostAgencyRegisterRequestDTO> requestDTO) {
         return ApiResponse.success(adminAgencyService.postAgenciesRegister(requestDTO));
