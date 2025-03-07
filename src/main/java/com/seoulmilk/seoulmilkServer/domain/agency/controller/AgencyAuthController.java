@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.agency.controller;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.etc.ChangeAgencyPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginRequestDTO;
@@ -11,13 +12,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegist
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyVerifyOTPRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.PostVerifyOtpRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.PostVerifyOtpResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -91,7 +86,7 @@ public class AgencyAuthController {
         return ResponseEntity.ok("인증 완료되었습니다.");
     }
 
-    @Operation(summary = "비밀번호 변경")
+    @Operation(summary = "비밀번호 변경 (로그인 안한 상태) - 인증코드 입력후")
     @PatchMapping("/update-password")
     public ApiResponse<UpdateAgencyPasswordResponseDTO> updatePassword(
         @RequestBody @Valid UpdateAgencyPasswordRequestDTO requestDTO) {
@@ -103,6 +98,15 @@ public class AgencyAuthController {
     public ApiResponse<GetNewTokenResponseDTO> getTokenRefreshed(
         @RequestHeader(value = "refreshToken", required = false) String refreshToken) {
         return ApiResponse.success(agencyAuthService.getNewToken(refreshToken));
+    }
+
+
+    @Operation(summary = "마이페이지 - 비번 변경")
+    @PatchMapping("/my-page/update-password")
+    public ResponseEntity updatePasswordMyPage(
+        @RequestBody @Valid ChangeAgencyPasswordRequestDTO requestDTO) {
+        agencyAuthService.changePassword(requestDTO);
+        return ResponseEntity.ok("비밀번호 변경 완료");
     }
 
 }

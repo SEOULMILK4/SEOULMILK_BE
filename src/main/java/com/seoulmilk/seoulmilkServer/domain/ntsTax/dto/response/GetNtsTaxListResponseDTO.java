@@ -33,8 +33,6 @@ public class GetNtsTaxListResponseDTO {
         Integer listSize;
         Integer totalPage;
         Long totalElements;
-        Boolean isFirst;
-        Boolean isLast;
     }
 
     public static GetNtsTaxListResponseDTO from(NtsTax ntsTax) {
@@ -57,8 +55,6 @@ public class GetNtsTaxListResponseDTO {
                 .listSize(getNtsTaxList.size())
                 .totalPage(ntsTaxList.getTotalPages())
                 .totalElements(ntsTaxList.getTotalElements())
-                .isFirst(ntsTaxList.isFirst())
-                .isLast(ntsTaxList.isLast())
                 .build();
     }
 }

@@ -1,20 +1,22 @@
 package com.seoulmilk.seoulmilkServer.domain.member.service;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.etc.ChangeAgencyPasswordRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.ChangeMemberPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.PostVerifyOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.PostVerifyOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.AuthVerifiedMember;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.auth.repository.AuthVerifyRepository;
 import com.seoulmilk.seoulmilkServer.global.auth.repository.RefreshTokenRepository;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
-import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import com.seoulmilk.seoulmilkServer.global.jwt.provider.JwtProvider;
@@ -22,7 +24,6 @@ import com.seoulmilk.seoulmilkServer.global.mail.service.EmailService;
 import com.seoulmilk.seoulmilkServer.global.mail.service.OTPService;
 import com.seoulmilk.seoulmilkServer.global.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,6 @@ public class MemberAuthService {
     private final AuthVerifyRepository authVerifyRepository;
     private final EmailService emailService;
     private final OTPService otpService;
-
 
 
     @Transactional
@@ -66,8 +66,8 @@ public class MemberAuthService {
         Member member = getCurrentMember();
 
         jwtProvider.validateToken(refreshToken);
-        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(), "employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(), "employee");
 
         return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
     }
@@ -85,11 +85,12 @@ public class MemberAuthService {
 
     private GetLoginResponseDTO createToken(Member member) {
 
-        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(), "employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(), "employee");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(String.valueOf(member.getId()), "employee",createdRefreshToken));
+            new RefreshTokenEntity(String.valueOf(member.getId()), "employee",
+                createdRefreshToken));
 
         return GetLoginResponseDTO.of(member, createdAccessToken, createdRefreshToken);
 
@@ -131,13 +132,12 @@ public class MemberAuthService {
         String employeeNum = requestDTO.getEmployeeNum();
         isUserVerified(employeeNum);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword = requestDTO.getPassword();
 
         Member member = memberRepository.findByEmployeeNum(employeeNum)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        member.updatePassword(passwordEncoder.encode(newPassword));
+        member.updatePassword(encoder.encode(newPassword));
         memberRepository.save(member);
 
         removeVerifiedUser(employeeNum);
@@ -152,6 +152,7 @@ public class MemberAuthService {
     }
 
     private void verifyUser(String employNum, String otpCode) {
+
         AuthVerifiedMember member = authVerifyRepository.findById(employNum)
             .orElseThrow(() -> new BusinessException(ErrorCode.VERIFIED_MEMBER_NOT_FOUND));
 
@@ -165,6 +166,7 @@ public class MemberAuthService {
 
 
     private void isUserVerified(String employeeNum) {
+
         AuthVerifiedMember user = authVerifyRepository.findById(employeeNum)
             .orElseThrow(() -> new BusinessException(ErrorCode.VERIFIED_MEMBER_NOT_FOUND));
 
@@ -177,13 +179,22 @@ public class MemberAuthService {
         authVerifyRepository.deleteById(employNum);
     }
 
+    @Transactional
+    public void changePassword(ChangeMemberPasswordRequestDTO requestDTO) {
 
+        Member member = getCurrentMember();
+
+        String newPassword = requestDTO.getPassword();
+
+        member.updatePassword(encoder.encode(newPassword));
+        memberRepository.save(member);
+
+    }
 
 //    public void getHashedPassword() {     // 비번 해싱
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //
 //        String rawPassword = "12345"; // 저장할 비밀번호
-//        String hashedPassword = passwordEncoder.encode(rawPassword);
+//        String hashedPassword = encoder.encode(rawPassword);
 //
 //        System.out.println("Hashed Password: " + hashedPassword);
 //    }

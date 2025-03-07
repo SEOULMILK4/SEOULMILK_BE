@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/api/employee/find-password/**", "/api/employee/update-password")
                 .permitAll()
-                .requestMatchers("/api/admin/login", "/api/admin/refresh/**")
+                .requestMatchers("/api/admin/login", "/api/admin/refresh/**",
+                    "/api/admin/agency/**", "/api/admin/employee/**")
                 .permitAll()
                 .requestMatchers("/api/agency/register/**", "/api/agency/login",
                     "/api/agency/refresh/**",

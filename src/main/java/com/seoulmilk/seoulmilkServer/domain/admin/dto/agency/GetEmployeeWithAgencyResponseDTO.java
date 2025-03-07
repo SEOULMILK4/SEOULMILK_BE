@@ -1,4 +1,4 @@
-package com.seoulmilk.seoulmilkServer.domain.admin.dto;
+package com.seoulmilk.seoulmilkServer.domain.admin.dto.agency;
 
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)

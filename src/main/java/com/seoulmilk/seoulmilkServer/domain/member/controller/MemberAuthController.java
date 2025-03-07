@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.member.controller;
 
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.ChangeMemberPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginRequestDTO;
@@ -17,7 +18,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -49,7 +49,7 @@ public class MemberAuthController {
     @Operation(summary = "토큰 재발급")
     @PostMapping("/refresh")
     public ApiResponse<GetNewTokenResponseDTO> getTokenRefreshed(
-        @RequestHeader(value = "refreshToken", required = false) String refreshToken){
+        @RequestHeader(value = "refreshToken", required = false) String refreshToken) {
         return ApiResponse.success(memberAuthService.getNewToken(refreshToken));
     }
 
@@ -68,11 +68,19 @@ public class MemberAuthController {
         return ApiResponse.success(memberAuthService.postVerifyOtp(postVerifyOtpRequestDTO));
     }
 
-    @Operation(summary = "비밀번호 변경")
+    @Operation(summary = "비밀번호 변경 (로그인 안한 상태) - 인증코드 입력 후")
     @PatchMapping("/update-password")
     public ApiResponse<UpdatePasswordResponseDTO> updatePassword(
         @RequestBody @Valid UpdatePasswordRequestDTO updatePasswordRequestDTO) {
         return ApiResponse.success(memberAuthService.updatePassword(updatePasswordRequestDTO));
+    }
+
+    @Operation(summary = "마이페이지 - 비번 변경")
+    @PatchMapping("/my-page/update-password")
+    public ResponseEntity updatePasswordMyPage(
+        @RequestBody @Valid ChangeMemberPasswordRequestDTO requestDTO) {
+        memberAuthService.changePassword(requestDTO);
+        return ResponseEntity.ok("비밀번호 변경 완료");
     }
 
 }
