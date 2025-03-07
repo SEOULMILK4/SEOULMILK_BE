@@ -60,6 +60,9 @@ public class GetOcrNtsTaxResponseDTO {
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
 
+    @Schema(description = "파일 이름")
+    private String fileName;
+
     @Schema(description = "파일 URL")
     private String imageUrl;
 
@@ -88,6 +91,7 @@ public class GetOcrNtsTaxResponseDTO {
                 .taxTotal(ntsTax.getTaxTotal())
                 .erdAt(LocalDateTime.now())
                 .imageUrl(ntsTax.getImageUrl())
+                .fileName(ntsTax.getFileName())
                 .build();
     }
 }

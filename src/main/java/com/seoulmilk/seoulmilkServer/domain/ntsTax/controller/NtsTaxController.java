@@ -57,6 +57,13 @@ public class NtsTaxController {
         return ApiResponse.success(ntsTaxCommandService.updateNtsTax(agency, request));
     }
 
+    @Operation(summary = "세금 계산서 성공 여부 조회")
+    @GetMapping("/nts-tax/success") ApiResponse<GetOcrSuccessResponseDTO> getOcrSuccess () {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        return null;
+    }
+
     @Operation(summary = "세금 계산서 목록 조회")
     @GetMapping("/nts-tax")
     public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getNtsTaxList(@RequestParam(name = "page") Integer page) {

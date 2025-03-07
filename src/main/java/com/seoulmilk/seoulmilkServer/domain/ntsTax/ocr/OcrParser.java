@@ -19,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OcrParser {
 
-    public static NtsTax parseOcrResponse(Agency agency, String jsonResponse, String imageUrl) {
+    public static NtsTax parseOcrResponse(Agency agency, String jsonResponse, String imageUrl, String fileName) {
         try {
             OcrResponseDTO response = new ObjectMapper().readValue(jsonResponse, OcrResponseDTO.class);
 
@@ -80,6 +80,7 @@ public class OcrParser {
                     .taxTotal(extractedData.getOrDefault("세액", " "))
                     .grandTotal(extractedData.getOrDefault("합계금액", " "))
                     .imageUrl(imageUrl)
+                    .fileName(fileName)
                     .build();
 
         } catch (Exception e) {

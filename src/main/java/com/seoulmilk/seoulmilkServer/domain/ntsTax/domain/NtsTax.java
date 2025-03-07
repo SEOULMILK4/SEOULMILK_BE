@@ -26,7 +26,7 @@ public class NtsTax extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP ARAP;
+    private ARAP ARAP;
 
     @Column(name = "issue_date", nullable = false)
     private LocalDate issueDate;
@@ -59,6 +59,9 @@ public class NtsTax extends BaseEntity {
     @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
+    @Column(name ="fileName")
+    private String fileName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -78,7 +81,7 @@ public class NtsTax extends BaseEntity {
     }
 
     @Builder
-    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl) {
+    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl, String fileName) {
         this.member = member;
         this.agency = agency;
         this.id = id;
@@ -94,5 +97,6 @@ public class NtsTax extends BaseEntity {
         this.grandTotal = grandTotal;
         this.status = status;
         this.imageUrl = imageUrl;
+        this.fileName = fileName;
     }
 }

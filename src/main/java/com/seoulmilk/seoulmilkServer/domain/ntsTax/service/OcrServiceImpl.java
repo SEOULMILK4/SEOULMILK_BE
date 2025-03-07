@@ -58,6 +58,9 @@ public class OcrServiceImpl implements OcrService{
 
         for (MultipartFile file : files) {
             try {
+                // 원본 파일명
+                String fileName = file.getOriginalFilename();
+
                 // S3에 업로드할 고유한 파일명 생성
                 String fileExtension = getFileExtension(file.getOriginalFilename());
                 String keyName = "ocr-uploads/" + UUID.randomUUID() + "." + fileExtension; // 고유한 keyName 생성
@@ -98,7 +101,7 @@ public class OcrServiceImpl implements OcrService{
                     log.info("OCR API 응답 (템플릿 {} 적용): {}", templateId, objectMapper.writeValueAsString(getOcrResponse));
 
                     // OCR 파싱
-                    ntsTax = OcrParser.parseOcrResponse(agency, objectMapper.writeValueAsString(getOcrResponse), imageUrl);
+                    ntsTax = OcrParser.parseOcrResponse(agency, objectMapper.writeValueAsString(getOcrResponse), imageUrl, fileName);
 
                     // 유효한 데이터 -> 종료
                     if (ntsTax != null && !isInvalidNtsTax(ntsTax)) {
@@ -108,6 +111,7 @@ public class OcrServiceImpl implements OcrService{
                 if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
                     ntsTax = NtsTax.builder()
                             .imageUrl(imageUrl)
+                            .fileName(fileName)
                             .issueId(" ")
                             .issueDate(LocalDate.now())
                             .suId(" ")
