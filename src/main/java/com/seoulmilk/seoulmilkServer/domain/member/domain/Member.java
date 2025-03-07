@@ -37,7 +37,7 @@ public class Member extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "member")
-   	private List<Agency> agencies = new ArrayList<>();
+    private List<Agency> agencies = new ArrayList<>();
 
 
     public void updatePassword(String newPassword) {
@@ -52,6 +52,15 @@ public class Member extends BaseEntity {
         this.password = password;
         this.email = email;
         this.name = name;
+    }
+
+    public static Member of(String employeeNum, String name, String email, String encodedPassword) {
+        return Member.builder()
+            .employeeNum(employeeNum)
+            .name(name)
+            .email(email)
+            .password(encodedPassword)
+            .build();
     }
 
 }

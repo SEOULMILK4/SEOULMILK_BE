@@ -113,7 +113,7 @@ public class AdminAgencyService {
         for (Long id : requestDTO.getIdList()) {
             Agency agency = agencyRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_DISAPPROVED));
-            emailService.sendOtp(agency.getEmail(), agency.getAgencyName());
+            emailService.sendAgencyInvitation(agency.getEmail(), agency.getAgencyName());
             agency.updateAgencyStatue();
         }
     }

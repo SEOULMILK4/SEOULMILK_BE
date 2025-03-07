@@ -40,10 +40,11 @@ public class EmailService {
 
     public void sendAgencyInvitation(String email, String agencyName) {
            try {
-               String subject = "[서울우유협동조합] 대리점 승인 완료 안내";
+               String subject = "[서울우유협동조합] 대리점 초대 메일";
 
                Context context = new Context();
                context.setVariable("agencyName",agencyName);
+               context.setVariable("agencyEmail",email);
 
                String htmlContent = templateEngine.process("agency-invitation-template", context);
 
