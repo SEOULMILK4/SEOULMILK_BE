@@ -2,6 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.agency.service;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.ApprovedState;
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.etc.ChangeAgencyPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.CreateAgencyOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.login.GetAgencyLoginRequestDTO;
@@ -13,9 +14,6 @@ import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegist
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.dto.register.PostAgencyVerifyOTPRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.UpdatePasswordResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.AuthVerifiedMember;
 import com.seoulmilk.seoulmilkServer.global.auth.domain.RefreshTokenEntity;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetNewTokenResponseDTO;
@@ -224,6 +222,18 @@ public class AgencyAuthService {
             new RefreshTokenEntity(String.valueOf(agency.getId()), "agency", createdRefreshToken));
 
         return GetAgencyLoginResponseDTO.of(agency, createdAccessToken, createdRefreshToken);
+
+    }
+
+    @Transactional
+    public void changePassword(ChangeAgencyPasswordRequestDTO requestDTO) {
+
+        Agency agency = getCurrentAgency();
+
+        String newPassword = requestDTO.getPassword();
+
+        agency.updatePassword(encoder.encode(newPassword));
+        agencyRepository.save(agency);
 
     }
 }

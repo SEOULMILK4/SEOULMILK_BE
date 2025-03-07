@@ -1,6 +1,8 @@
 package com.seoulmilk.seoulmilkServer.domain.member.service;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.dto.etc.ChangeAgencyPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.ChangeMemberPasswordRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.CreateOtpResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.dto.auth.GetLoginRequestDTO;
@@ -39,7 +41,6 @@ public class MemberAuthService {
     private final OTPService otpService;
 
 
-
     @Transactional
     public GetLoginResponseDTO getMemberLogin(GetLoginRequestDTO requestDTO) {
 
@@ -65,8 +66,8 @@ public class MemberAuthService {
         Member member = getCurrentMember();
 
         jwtProvider.validateToken(refreshToken);
-        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(), "employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(), "employee");
 
         return GetNewTokenResponseDTO.of(createdAccessToken, createdRefreshToken);
     }
@@ -84,11 +85,12 @@ public class MemberAuthService {
 
     private GetLoginResponseDTO createToken(Member member) {
 
-        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(),"employee");
-        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(),"employee");
+        String createdAccessToken = jwtProvider.generateAccessToken(member.getId(), "employee");
+        String createdRefreshToken = jwtProvider.generateRefreshToken(member.getId(), "employee");
 
         refreshTokenRepository.save(
-            new RefreshTokenEntity(String.valueOf(member.getId()), "employee",createdRefreshToken));
+            new RefreshTokenEntity(String.valueOf(member.getId()), "employee",
+                createdRefreshToken));
 
         return GetLoginResponseDTO.of(member, createdAccessToken, createdRefreshToken);
 
@@ -177,7 +179,17 @@ public class MemberAuthService {
         authVerifyRepository.deleteById(employNum);
     }
 
+    @Transactional
+    public void changePassword(ChangeMemberPasswordRequestDTO requestDTO) {
 
+        Member member = getCurrentMember();
+
+        String newPassword = requestDTO.getPassword();
+
+        member.updatePassword(encoder.encode(newPassword));
+        memberRepository.save(member);
+
+    }
 
 //    public void getHashedPassword() {     // 비번 해싱
 //
