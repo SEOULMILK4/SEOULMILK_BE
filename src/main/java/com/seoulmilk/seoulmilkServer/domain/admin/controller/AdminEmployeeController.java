@@ -42,17 +42,17 @@ public class AdminEmployeeController {
 
     // 사원 등록
     @Operation(summary = "사원 신규 등록")
-     @PostMapping("/register-employee")
-     public ApiResponse<PostEmployeeResponseDTO> registerOneEmployee(
-         @RequestBody @Valid PostEmployeeRequestDTO requestDTO) {
-         return ApiResponse.success(adminEmployeeService.postEmployeeRegister(requestDTO));
-     }
+    @PostMapping("/register-employee")
+    public ApiResponse<PostEmployeeResponseDTO> registerOneEmployee(
+        @RequestBody @Valid PostEmployeeRequestDTO requestDTO) {
+        return ApiResponse.success(adminEmployeeService.postEmployeeRegister(requestDTO));
+    }
 
-//     @Operation(summary = "사원 일괄 등록")
-//     @PostMapping("/employee/register-employee")
-//     public ApiResponse<List<PostAgencyRegisterResponseDTO>> registerAgencies(
-//         @RequestBody @Valid List<PostAgencyRegisterRequestDTO> requestDTO) {
-//         return ApiResponse.success(adminEmployeeService.postAgenciesRegister(requestDTO));
-//     }
+    @Operation(summary = "사원 일괄 등록")
+    @PostMapping("/register-employees")
+    public ApiResponse<List<PostEmployeeResponseDTO>> registerAgencies(
+        @RequestBody @Valid List<PostEmployeeRequestDTO> requestDTO) {
+        return ApiResponse.success(adminEmployeeService.postEmployeesRegister(requestDTO));
+    }
 
 }

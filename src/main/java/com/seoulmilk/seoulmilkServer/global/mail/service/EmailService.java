@@ -60,8 +60,6 @@ public class EmailService {
                helper.setSubject(subject);
                helper.setText(htmlContent, true);
 
-               System.out.println(htmlContent);
-
                mailSender.send(message);
            } catch (MessagingException e) {
                throw new RuntimeException("이메일 전송 중 오류 발생", e);

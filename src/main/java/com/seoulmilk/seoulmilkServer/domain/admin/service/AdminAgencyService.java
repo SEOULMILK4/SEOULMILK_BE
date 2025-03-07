@@ -8,6 +8,7 @@ import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAdminRegisterAg
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.ApprovedState;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
@@ -113,6 +114,9 @@ public class AdminAgencyService {
         for (Long id : requestDTO.getIdList()) {
             Agency agency = agencyRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_DISAPPROVED));
+            if (agency.getApprovedState() == ApprovedState.APPROVED) {
+                throw new BusinessException(ErrorCode.AGENCY_ALREADY_REGISTERED);
+            }
             emailService.sendAgencyInvitation(agency.getEmail(), agency.getAgencyName());
             agency.updateAgencyStatue();
         }

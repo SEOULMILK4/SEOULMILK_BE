@@ -11,6 +11,7 @@ import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import com.seoulmilk.seoulmilkServer.global.etc.MemberProperties;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,15 +48,12 @@ public class AdminEmployeeService {
     }
 
     // 사원 등록
-    // 1. 신규 등록
-
     @Transactional
     public PostEmployeeResponseDTO postEmployeeRegister(PostEmployeeRequestDTO requestDTO) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
         String employeeNum = requestDTO.getEmployeeNum();
 
-        // 이미 존재하는 사원인지 체크하기
         if (memberRepository.existsByEmployeeNum(employeeNum)) {
             throw new BusinessException(ErrorCode.MEMBER_ALREADY_REGISTERED);
         }
@@ -69,7 +67,25 @@ public class AdminEmployeeService {
 
     }
 
+    @Transactional
+    public List<PostEmployeeResponseDTO> postEmployeesRegister(
+        List<PostEmployeeRequestDTO> employees) {
 
+        Admin admin = adminAuthService.getCurrentAdmin();
+        String encodePassword = encoder.encode(memberProperties.getDefaultPassword());
+
+        List<Member> newEmployees = employees.stream()
+            .filter(employee -> !memberRepository.existsByEmployeeNum(employee.getEmployeeNum()))
+            .map(employee -> Member.of(employee.getEmployeeNum(), employee.getName(),
+                employee.getEmail(), encodePassword))
+            .toList();
+
+        List<Member> savedEmployees = memberRepository.saveAll(newEmployees);
+
+        return savedEmployees.stream()
+            .map(PostEmployeeResponseDTO::of)
+            .collect(Collectors.toList());
+
+    }
 }
-
 
