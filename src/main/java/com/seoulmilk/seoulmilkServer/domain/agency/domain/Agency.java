@@ -79,5 +79,12 @@ public class Agency {
         this.member=member;
     }
 
+    public static Agency of(String agencyName,String email) {
+        return Agency.builder()
+            .agencyName(agencyName)
+            .email(email)
+            .build();
+    }
+
 
 }

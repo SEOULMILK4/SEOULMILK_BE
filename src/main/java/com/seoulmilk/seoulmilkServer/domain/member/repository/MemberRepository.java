@@ -1,6 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.member.repository;
 
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.GetEmployeeWithAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import java.util.List;
 import java.util.Optional;
