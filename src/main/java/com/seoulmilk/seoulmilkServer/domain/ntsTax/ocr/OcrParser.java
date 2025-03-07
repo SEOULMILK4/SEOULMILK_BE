@@ -7,6 +7,8 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrResponseDTO;
+import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
+import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class OcrParser {
             OcrResponseDTO response = new ObjectMapper().readValue(jsonResponse, OcrResponseDTO.class);
 
             if (response.getImages() == null || response.getImages().isEmpty()) {
-                return null;
+                throw new BusinessException(ErrorCode.NTS_TAX_NOT_UPLOAD);
             }
 
             OcrResponseDTO.ImageResult imageResult = response.getImages().get(0);
@@ -70,15 +72,15 @@ public class OcrParser {
                     .status(Status.WAITING)
                     .agency(agency)
                     .member(agency.getMember())
-                    .issueId(extractedData.getOrDefault("승인번호", null))
-                    .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : null)
-                    .suId(extractedData.getOrDefault("공급자 등록번호", null))
-                    .suName(extractedData.getOrDefault("공급자 사업체명", null))
-                    .ipId(extractedData.getOrDefault("공급받는자 등록번호", null))
-                    .ipName(extractedData.getOrDefault("공급받는자 사업체명", null))
-                    .chargeTotal(extractedData.getOrDefault("공급가액", null))
-                    .taxTotal(extractedData.getOrDefault("세액", null))
-                    .grandTotal(extractedData.getOrDefault("합계금액", null))
+                    .issueId(extractedData.getOrDefault("승인번호", " "))
+                    .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : LocalDate.now())
+                    .suId(extractedData.getOrDefault("공급자 등록번호", " "))
+                    .suName(extractedData.getOrDefault("공급자 사업체명", " "))
+                    .ipId(extractedData.getOrDefault("공급받는자 등록번호", " "))
+                    .ipName(extractedData.getOrDefault("공급받는자 사업체명", " "))
+                    .chargeTotal(extractedData.getOrDefault("공급가액", " "))
+                    .taxTotal(extractedData.getOrDefault("세액", " "))
+                    .grandTotal(extractedData.getOrDefault("합계금액", " "))
                     .imageUrl(imageUrl)
                     .build();
 

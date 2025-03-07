@@ -3,8 +3,6 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
-import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
-import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
