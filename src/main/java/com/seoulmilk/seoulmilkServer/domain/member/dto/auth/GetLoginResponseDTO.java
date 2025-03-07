@@ -18,6 +18,12 @@ public class GetLoginResponseDTO {
     @Schema(description = "사번", example = "123456")
     private final String employeeNum;
 
+    @Schema(description = "사원명", example = "김우유")
+    private final String name;
+
+    @Schema(description = "이메일", example = "milksajo@gmail.com")
+    private final String email;
+
     @Schema(description = "액세스 토큰")
     private final String accessToken;
 
@@ -28,6 +34,8 @@ public class GetLoginResponseDTO {
         return GetLoginResponseDTO.builder()
             .memberId(member.getId())
             .employeeNum(member.getEmployeeNum())
+            .name(member.getName())
+            .email(member.getEmail())
             .accessToken(accessToken)
             .refreshToken(refreshToken)
             .build();
