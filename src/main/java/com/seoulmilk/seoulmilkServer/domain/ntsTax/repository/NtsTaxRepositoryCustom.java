@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface NtsTaxRepositoryCustom {
     Page<NtsTax> searchNtsTaxList(Agency agency, Pageable pageable, LocalDate startDate, LocalDate endDate, List<String> ipNameList); // 세금계산서 통합 조회
+    List<NtsTax> findAllById(List<Long> ntsTaxList);
 }
