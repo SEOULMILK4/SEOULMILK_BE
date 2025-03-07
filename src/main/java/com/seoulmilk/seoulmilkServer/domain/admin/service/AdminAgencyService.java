@@ -3,8 +3,8 @@ package com.seoulmilk.seoulmilkServer.domain.admin.service;
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.InviteAgenciesRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAdminRegisterAgencyRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAdminRegisterAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
@@ -65,8 +65,8 @@ public class AdminAgencyService {
     }
 
     @Transactional
-    public PostAgencyRegisterResponseDTO postAgencyRegister(
-        PostAgencyRegisterRequestDTO requestDTO) {
+    public PostAdminRegisterAgencyResponseDTO postAgencyRegister(
+        PostAdminRegisterAgencyRequestDTO requestDTO) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
@@ -81,12 +81,12 @@ public class AdminAgencyService {
         Agency newAgency = Agency.of(agencyName, agencyEmail);
         agencyRepository.save(newAgency);
 
-        return PostAgencyRegisterResponseDTO.of(newAgency);
+        return PostAdminRegisterAgencyResponseDTO.of(newAgency);
     }
 
     @Transactional
-    public List<PostAgencyRegisterResponseDTO> postAgenciesRegister(
-        List<PostAgencyRegisterRequestDTO> agencies) {
+    public List<PostAdminRegisterAgencyResponseDTO> postAgenciesRegister(
+        List<PostAdminRegisterAgencyRequestDTO> agencies) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
@@ -99,7 +99,7 @@ public class AdminAgencyService {
         List<Agency> savedAgencies = agencyRepository.saveAll(newAgencies);
 
         return savedAgencies.stream()
-            .map(PostAgencyRegisterResponseDTO::of)
+            .map(PostAdminRegisterAgencyResponseDTO::of)
             .collect(Collectors.toList());
 
     }

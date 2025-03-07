@@ -2,6 +2,8 @@ package com.seoulmilk.seoulmilkServer.global.mail.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -38,22 +40,27 @@ public class EmailService {
         }
     }
 
-    public void sendAgencyInvitation(String email, String agencyName) {
+    public void sendAgencyInvitation(String agencyEmail, String agencyName) {
            try {
                String subject = "[서울우유협동조합] 대리점 초대 메일";
 
+               Map<String, Object> variables = new HashMap<>();
+               variables.put("agencyName", agencyName);
+               variables.put("agencyEmail", agencyEmail);
+
                Context context = new Context();
-               context.setVariable("agencyName",agencyName);
-               context.setVariable("agencyEmail",email);
+               context.setVariables(variables);
 
                String htmlContent = templateEngine.process("agency-invitation-template", context);
 
                MimeMessage message = mailSender.createMimeMessage();
-               MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+               MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-               helper.setTo(email);
+               helper.setTo(agencyEmail);
                helper.setSubject(subject);
                helper.setText(htmlContent, true);
+
+               System.out.println(htmlContent);
 
                mailSender.send(message);
            } catch (MessagingException e) {

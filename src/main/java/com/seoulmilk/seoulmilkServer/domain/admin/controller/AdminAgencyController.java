@@ -2,8 +2,8 @@ package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.InviteAgenciesRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAdminRegisterAgencyRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAdminRegisterAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminAgencyService;
@@ -53,20 +53,20 @@ public class AdminAgencyController {
     // 대리점 등록
     @Operation(summary = "대리점 신규 등록")
     @PostMapping("/register-agency")
-    public ApiResponse<PostAgencyRegisterResponseDTO> registerOneAgency(
-        @RequestBody @Valid PostAgencyRegisterRequestDTO requestDTO) {
+    public ApiResponse<PostAdminRegisterAgencyResponseDTO> registerOneAgency(
+        @RequestBody @Valid PostAdminRegisterAgencyRequestDTO requestDTO) {
         return ApiResponse.success(adminAgencyService.postAgencyRegister(requestDTO));
     }
 
     @Operation(summary = "대리점 일괄 등록")
     @PostMapping("/register-agencies")
-    public ApiResponse<List<PostAgencyRegisterResponseDTO>> registerAgencies(
-        @RequestBody @Valid List<PostAgencyRegisterRequestDTO> requestDTO) {
+    public ApiResponse<List<PostAdminRegisterAgencyResponseDTO>> registerAgencies(
+        @RequestBody @Valid List<PostAdminRegisterAgencyRequestDTO> requestDTO) {
         return ApiResponse.success(adminAgencyService.postAgenciesRegister(requestDTO));
     }
 
     @Operation(summary = "대리점 초대 메일 발송")
-    @PostMapping("/agency/invite")
+    @PostMapping("/invite")
     public ResponseEntity inviteAgencies(
         @RequestBody @Valid InviteAgenciesRequestDTO requestDTO) {
         adminAgencyService.inviteAgencies(requestDTO);

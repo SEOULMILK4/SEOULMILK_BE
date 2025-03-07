@@ -1,111 +1,47 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>서울우유협동조합 회원가입 초대</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      text-align: left;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background: white;
-      margin: 30px auto;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo {
-      width: 315px;
-      margin-bottom: 50px;
-    }
-
-    .title {
-      font-size: 22px;
-      font-weight: bold;
-      color: #d91c1c;
-      margin-bottom: 10px;
-    }
-
-    .content {
-      font-size: 14px;
-      color: #6c757d;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .user-info {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: left;
-      margin: 20px 0;
-      border: 1px solid #e1e4e8;
-    }
-
-    .user-info p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
-
-    .user-info .header {
-      font-size: 16px;
-      font-weight: bold;
-      color: #218838;
-      margin-bottom: 10px;
-    }
-
-    .highlight {
-      font-weight: bold;
-    }
-
-    .btn {
-      display: block;
-      width: 100%; /* 버튼을 가로로 길게 */
-      max-width: 500px; /* 너무 길어지는 것을 방지 */
-      background: #28a745;
-      color: white;
-      padding: 15px;
-      font-size: 18px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 20px auto;
-      text-align: center;
-    }
-
-    .btn:hover {
-      background: #218838;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>대리점 초대 메일</title>
 </head>
-<body>
-<div class="container">
-  <img src="https://nts-tax.s3.ap-northeast-2.amazonaws.com/logo/seoulmilkLogo.png" alt="서울우유협동조합"
-       class="logo">
-
-  <p class="title">서울우유협동조합에 가입해주세요</p>
-  <p class="content">
-    서울우유협동조합에서 <span class="highlight">${agencyName}</span>님을 초대하였습니다.<br>
-    아래 사용자 정보를 확인한 뒤, 회원가입 버튼을 눌러 가입을 진행해주세요.
-  </p>
-
-  <div class="user-info">
-    <p class="header">사용자 정보</p>
-    <p></p>
-    <p><strong>대리점 명 </strong> ${agencyName}</p>
-    <p><strong>대리점 이메일 </strong> ${agencyEmail}</p>
-  </div>
-
-  <a href="https://www.milksajo.store" class="btn">회원가입 링크</a>
-</div>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f9f9f9;">
+    <table width="600" align="left" style="background-color: white; padding: 20px; border-radius: 10px;">
+        <tr>
+            <td>
+                <img src="https://nts-tax.s3.ap-northeast-2.amazonaws.com/logo/seoulmilkLogo.png" alt="서울우유협동조합" style="width: 300px; height: auto; margin-bottom: 30px;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2 style="color: red;">서울우유협동조합에 가입해주세요</h2>
+                <p>서울우유협동조합에서 <strong th:text="${agencyName}"></strong>님을 초대하였습니다.</p>
+                <p>아래 사용자 정보를 확인한 뒤, 회원가입 버튼을 눌러 가입을 진행해주세요.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" style="border: 1px solid #ddd; padding: 15px; background-color: #f9f9f9;">
+                    <tr>
+                        <td style="color: green; font-weight: bold;">사용자 정보</td>
+                    </tr>
+                    <tr>
+                        <td><strong>대리점 명:</strong> <span th:text="${agencyName}"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>대리점 이메일:</strong> <span th:text="${agencyEmail}"></span></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" style="padding-top: 20px;">
+                   <a href="https://www.seoulmilk.store"
+                      style="display: block; width: 100%; text-align: center; padding: 15px 0; background-color: #28a745; color: white;
+                             text-decoration: none; border-radius: 5px; font-size: 16px;">
+                       회원가입 링크
+                   </a>
+               </td>
+        </tr>
+    </table>
 </body>
 </html>
-

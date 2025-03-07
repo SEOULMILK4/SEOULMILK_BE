@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostAgencyRegisterResponseDTO {
+public class PostAdminRegisterAgencyResponseDTO {
 
     @Schema(description = "대리점 이름", example = "서울우유 고양시 나옹점")
     private final String agencyName;
@@ -21,8 +21,8 @@ public class PostAgencyRegisterResponseDTO {
     @Schema(description = "메세지", example = "대리점 등록 완료")
     private final String message;
 
-    public static PostAgencyRegisterResponseDTO of(Agency agency) {
-        return PostAgencyRegisterResponseDTO.builder()
+    public static PostAdminRegisterAgencyResponseDTO of(Agency agency) {
+        return PostAdminRegisterAgencyResponseDTO.builder()
             .agencyName(agency.getAgencyName())
             .email(agency.getEmail())
             .message("대리점 등록 완료")

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class PostAgencyRegisterRequestDTO {
+public class PostAdminRegisterAgencyRequestDTO {
 
     @NotNull
     @Schema(description = "대리점 이름", example = "서울우유 고양시 나옹점")
