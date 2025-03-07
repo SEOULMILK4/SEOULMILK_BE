@@ -30,13 +30,35 @@ public class EmailService {
 
             helper.setTo(email);
             helper.setSubject(subject);
-            helper.setText(htmlContent, true); // HTML 형식
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("이메일 전송 중 오류 발생", e);
         }
     }
+
+    public void sendAgencyInvitation(String email, String agencyName) {
+           try {
+               String subject = "[서울우유협동조합] 대리점 승인 완료 안내";
+
+               Context context = new Context();
+               context.setVariable("agencyName",agencyName);
+
+               String htmlContent = templateEngine.process("agency-invitation-template", context);
+
+               MimeMessage message = mailSender.createMimeMessage();
+               MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+
+               helper.setTo(email);
+               helper.setSubject(subject);
+               helper.setText(htmlContent, true);
+
+               mailSender.send(message);
+           } catch (MessagingException e) {
+               throw new RuntimeException("이메일 전송 중 오류 발생", e);
+           }
+       }
 }
 
 

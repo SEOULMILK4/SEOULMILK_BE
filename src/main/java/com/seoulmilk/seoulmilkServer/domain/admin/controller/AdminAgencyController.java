@@ -1,6 +1,7 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.InviteAgenciesRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyRequestDTO;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,5 +65,12 @@ public class AdminAgencyController {
         return ApiResponse.success(adminAgencyService.postAgenciesRegister(requestDTO));
     }
 
+    @Operation(summary = "대리점 초대 메일 발송")
+    @PostMapping("/agency/invite")
+    public ResponseEntity inviteAgencies(
+        @RequestBody @Valid InviteAgenciesRequestDTO requestDTO) {
+        adminAgencyService.inviteAgencies(requestDTO);
+        return ResponseEntity.ok("초대 메일 발송 완료");
+    }
 
 }

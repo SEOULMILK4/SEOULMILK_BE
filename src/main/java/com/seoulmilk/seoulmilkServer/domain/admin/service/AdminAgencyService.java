@@ -2,6 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.admin.service;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.InviteAgenciesRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.PostAgencyRegisterResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.UpdateAgencyRequestDTO;
@@ -10,6 +11,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import com.seoulmilk.seoulmilkServer.global.mail.service.EmailService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class AdminAgencyService {
 
     private final AgencyRepository agencyRepository;
     private final AdminAuthService adminAuthService;
+    private final EmailService emailService;
 
     @Transactional(readOnly = true)
     public List<GetAgencyResponseDTO> getAgencyList() {
@@ -85,9 +88,11 @@ public class AdminAgencyService {
     public List<PostAgencyRegisterResponseDTO> postAgenciesRegister(
         List<PostAgencyRegisterRequestDTO> agencies) {
 
+        Admin admin = adminAuthService.getCurrentAdmin();
+
         List<Agency> newAgencies = agencies.stream()
             .filter(agency -> !agencyRepository.existsByAgencyName(agency.getAgencyName()) &&
-                               !agencyRepository.existsByEmail(agency.getEmail()))
+                !agencyRepository.existsByEmail(agency.getEmail()))
             .map(request -> Agency.of(request.getAgencyName(), request.getEmail()))
             .collect(Collectors.toList());
 
@@ -97,6 +102,20 @@ public class AdminAgencyService {
             .map(PostAgencyRegisterResponseDTO::of)
             .collect(Collectors.toList());
 
+    }
+
+    // 초대 메일 보내기
+    @Transactional
+    public void inviteAgencies(InviteAgenciesRequestDTO requestDTO) {
+
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        for (Long id : requestDTO.getIdList()) {
+            Agency agency = agencyRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AGENCY_DISAPPROVED));
+            emailService.sendOtp(agency.getEmail(), agency.getAgencyName());
+            agency.updateAgencyStatue();
+        }
     }
 
 
