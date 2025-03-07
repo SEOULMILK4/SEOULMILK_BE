@@ -70,6 +70,10 @@ public class NtsTax extends BaseEntity {
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
+    public void updateStatus(Status status){
+        this.status = status;
+    }
+
     public void updateNtsTax(String issueId, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal) {
         this.issueId = issueId;
         this.issueDate = issueDate;

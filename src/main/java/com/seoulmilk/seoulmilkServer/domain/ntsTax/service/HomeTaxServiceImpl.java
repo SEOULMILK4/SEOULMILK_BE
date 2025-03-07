@@ -44,7 +44,7 @@ public class HomeTaxServiceImpl implements HomeTaxService {
         List<OcrTaxInvoiceRequestDTO> requests) {
         String accessToken = codefAuthService.getCodefToken();
 
-        return requests.parallelStream()
+        return requests.stream()
             .map(request -> processTaxInvoiceVerification(request, accessToken))
             .collect(Collectors.toList());
     }
@@ -64,6 +64,7 @@ public class HomeTaxServiceImpl implements HomeTaxService {
             requestData.put("approvalNo", request.getApprovalNo());
             requestData.put("reportingDate", request.getReportingDate());
             requestData.put("supplyValue", request.getSupplyValue());
+
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -90,8 +91,8 @@ public class HomeTaxServiceImpl implements HomeTaxService {
 
             JsonNode dataNode = rootNode.get("data");
             return OcrTaxInvoiceResponseDTO.of(
-                dataNode.get("resAuthenticity").asText(),
-                dataNode.get("resAuthenticityDesc").asText()
+                request.getId(),
+                dataNode.get("resAuthenticity").asText()
             );
 
         } catch (Exception e) {

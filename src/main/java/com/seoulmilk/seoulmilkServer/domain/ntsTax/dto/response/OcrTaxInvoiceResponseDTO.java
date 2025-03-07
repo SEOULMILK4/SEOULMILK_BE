@@ -11,17 +11,19 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OcrTaxInvoiceResponseDTO {
 
+    @Schema(description = "세금계신서 id", example = "1")
+    private final Long id;
 
     @Schema(description = "전위확인 결과", example = "1")
     private final String resAuthenticity;
 
-    @Schema(description = "전위확인 내용", example = "조회의 전자세금계산서는 2022년 01월 10일 발급된 사실이 있습니다.")
-    private final String resAuthenticityDesc;
+//    @Schema(description = "전위확인 내용", example = "조회의 전자세금계산서는 2022년 01월 10일 발급된 사실이 있습니다.")
+//    private final String resAuthenticityDesc;
 
-    public static OcrTaxInvoiceResponseDTO of(String resAuthenticity,String resAuthenticityDesc) {
+    public static OcrTaxInvoiceResponseDTO of(Long id,String resAuthenticity) {
          return OcrTaxInvoiceResponseDTO.builder()
+             .id(id)
              .resAuthenticity(resAuthenticity)
-             .resAuthenticityDesc(resAuthenticityDesc)
              .build();
      }
 
