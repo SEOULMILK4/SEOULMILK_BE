@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,7 +26,8 @@ import org.hibernate.type.SqlTypes;
 public class Agency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "agency_seq_generator")
+    @SequenceGenerator(name = "agency_seq_generator", sequenceName = "AGENCY_SEQ", allocationSize = 1)
     private Long id;
 
     @NotNull
