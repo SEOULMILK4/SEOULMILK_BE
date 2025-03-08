@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
@@ -68,7 +69,10 @@ public class GetOcrNtsTaxResponseDTO {
     private Status status;
 
     @Schema(description = "생성일")
-    private LocalDateTime erdAt;
+    private LocalDate createdAt;
+
+    @Schema(description = "생성시간")
+    private LocalTime createdTime;
 
     public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax) {
         return GetOcrNtsTaxResponseDTO.builder()
@@ -87,7 +91,8 @@ public class GetOcrNtsTaxResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
-                .erdAt(LocalDateTime.now())
+                .createdAt(ntsTax.getCreatedAt().toLocalDate())
+                .createdTime(ntsTax.getCreatedAt().toLocalTime())
                 .imageUrl(ntsTax.getImageUrl())
                 .fileName(ntsTax.getFileName())
                 .build();

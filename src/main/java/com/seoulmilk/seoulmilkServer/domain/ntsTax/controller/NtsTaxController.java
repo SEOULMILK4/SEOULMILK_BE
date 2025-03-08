@@ -69,8 +69,8 @@ public class NtsTaxController {
 
     @Operation(summary = "세금 계산서 수정")
     @PutMapping("/nts-tax/edit")
-    public ApiResponse<List<UpdateNtsTaxResponseDTO>> updateNtsTax(
-        @RequestBody List<UpdateNtsTaxRequestDTO> request) {
+    public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(
+        @RequestBody UpdateNtsTaxRequestDTO request) {
 
         Agency agency = agencyAuthService.getCurrentAgency();
 

@@ -79,11 +79,14 @@ public class NtsTax extends BaseEntity {
         this.status = status;
     }
 
-    public void updateNtsTax(String issueId, LocalDate issueDate, String suId, String ipId, String chargeTotal, String taxTotal, String grandTotal) {
+    public void updateNtsTax(IsSuccess isSuccess, String issueId, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal) {
+        this.isSuccess = isSuccess;
         this.issueId = issueId;
         this.issueDate = issueDate;
         this.suId = suId;
+        this.suName = suName;
         this.ipId = ipId;
+        this.ipName = ipName;
         this.chargeTotal = chargeTotal;
         this.taxTotal = taxTotal;
         this.grandTotal = grandTotal;

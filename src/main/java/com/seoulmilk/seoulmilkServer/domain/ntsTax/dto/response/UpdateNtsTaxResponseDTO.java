@@ -2,6 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +10,15 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
 @AllArgsConstructor
 public class UpdateNtsTaxResponseDTO {
+
+    @Schema(description = "OCR 성공/실패 여부", example = "SUCCESS")
+    private IsSuccess isSuccess;
 
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
@@ -46,13 +51,17 @@ public class UpdateNtsTaxResponseDTO {
     private String taxTotal;
 
     @Schema(description = "생성일")
-    private LocalDateTime erdAt;
+    private LocalDate createdAt;
+
+    @Schema(description = "생성시간")
+    private LocalTime createdTime;
 
     @Schema(description = "수정일")
     private LocalDateTime updatedAt;
 
     public static UpdateNtsTaxResponseDTO from(NtsTax ntsTax) {
         return UpdateNtsTaxResponseDTO.builder()
+                .isSuccess(IsSuccess.SUCCESS)
                 .issueId(ntsTax.getIssueId())
                 .issueDate(ntsTax.getIssueDate())
                 .suId(ntsTax.getSuId())
@@ -63,7 +72,8 @@ public class UpdateNtsTaxResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
-                .erdAt(ntsTax.getCreatedAt())
+                .createdAt(ntsTax.getCreatedAt().toLocalDate())
+                .createdTime(ntsTax.getCreatedAt().toLocalTime())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
