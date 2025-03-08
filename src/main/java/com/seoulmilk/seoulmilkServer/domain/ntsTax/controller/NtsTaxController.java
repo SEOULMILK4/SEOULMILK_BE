@@ -144,15 +144,16 @@ public class NtsTaxController {
 //        return ApiResponse.success(homeTaxService.verifyMultipleTaxInvoice(requests));
 //    }
 
-    @Operation(summary = "세금 계산서 진위 여부 검증 후, 본사 측 목록 조회")
-    @GetMapping("/nts-tax/view-hometax")
+    @Operation(summary = "세금 계산서 진위 여부 검증 후, 본사 측 검색")
+    @GetMapping("/nts-tax/search-hometax")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList (@RequestParam(name = "page") Integer page,
                                                                                            @RequestParam(required = false) LocalDate startMonth,
                                                                                            @RequestParam(required = false) LocalDate endMonth,
-                                                                                           @RequestParam(required = false) Status status) {
+                                                                                           @RequestParam(required = false) String suName,
+                                                                                           @RequestParam(required = false) String ipName) {
         Member member = memberAuthService.getCurrentMember();
 
-        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, status);
+        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suName, ipName);
 
         return ApiResponse.success(GetHometaxResponseDTO.from(searchHometaxList));
     }

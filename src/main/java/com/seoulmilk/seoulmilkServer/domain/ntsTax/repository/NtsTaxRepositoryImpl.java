@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax;
 import lombok.RequiredArgsConstructor;
@@ -72,5 +73,10 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
             .selectFrom(QNtsTax.ntsTax)
             .where(QNtsTax.ntsTax.id.in(ids))
             .fetch();
+    }
+
+    @Override
+    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startMonth, LocalDate endMonth, List<String> suName, List<String> ipName) {
+        return null;
     }
 }
