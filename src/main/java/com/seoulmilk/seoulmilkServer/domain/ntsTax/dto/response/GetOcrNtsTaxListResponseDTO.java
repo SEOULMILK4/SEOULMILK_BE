@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,9 @@ public class GetOcrNtsTaxListResponseDTO {
 
     public static GetOcrNtsTaxListResponseDTO from(List<GetOcrNtsTaxResponseDTO> responseList, long totalTimes) {
         long totalCnt = responseList.size();
-        long successCnt = responseList.stream().filter(GetOcrNtsTaxResponseDTO::isSuccess).count();
+        long successCnt = responseList.stream()
+                .filter(dto -> dto.getIsSuccess() == IsSuccess.SUCCESS)
+                .count();
         long failedCnt = totalCnt - successCnt;
 
         return GetOcrNtsTaxListResponseDTO.builder()

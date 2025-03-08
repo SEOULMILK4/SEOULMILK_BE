@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -17,11 +18,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GetOcrNtsTaxResponseDTO {
 
-    private boolean success;
-
     private Long memberId;
 
     private Long agencyId;
+
+    @Schema(description = "OCR 성공/실패 여부", example = "SUCCESS")
+    private IsSuccess isSuccess;
 
     @Schema(description = "세금 계산서 ID", example = "1")
     private Long ntsTaxId;
@@ -68,9 +70,9 @@ public class GetOcrNtsTaxResponseDTO {
     @Schema(description = "생성일")
     private LocalDateTime erdAt;
 
-    public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax, boolean success) {
+    public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax) {
         return GetOcrNtsTaxResponseDTO.builder()
-                .success(success)
+                .isSuccess(ntsTax.getIsSuccess())
                 .AR(ntsTax.getARAP())
                 .memberId(agency.getMember().getId())
                 .agencyId(agency.getId())
