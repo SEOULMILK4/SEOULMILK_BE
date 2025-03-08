@@ -2,6 +2,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
@@ -28,42 +29,29 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
     @Override
     @Transactional
-    public List<UpdateNtsTaxResponseDTO> updateNtsTax(Agency agency, List<UpdateNtsTaxRequestDTO> requestList) {
-        List<Long> ntsTaxIds = requestList.stream()
-                .map(UpdateNtsTaxRequestDTO::getNtsTaxId)
-                .collect(Collectors.toList());
+    public UpdateNtsTaxResponseDTO updateNtsTax(Agency agency, UpdateNtsTaxRequestDTO request) {
+        NtsTax ntsTax = ntsTaxRepository.findById(request.getNtsTaxId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
 
-        List<NtsTax> ntsTaxeList = ntsTaxRepository.findAllById(ntsTaxIds);
-
-        // 요청한 ID 개수와 DB 내 ID 개수가 다를 경우
-        if (ntsTaxeList.size() != ntsTaxIds.size()) {
-            throw new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND);
+        // 담당 대리점일 경우에만 수정 가능
+        if (!ntsTax.getAgency().equals(agency)) {
+            throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
         }
-        List<UpdateNtsTaxResponseDTO> responseList = new ArrayList<>();
 
-        for (NtsTax ntsTax : ntsTaxeList) {
-            UpdateNtsTaxRequestDTO request = requestList.stream()
-                    .filter(r -> r.getNtsTaxId().equals(ntsTax.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+        ntsTax.updateNtsTax(
+                IsSuccess.SUCCESS,
+                request.getIssueId(),
+                request.getIssueDate(),
+                request.getSuId(),
+                request.getSuName(),
+                request.getIpId(),
+                request.getIpName(),
+                request.getChargeTotal(),
+                request.getTaxTotal(),
+                request.getGrandTotal()
+        );
 
-            // 담당 대리점일 경우에만 수정 가능
-            if (!ntsTax.getAgency().equals(agency)) {
-                throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
-            }
-
-            ntsTax.updateNtsTax(
-                    request.getIssueId(),
-                    request.getIssueDate(),
-                    request.getSuId(),
-                    request.getIpId(),
-                    request.getChargeTotal(),
-                    request.getTaxTotal(),
-                    request.getGrandTotal()
-            );
-            responseList.add(UpdateNtsTaxResponseDTO.from(ntsTax));
-        }
-        return responseList;
+        return UpdateNtsTaxResponseDTO.from(ntsTax);
     }
 
     @Override

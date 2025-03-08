@@ -8,7 +8,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResp
 import java.util.List;
 
 public interface NtsTaxCommandService {
-    List<UpdateNtsTaxResponseDTO> updateNtsTax(Agency agency, List<UpdateNtsTaxRequestDTO> request); // 세금계산서 수정
+    UpdateNtsTaxResponseDTO updateNtsTax(Agency agency, UpdateNtsTaxRequestDTO request); // 세금계산서 수정
     void deleteNtsTax(Agency agency, Long ntsTaxId); // 세금계산서 단건 삭제
     void deleteNtsTaxList(Agency agency, List<DeleteNtsTaxRequestDTO> request); // 세금계산서 목록 삭제
 }
