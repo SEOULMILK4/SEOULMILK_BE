@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.domain;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -62,6 +63,10 @@ public class NtsTax extends BaseEntity {
     @Column(name ="fileName")
     private String fileName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private IsSuccess isSuccess;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -85,7 +90,7 @@ public class NtsTax extends BaseEntity {
     }
 
     @Builder
-    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl, String fileName) {
+    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl, String fileName, IsSuccess isSuccess) {
         this.member = member;
         this.agency = agency;
         this.id = id;
@@ -102,5 +107,6 @@ public class NtsTax extends BaseEntity {
         this.status = status;
         this.imageUrl = imageUrl;
         this.fileName = fileName;
+        this.isSuccess = isSuccess;
     }
 }

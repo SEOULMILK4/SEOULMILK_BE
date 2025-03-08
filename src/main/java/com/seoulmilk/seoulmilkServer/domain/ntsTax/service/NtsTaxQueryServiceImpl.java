@@ -1,7 +1,9 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -37,5 +40,16 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         Pageable pageable = PageRequest.of(page, 13);
 
         return ntsTaxRepository.searchNtsTaxList(agency, pageable, startDate, endDate, ipNameList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startMonth, LocalDate endMonth, String suName, String ipName) {
+        Pageable pageable = PageRequest.of(page, 13);
+
+        LocalDateTime startDateTime = startMonth.atStartOfDay();
+        LocalDateTime endDateTime = endMonth.atTime(23, 59, 59);
+
+        return null;
     }
 }

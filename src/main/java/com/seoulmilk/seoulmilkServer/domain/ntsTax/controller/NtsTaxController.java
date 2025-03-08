@@ -2,10 +2,14 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
@@ -44,6 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class NtsTaxController {
 
+    private final MemberAuthService memberAuthService;
     private final AgencyAuthService agencyAuthService;
     private final NtsTaxCommandService ntsTaxCommandService;
     private final OcrService ocrService;
@@ -138,4 +143,18 @@ public class NtsTaxController {
 //        @RequestBody List<OcrTaxInvoiceRequestDTO> requests) {
 //        return ApiResponse.success(homeTaxService.verifyMultipleTaxInvoice(requests));
 //    }
+
+    @Operation(summary = "세금 계산서 진위 여부 검증 후, 본사 측 검색")
+    @GetMapping("/nts-tax/search-hometax")
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList (@RequestParam(name = "page") Integer page,
+                                                                                           @RequestParam(required = false) LocalDate startMonth,
+                                                                                           @RequestParam(required = false) LocalDate endMonth,
+                                                                                           @RequestParam(required = false) String suName,
+                                                                                           @RequestParam(required = false) String ipName) {
+        Member member = memberAuthService.getCurrentMember();
+
+        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suName, ipName);
+
+        return ApiResponse.success(GetHometaxResponseDTO.from(searchHometaxList));
+    }
 }

@@ -5,6 +5,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrImageRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrRequestDTO;
@@ -110,6 +111,7 @@ public class OcrServiceImpl implements OcrService{
                 }
                 if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
                     ntsTax = NtsTax.builder()
+                            .isSuccess(IsSuccess.FAILED)
                             .imageUrl(imageUrl)
                             .fileName(fileName)
                             .issueId(" ")
@@ -131,7 +133,7 @@ public class OcrServiceImpl implements OcrService{
 
                 // 성공 여부 판별 후 DTO 변환
                 boolean success = !(ntsTax.getIssueId() == null || " ".equals(ntsTax.getIssueId()));
-                responseList.add(GetOcrNtsTaxResponseDTO.from(agency, ntsTax, success));
+                responseList.add(GetOcrNtsTaxResponseDTO.from(agency, ntsTax));
 
                 LocalDateTime endTime = LocalDateTime.now();
                 Duration duration = Duration.between(startTime, endTime);

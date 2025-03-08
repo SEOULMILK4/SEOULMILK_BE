@@ -1,29 +1,25 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response;
 
-import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class GetOcrNtsTaxResponseDTO {
-
-    private Long memberId;
-
-    private Long agencyId;
-
-    @Schema(description = "OCR 성공/실패 여부", example = "SUCCESS")
-    private IsSuccess isSuccess;
+public class GetHometaxResponseDTO {
 
     @Schema(description = "세금 계산서 ID", example = "1")
     private Long ntsTaxId;
@@ -49,34 +45,26 @@ public class GetOcrNtsTaxResponseDTO {
     @Schema(description = "합계 금액", example = "305,000")
     private String grandTotal;
 
-    @Schema(description = "매출", example = "AR")
-    private ARAP AR;
-
     @Schema(description = "총 공급가액", example = "305,000")
     private String chargeTotal;
 
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
 
-    @Schema(description = "파일 이름")
-    private String fileName;
-
-    @Schema(description = "파일 URL")
-    private String imageUrl;
+    @Schema(description = "매출", example = "AR")
+    private ARAP AR;
 
     @Schema(description = "승인상태")
     private Status status;
 
     @Schema(description = "생성일")
-    private LocalDateTime erdAt;
+    private LocalDate createdAt;
 
-    public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax) {
-        return GetOcrNtsTaxResponseDTO.builder()
-                .isSuccess(ntsTax.getIsSuccess())
-                .AR(ntsTax.getARAP())
-                .memberId(agency.getMember().getId())
-                .agencyId(agency.getId())
-                .status(ntsTax.getStatus())
+    @Schema(description = "생성시간")
+    private LocalTime createdTime;
+
+    public static GetHometaxResponseDTO from(NtsTax ntsTax) {
+        return GetHometaxResponseDTO.builder()
                 .ntsTaxId(ntsTax.getId())
                 .issueId(ntsTax.getIssueId())
                 .issueDate(ntsTax.getIssueDate())
@@ -87,9 +75,34 @@ public class GetOcrNtsTaxResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
-                .erdAt(LocalDateTime.now())
-                .imageUrl(ntsTax.getImageUrl())
-                .fileName(ntsTax.getFileName())
+                .AR(ARAP.AR)
+                .status(ntsTax.getStatus())
+                .createdAt(ntsTax.getCreatedAt().toLocalDate())
+                .createdTime(ntsTax.getCreatedAt().toLocalTime())
+                .build();
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetHometaxListResponseDTO {
+        List<GetHometaxResponseDTO> hometaxList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+    }
+
+    public static GetHometaxListResponseDTO from(Page<NtsTax> hometaxList) {
+        List<GetHometaxResponseDTO> getHometaxlist = hometaxList.stream()
+                .map(GetHometaxResponseDTO::from).collect(Collectors.toList());
+
+        return GetHometaxListResponseDTO.builder()
+                .hometaxList(getHometaxlist)
+                .listSize(getHometaxlist.size())
+                .totalElements(hometaxList.getTotalElements())
+                .totalPage(hometaxList.getTotalPages())
+                .totalElements(hometaxList.getTotalElements())
                 .build();
     }
 }

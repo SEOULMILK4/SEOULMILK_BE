@@ -1,8 +1,10 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.ocr;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrResponseDTO;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -66,6 +68,7 @@ public class OcrParser {
             }
 
             return NtsTax.builder()
+                    .isSuccess(IsSuccess.SUCCESS)
                     .ARAP(ARAP.AR)
                     .status(Status.WAITING)
                     .agency(agency)
