@@ -149,11 +149,11 @@ public class NtsTaxController {
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList (@RequestParam(name = "page") Integer page,
                                                                                            @RequestParam(required = false) LocalDate startMonth,
                                                                                            @RequestParam(required = false) LocalDate endMonth,
-                                                                                           @RequestParam(required = false) String suName,
-                                                                                           @RequestParam(required = false) String ipName) {
+                                                                                           @RequestParam(required = false) List<String> suNameList,
+                                                                                           @RequestParam(required = false) List<String> ipNameList) {
         Member member = memberAuthService.getCurrentMember();
 
-        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suName, ipName);
+        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suNameList, ipNameList);
 
         return ApiResponse.success(GetHometaxResponseDTO.from(searchHometaxList));
     }

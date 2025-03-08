@@ -44,11 +44,11 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startMonth, LocalDate endMonth, String suName, String ipName) {
+    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
         Pageable pageable = PageRequest.of(page, 13);
 
-        LocalDateTime startDateTime = startMonth.atStartOfDay();
-        LocalDateTime endDateTime = endMonth.atTime(23, 59, 59);
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
         return null;
     }

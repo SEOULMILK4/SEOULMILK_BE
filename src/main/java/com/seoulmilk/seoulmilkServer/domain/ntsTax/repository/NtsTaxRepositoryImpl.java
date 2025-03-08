@@ -63,6 +63,10 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         return null;
     }
 
+    private BooleanExpression inSuNames(List<String> suNameList) {
+        return null;
+    }
+
     private BooleanExpression inIpNames(List<String> ipNameList) {
         return (ipNameList != null && !ipNameList.isEmpty()) ? ntsTax.ipName.in(ipNameList) : null;
     }
@@ -76,7 +80,36 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     @Override
-    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startMonth, LocalDate endMonth, List<String> suName, List<String> ipName) {
-        return null;
+    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+        if (pageable == null) {
+            pageable = PageRequest.of(0, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
+        }
+
+        List<NtsTax> results = jpaQueryFactory
+                .selectFrom(ntsTax)
+                .where(
+                        ntsTax.member.eq(member),
+                        betweenIssueDate(startDate, endDate),
+
+                        inIpNames(ipNameList)
+                )
+                .orderBy(ntsTax.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = Optional.ofNullable(
+                jpaQueryFactory
+                        .select(ntsTax.count())
+                        .from(ntsTax)
+                        .where(
+                                ntsTax.member.eq(member),
+                                betweenIssueDate(startDate, endDate),
+                                inIpNames(ipNameList)
+                        )
+                        .fetchOne()
+        ).orElse(0L);
+
+        return new PageImpl<>(results, pageable, total);
     }
 }
