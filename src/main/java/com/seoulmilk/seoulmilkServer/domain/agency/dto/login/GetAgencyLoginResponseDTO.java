@@ -17,7 +17,7 @@ public class GetAgencyLoginResponseDTO {
     private final String agencyId;
 
     @Schema(description = "대리점명", example = "서울우유 강동점")
-    private final String agencyName;
+    private final String name;
 
     @Schema(description = "대리점 이메일", example = "milksago@gmail.com")
     private final String email;
@@ -32,7 +32,7 @@ public class GetAgencyLoginResponseDTO {
         String refreshToken) {
         return GetAgencyLoginResponseDTO.builder()
             .agencyId(agency.getAgencyId())
-            .agencyName(agency.getAgencyName())
+            .name(agency.getAgencyName())
             .email(agency.getEmail())
             .accessToken(accessToken)
             .refreshToken(refreshToken)
