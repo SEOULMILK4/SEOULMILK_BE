@@ -71,11 +71,23 @@ public class GetNtsTaxListResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NtsTaxListResponseDTO {
+    public static class SearchNtsTaxListResponseDTO {
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;
         Long totalElements;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NtsTaxListResponseDTO {
+        List<GetNtsTaxListResponseDTO> ntsTaxList;
+        Integer listSize;
+        Integer totalPage;
+        Long successElements;
+        Long failedElements;
     }
 
     public static GetNtsTaxListResponseDTO from(NtsTax ntsTax) {
@@ -98,11 +110,25 @@ public class GetNtsTaxListResponseDTO {
                 .build();
     }
 
-    public static NtsTaxListResponseDTO from(Page<NtsTax> ntsTaxList) {
+    public static NtsTaxListResponseDTO of(Page<NtsTax> ntsTaxList, Long successCnt, Long failedCnt) {
+        List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
+                .map(GetNtsTaxListResponseDTO::from)
+                .collect(Collectors.toList());
+
+        return NtsTaxListResponseDTO.builder()
+                .ntsTaxList(getNtsTaxList)
+                .listSize(getNtsTaxList.size())
+                .totalPage(ntsTaxList.getTotalPages())
+                .successElements(successCnt)
+                .failedElements(failedCnt)
+                .build();
+    }
+
+    public static SearchNtsTaxListResponseDTO from(Page<NtsTax> ntsTaxList) {
         List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
                 .map(GetNtsTaxListResponseDTO::from).collect(Collectors.toList());
 
-        return NtsTaxListResponseDTO.builder()
+        return SearchNtsTaxListResponseDTO.builder()
                 .ntsTaxList(getNtsTaxList)
                 .listSize(getNtsTaxList.size())
                 .totalPage(ntsTaxList.getTotalPages())
