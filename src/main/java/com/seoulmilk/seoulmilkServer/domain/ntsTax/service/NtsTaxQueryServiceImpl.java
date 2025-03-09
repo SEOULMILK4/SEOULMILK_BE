@@ -3,13 +3,15 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +28,16 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> getNtsTaxList(Agency agency, Integer page) {
-        Pageable pageable = PageRequest.of(page, 13);
+    public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page, IsSuccess isSuccess) {
+        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findAll(pageable);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccess(agency.getId(), isSuccess, pageable);
 
-        return ntsTaxPage;
+        // 전체 성공, 실패 건 수 조회
+        Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
+        Long failedCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.FAILED);
+
+        return GetNtsTaxListResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
 
     @Override
