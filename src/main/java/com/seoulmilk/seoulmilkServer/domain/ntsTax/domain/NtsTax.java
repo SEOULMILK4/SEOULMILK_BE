@@ -60,7 +60,7 @@ public class NtsTax extends BaseEntity {
     @Column(name = "imageUrl", nullable = false)
     private String imageUrl;
 
-    @Column(name ="fileName")
+    @Column(name = "fileName")
     private String fileName;
 
     @Enumerated(EnumType.STRING)
@@ -75,11 +75,13 @@ public class NtsTax extends BaseEntity {
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
-    public void updateStatus(Status status){
+    public void updateStatus(Status status) {
         this.status = status;
     }
 
-    public void updateNtsTax(IsSuccess isSuccess, String issueId, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal) {
+    public void updateNtsTax(IsSuccess isSuccess, String issueId, LocalDate issueDate, String suId,
+        String suName, String ipId, String ipName, String chargeTotal, String taxTotal,
+        String grandTotal) {
         this.isSuccess = isSuccess;
         this.issueId = issueId;
         this.issueDate = issueDate;
@@ -92,8 +94,22 @@ public class NtsTax extends BaseEntity {
         this.grandTotal = grandTotal;
     }
 
+    public void modifyNtsTax(String issueId, LocalDate issueDate, String suId, String ipId,
+        String chargeTotal, String taxTotal, String grandTotal) {
+        this.issueId = issueId;
+        this.issueDate = issueDate;
+        this.suId = suId;
+        this.ipId = ipId;
+        this.chargeTotal = chargeTotal;
+        this.taxTotal = taxTotal;
+        this.grandTotal = grandTotal;
+    }
+
     @Builder
-    private NtsTax (Member member, Agency agency, Long id, String issueId, ARAP ARAP, LocalDate issueDate, String suId, String suName, String ipId, String ipName, String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl, String fileName, IsSuccess isSuccess) {
+    private NtsTax(Member member, Agency agency, Long id, String issueId, ARAP ARAP,
+        LocalDate issueDate, String suId, String suName, String ipId, String ipName,
+        String chargeTotal, String taxTotal, String grandTotal, Status status, String imageUrl,
+        String fileName, IsSuccess isSuccess) {
         this.member = member;
         this.agency = agency;
         this.id = id;
