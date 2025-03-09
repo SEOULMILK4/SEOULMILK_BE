@@ -56,6 +56,47 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         return new PageImpl<>(results, pageable, total);
     }
 
+    @Override
+    public List<NtsTax> findAllById(List<Long> ids) {
+        return jpaQueryFactory
+            .selectFrom(QNtsTax.ntsTax)
+            .where(QNtsTax.ntsTax.id.in(ids))
+            .fetch();
+    }
+
+    @Override
+    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+        if (pageable == null) {
+            pageable = PageRequest.of(0, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
+        }
+
+        List<NtsTax> results = jpaQueryFactory
+                .selectFrom(ntsTax)
+                .where(
+                        ntsTax.member.eq(member),
+                        betweenIssueDate(startDate, endDate),
+                        orSearch(suNameList, ipNameList)
+                )
+                .orderBy(ntsTax.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = Optional.ofNullable(
+                jpaQueryFactory
+                        .select(ntsTax.count())
+                        .from(ntsTax)
+                        .where(
+                                ntsTax.member.eq(member),
+                                betweenIssueDate(startDate, endDate),
+                                orSearch(suNameList, ipNameList)
+                        )
+                        .fetchOne()
+        ).orElse(0L);
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
     private BooleanExpression betweenIssueDate(LocalDate startDate, LocalDate endDate) {
         if (startDate != null && endDate != null) {
             return ntsTax.issueDate.between(startDate, endDate);
@@ -101,46 +142,5 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         if (ipName == null) return suName;
 
         return suName.or(ipName);
-    }
-
-    @Override
-    public List<NtsTax> findAllById(List<Long> ids) {
-        return jpaQueryFactory
-            .selectFrom(QNtsTax.ntsTax)
-            .where(QNtsTax.ntsTax.id.in(ids))
-            .fetch();
-    }
-
-    @Override
-    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
-        if (pageable == null) {
-            pageable = PageRequest.of(0, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
-        }
-
-        List<NtsTax> results = jpaQueryFactory
-                .selectFrom(ntsTax)
-                .where(
-                        ntsTax.member.eq(member),
-                        betweenIssueDate(startDate, endDate),
-                        orSearch(suNameList, ipNameList)
-                )
-                .orderBy(ntsTax.createdAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = Optional.ofNullable(
-                jpaQueryFactory
-                        .select(ntsTax.count())
-                        .from(ntsTax)
-                        .where(
-                                ntsTax.member.eq(member),
-                                betweenIssueDate(startDate, endDate),
-                                orSearch(suNameList, ipNameList)
-                        )
-                        .fetchOne()
-        ).orElse(0L);
-
-        return new PageImpl<>(results, pageable, total);
     }
 }
