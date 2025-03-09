@@ -4,8 +4,19 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
+import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
+import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,23 +26,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     private final NtsTaxRepository ntsTaxRepository;
+    private final HomeTaxService homeTaxService;
 
     @Override
     @Transactional(readOnly = true)
-    public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page, IsSuccess isSuccess) {
+    public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page,
+        IsSuccess isSuccess) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccess(agency.getId(), isSuccess, pageable);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccess(agency.getId(),
+            isSuccess, pageable);
 
         // 전체 성공, 실패 건 수 조회
         Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
@@ -42,7 +52,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate, LocalDate endDate, List<String> ipNameList) {
+    public Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate,
+        LocalDate endDate, List<String> ipNameList) {
         Pageable pageable = PageRequest.of(page, 13);
 
         return ntsTaxRepository.searchNtsTaxList(agency, pageable, startDate, endDate, ipNameList);
@@ -50,7 +61,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startMonth, LocalDate endMonth, String suName, String ipName) {
+    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startMonth,
+        LocalDate endMonth, String suName, String ipName) {
         Pageable pageable = PageRequest.of(page, 13);
 
         LocalDateTime startDateTime = startMonth.atStartOfDay();
@@ -58,4 +70,65 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
         return null;
     }
+
+
+    public GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member) {
+
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        if (!ntsTax.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        return GetOneNtsTaxResponseDTO.from(ntsTax);
+    }
+
+
+    @Override
+    @Transactional
+    public ModifyNtsTaxResponseDTO modifyOneNtsTax(Long ntsTaxId,
+        ModifyNtsTaxRequestDTO requestDTO, Member member) {
+
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        if (!ntsTax.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        ntsTax.modifyNtsTax(requestDTO.getIssueId(), requestDTO.getIssueDate(),
+            requestDTO.getSuId(), requestDTO.getIpId(),
+            requestDTO.getChargeTotal(), requestDTO.getTaxTotal(), requestDTO.getGrandTotal());
+
+        return ModifyNtsTaxResponseDTO.from(ntsTax);
+    }
+
+    @Override
+    @Transactional
+    public OcrTaxInvoiceResponseDTO revalidateOneNtsTax(Long ntsTaxId, Member member) {
+
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        if (!ntsTax.getMember().equals(member)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (ntsTax.getStatus().equals(Status.APPROVAL)) {
+            throw new BusinessException(ErrorCode.NTS_TAX_VALIDATED);
+        }
+
+        OcrTaxInvoiceResponseDTO result = homeTaxService.verifyTaxInvoice(
+            OcrTaxInvoiceRequestDTO.from(ntsTax));
+
+        if ("1".equals(result.getResAuthenticity())) {
+            ntsTax.updateStatus(Status.APPROVAL);
+        } else {
+            ntsTax.updateStatus(Status.REJECTION);
+        }
+
+        return result;
+    }
+
 }
