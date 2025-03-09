@@ -47,9 +47,6 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
     public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
         Pageable pageable = PageRequest.of(page, 13);
 
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
-
-        return null;
+        return ntsTaxRepository.searchHometaxList(member, pageable, startDate, endDate, suNameList, ipNameList);
     }
 }

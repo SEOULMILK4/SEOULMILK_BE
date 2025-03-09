@@ -64,11 +64,43 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     private BooleanExpression inSuNames(List<String> suNameList) {
-        return null;
+        // null = 검색 조건 적용 X
+        if (suNameList == null || suNameList.isEmpty()) {
+            return null;
+        }
+        BooleanExpression searchList = null;
+
+        // 첫 번째 조건 -> 저장, 두 번째 조건부터 or로 연결
+        for (String suName : suNameList) {
+            BooleanExpression searchSuName = ntsTax.suName.like("%" + suName + "%");
+            searchList = (searchList == null) ? searchSuName : searchList.or(searchSuName);
+        }
+        return searchList;
     }
 
     private BooleanExpression inIpNames(List<String> ipNameList) {
-        return (ipNameList != null && !ipNameList.isEmpty()) ? ntsTax.ipName.in(ipNameList) : null;
+        // null = 검색 조건 적용 X
+        if (ipNameList == null || ipNameList.isEmpty()) {
+            return null;
+        }
+        BooleanExpression searchList = null;
+
+        // 첫 번째 조건 -> 저장, 두 번째 조건부터 or로 연결
+        for (String ipName: ipNameList) {
+            BooleanExpression searchSuName = ntsTax.ipName.like("%" + ipName + "%");
+            searchList = (searchList == null) ? searchSuName : searchList.or(searchSuName);
+        }
+        return searchList;
+    }
+
+    private BooleanExpression orSearch(List<String> suNameList, List<String> ipNameList) {
+        BooleanExpression suName = inSuNames(suNameList);
+        BooleanExpression ipName = inIpNames(ipNameList);
+
+        if (suName == null) return ipName;
+        if (ipName == null) return suName;
+
+        return suName.or(ipName);
     }
 
     @Override
@@ -90,8 +122,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 .where(
                         ntsTax.member.eq(member),
                         betweenIssueDate(startDate, endDate),
-
-                        inIpNames(ipNameList)
+                        orSearch(suNameList, ipNameList)
                 )
                 .orderBy(ntsTax.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -105,7 +136,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                         .where(
                                 ntsTax.member.eq(member),
                                 betweenIssueDate(startDate, endDate),
-                                inIpNames(ipNameList)
+                                orSearch(suNameList, ipNameList)
                         )
                         .fetchOne()
         ).orElse(0L);
