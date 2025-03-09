@@ -5,7 +5,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -13,7 +13,6 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxRespon
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.HomeTaxService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtxTaxMappingService;
@@ -80,17 +79,16 @@ public class NtsTaxController {
     @Operation(summary = "세금 계산서 목록 조회")
     @GetMapping("/nts-tax")
     public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getNtsTaxList(
-        @RequestParam(name = "page") Integer page) {
+            @RequestParam(name = "page") Integer page,
+            @RequestParam(name = "isSuccess") IsSuccess isSuccess) {
         Agency agency = agencyAuthService.getCurrentAgency();
 
-        Page<NtsTax> ntsTaxList = ntsTaxQueryService.getNtsTaxList(agency, page);
-
-        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
+        return ApiResponse.success(ntsTaxQueryService.getNtsTaxList(agency, page, isSuccess));
     }
 
-    @Operation(summary = "세금 계산서 통합 조회 - 조건 설정 후 탐색")
+    @Operation(summary = "세금 계산서 통합 조회 - 조건 설정 후 검색")
     @GetMapping("/nts-tax/search")
-    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> searchNtsTaxList(
+    public ApiResponse<GetNtsTaxListResponseDTO.SearchNtsTaxListResponseDTO> searchNtsTaxList(
         @RequestParam(name = "page") Integer page,
         @RequestParam(required = false) LocalDate startDate,
         @RequestParam(required = false) LocalDate endDate,
