@@ -53,6 +53,22 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
+    public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxAfterSubmit(Agency agency,
+        Integer page){
+        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndStatus(agency.getId(),
+            Status.WAITING, pageable);
+
+        // 전체 성공, 실패 건 수 조회
+        Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
+        Long failedCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.FAILED);
+
+        return GetNtsTaxListResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate,
         LocalDate endDate, List<String> ipNameList) {
         Pageable pageable = PageRequest.of(page, 13);
@@ -62,14 +78,16 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member, Integer page, Status status) {
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member,
+        Integer page, Status status) {
         if (status.equals(Status.WAITING)) {
             throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
         }
 
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByMemberAndStatusThisMonth(member, status, pageable);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByMemberAndStatusThisMonth(member, status,
+            pageable);
 
         // 전체 일치, 불일치 건 수 조회
         Long successCnt = ntsTaxRepository.countByStatusThisMonth(Status.APPROVAL);
@@ -80,7 +98,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member, Integer page, Status status) {
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member,
+        Integer page, Status status) {
         if (status != null && status.equals(Status.WAITING)) {
             throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
         }
@@ -105,10 +124,12 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+    public Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate,
+        LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
         Pageable pageable = PageRequest.of(page, 13);
 
-        return ntsTaxRepository.searchHometaxList(member, pageable, startDate, endDate, suNameList, ipNameList);
+        return ntsTaxRepository.searchHometaxList(member, pageable, startDate, endDate, suNameList,
+            ipNameList);
     }
 
     public GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member) {

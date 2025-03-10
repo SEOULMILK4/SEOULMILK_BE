@@ -20,6 +20,8 @@ public interface NtsTaxQueryService {
     GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page,
         IsSuccess isSuccess); // 세금 계산서 목록 조회
 
+    GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxAfterSubmit(Agency agency, Integer page);
+
     Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate,
         LocalDate endDate, List<String> ipNameList); // 세금 계산서 통합 조회 - 조건 기준 탐색
 

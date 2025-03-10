@@ -20,6 +20,8 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
 
     // 대리점 - 세금 계산서 목록 조회
     Page<NtsTax> findByAgencyIdAndIsSuccess(Long agencyId, IsSuccess isSuccess, Pageable pageable);
+
+    Page<NtsTax> findByAgencyIdAndStatus(Long agencyId, Status status, Pageable pageable);
     Long countByIsSuccess(IsSuccess isSuccess);
 
     // 본사 - 세금 계산서 이번 달 내역 조회
