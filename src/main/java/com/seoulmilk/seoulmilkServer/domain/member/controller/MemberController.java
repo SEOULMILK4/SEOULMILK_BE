@@ -8,6 +8,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
@@ -79,7 +80,7 @@ public class MemberController {
 
     @Operation(summary = "세금 계산서 csv 추출")
     @GetMapping("/nts-tax/csv")
-    public ApiResponse<List<GetHometaxResponseDTO>> getHometaxCsv(
+    public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
             @RequestParam(required = false) LocalDate startMonth,
             @RequestParam(required = false) LocalDate endMonth,
             @RequestParam(required = false) List<String> suNameList,
