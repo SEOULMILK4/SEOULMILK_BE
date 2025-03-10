@@ -6,6 +6,7 @@ import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -142,8 +143,26 @@ public class NtsTaxController {
 //        return ApiResponse.success(homeTaxService.verifyMultipleTaxInvoice(requests));
 //    }
 
+    @Operation(summary = "본사 - 세금 계산서 이번 달 내역 조회")
+    @GetMapping("/employee/nts-tax/view-hometax/recent")
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxList(@RequestParam(name = "page") Integer page,
+                                                                                       @RequestParam(name = "isSuccess") Status status) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxList(member, page, status));
+    }
+
+    @Operation(summary = "본사 - 세금 계산서 전체 내역 통합 조회")
+    @GetMapping("/employee/nts-tax/view-hometax/history")
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxHistory(@RequestParam(name = "page") Integer page,
+                                                                                          @RequestParam(required = false) Status status) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
+    }
+
     @Operation(summary = "세금 계산서 진위 여부 검증 후, 본사 측 검색")
-    @GetMapping("/nts-tax/search-hometax")
+    @GetMapping("/employee/nts-tax/search-hometax")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList (@RequestParam(name = "page") Integer page,
                                                                                            @RequestParam(required = false) LocalDate startMonth,
                                                                                            @RequestParam(required = false) LocalDate endMonth,

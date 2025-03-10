@@ -8,6 +8,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
@@ -15,7 +16,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,49 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         Pageable pageable = PageRequest.of(page, 13);
 
         return ntsTaxRepository.searchNtsTaxList(agency, pageable, startDate, endDate, ipNameList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member, Integer page, Status status) {
+        if (status.equals(Status.WAITING)) {
+            throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
+        }
+
+        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByMemberAndStatusThisMonth(member, status, pageable);
+
+        // 전체 일치, 불일치 건 수 조회
+        Long successCnt = ntsTaxRepository.countByStatusThisMonth(Status.APPROVAL);
+        Long failedCnt = ntsTaxRepository.countByStatusThisMonth(Status.REJECTION);
+
+        return GetHometaxResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member, Integer page, Status status) {
+        if (status != null && status.equals(Status.WAITING)) {
+            throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
+        }
+
+        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<NtsTax> ntsTaxPage;
+
+        if (status == null) {
+            List<Status> validStatuses = Arrays.asList(Status.APPROVAL, Status.REJECTION);
+            ntsTaxPage = ntsTaxRepository.findByMemberAndStatusIn(member, validStatuses, pageable);
+        } else {
+            ntsTaxPage = ntsTaxRepository.findByMemberAndStatus(member, status, pageable);
+        }
+
+        // 전체 일치, 불일치 건 수 조회
+        Long successCnt = ntsTaxRepository.countByStatus(Status.APPROVAL);
+        Long failedCnt = ntsTaxRepository.countByStatus(Status.REJECTION);
+
+        return GetHometaxResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
 
     @Override

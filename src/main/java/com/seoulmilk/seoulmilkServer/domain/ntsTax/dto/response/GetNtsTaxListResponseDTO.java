@@ -126,7 +126,8 @@ public class GetNtsTaxListResponseDTO {
 
     public static SearchNtsTaxListResponseDTO from(Page<NtsTax> ntsTaxList) {
         List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
-                .map(GetNtsTaxListResponseDTO::from).collect(Collectors.toList());
+                .map(GetNtsTaxListResponseDTO::from)
+                .collect(Collectors.toList());
 
         return SearchNtsTaxListResponseDTO.builder()
                 .ntsTaxList(getNtsTaxList)
