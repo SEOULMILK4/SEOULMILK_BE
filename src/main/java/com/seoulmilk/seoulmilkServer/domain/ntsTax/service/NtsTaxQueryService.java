@@ -4,8 +4,10 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
@@ -21,10 +23,6 @@ public interface NtsTaxQueryService {
     Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate,
         LocalDate endDate, List<String> ipNameList); // 세금 계산서 통합 조회 - 조건 기준 탐색
 
-    // 세금 계산서 진위 여부 검증 후, 상태 및 월 별 조회
-    Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startMonth,
-        LocalDate endMonth, String suName, String ipName); // 세금 계산서 진위 여부 검증 후, 검색
-
     GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member);
 
     ModifyNtsTaxResponseDTO modifyOneNtsTax(Long ntsTaxId, ModifyNtsTaxRequestDTO requestDTO,
@@ -32,4 +30,9 @@ public interface NtsTaxQueryService {
 
     OcrTaxInvoiceResponseDTO revalidateOneNtsTax(Long ntsTaxId, Member member);
 
+    GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member, Integer page, Status status); // 본사 - 세금 계산서 이번 달 내역 조회
+
+    GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member, Integer page, Status status); // 본사 - 세금 계산서 전체 내역 통합 조회
+
+    Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList); // 세금 계산서 진위 여부 검증 후, 검색
 }

@@ -10,22 +10,33 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRepositoryCustom {
-    // 세금 계산서 목록 조회
+    // 대리점 - 세금 계산서 목록 조회
     Page<NtsTax> findByAgencyIdAndIsSuccess(Long agencyId, IsSuccess isSuccess, Pageable pageable);
     Long countByIsSuccess(IsSuccess isSuccess);
 
-    // 세금 계산서 진위 여부 검증 후, 검색
-    @Query("SELECT n FROM NtsTax n " +
-            "WHERE n.member = :member " +
-            "AND n.createdAt BETWEEN :startDateTime AND :endDateTime " +
-            "AND (COALESCE(:status, n.status) = n.status)")
-    Page<NtsTax> findAllByFilters(@Param("member") Member member,
-                                  @Param("startDateTime") LocalDateTime startDateTime,
-                                  @Param("endDateTime") LocalDateTime endDateTime,
-                                  @Param("status") Status status,
-                                  Pageable pageable
-                                  );
+    // 본사 - 세금 계산서 이번 달 내역 조회
+    @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status " +
+            "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM n.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Page<NtsTax> findByMemberAndStatusThisMonth(@Param("member") Member member,
+                                                @Param("status") Status status,
+                                                Pageable pageable);
+
+    @Query("SELECT COUNT(n) FROM NtsTax n WHERE n.status = :status " +
+           "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+           "AND EXTRACT(MONTH FROM n.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Long countByStatusThisMonth(@Param("status") Status status);
+
+    // 본사 - 세금 계산서 전체 내역 통합 조회
+    Page<NtsTax> findByMemberAndStatusIn(Member member, List<Status> statusList, Pageable pageable);
+
+    @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status ")
+    Page<NtsTax> findByMemberAndStatus(@Param("member") Member member,
+                                       @Param("status") Status status,
+                                       Pageable pageable);
+    Long countByStatus(Status status);
+
 }

@@ -56,10 +56,10 @@ public enum ErrorCode {
     NTS_TAX_NOT_UPLOAD(400, "세금계산서 파일이 업로드 되지 않았습니다."),
     NTS_TAX_INVALID_FILE(400, "유효하지 않은 파일 형식입니다."),
     NTS_TAX_NOT_FOUND(404, "세금계산서를 찾을 수 없습니다."),
-    NTS_TAX_UPDATE_UNAUTHORIZED(403, "세금계산서 수정 권한이 없습니다."),
-    NTS_TAX_DELETE_UNAUTHORIZED(403, "세금계산서 삭제 권한이 없습니다."),
-    NTS_TAX_VALIDATED(409, "이미 검증된 세금계산서입니다"),
-
+    NTS_TAX_UPDATE_UNAUTHORIZED(403, "세금 계산서 수정 권한이 없습니다."),
+    NTS_TAX_DELETE_UNAUTHORIZED(403, "세금 계산서 삭제 권한이 없습니다."),
+    NTS_TAX_VALIDATED(409, "이미 검증된 세금 계산서입니다"),
+    WAITING_NOT_SELECTED(400, "WAITING 상태는 선택 불가능 합니다."),
 
     //S3
     FILE_IS_EMPTY(400, "비어있는 파일입니다."),

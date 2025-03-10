@@ -6,6 +6,7 @@ import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -54,8 +55,8 @@ public class NtsTaxController {
     private final NtsTaxQueryService ntsTaxQueryService;
     private final NtxTaxMappingService ntxTaxMappingService;
 
-    @Operation(summary = "세금 계산서 OCR")
-    @PostMapping(value = "/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "대리점 - 세금 계산서 OCR")
+    @PostMapping(value = "/agency/nts-tax/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<GetOcrNtsTaxListResponseDTO> getOcrTest(
         @RequestParam("files") List<MultipartFile> files) {
 
@@ -66,8 +67,8 @@ public class NtsTaxController {
         return ApiResponse.success(ocrService.getOcrResponse(files));
     }
 
-    @Operation(summary = "세금 계산서 수정")
-    @PutMapping("/nts-tax/edit")
+    @Operation(summary = "대리점 - 세금 계산서 수정")
+    @PutMapping("/agency/nts-tax/edit")
     public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(
         @RequestBody UpdateNtsTaxRequestDTO request) {
 
@@ -76,8 +77,8 @@ public class NtsTaxController {
         return ApiResponse.success(ntsTaxCommandService.updateNtsTax(agency, request));
     }
 
-    @Operation(summary = "세금 계산서 목록 조회")
-    @GetMapping("/nts-tax")
+    @Operation(summary = "대리점 - 세금 계산서 목록 조회")
+    @GetMapping("/agency/nts-tax")
     public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getNtsTaxList(
             @RequestParam(name = "page") Integer page,
             @RequestParam(name = "isSuccess") IsSuccess isSuccess) {
@@ -86,8 +87,8 @@ public class NtsTaxController {
         return ApiResponse.success(ntsTaxQueryService.getNtsTaxList(agency, page, isSuccess));
     }
 
-    @Operation(summary = "세금 계산서 통합 조회 - 조건 설정 후 검색")
-    @GetMapping("/nts-tax/search")
+    @Operation(summary = "대리점 - 세금 계산서 검색")
+    @GetMapping("/agency/nts-tax/search")
     public ApiResponse<GetNtsTaxListResponseDTO.SearchNtsTaxListResponseDTO> searchNtsTaxList(
         @RequestParam(name = "page") Integer page,
         @RequestParam(required = false) LocalDate startDate,
@@ -101,17 +102,18 @@ public class NtsTaxController {
         return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
     }
 
-    @Operation(summary = "세금계산서 단건 삭제")
+    @Operation(summary = "본사, 대리점 - 세금 계산서 단건 삭제")
     @DeleteMapping("/nts-tax/{nts_tax_id}")
     public ApiResponse<String> deleteNtsTax(@PathVariable("nts_tax_id") Long ntsTaxId) {
         Agency agency = agencyAuthService.getCurrentAgency();
+        Member member = memberAuthService.getCurrentMember();
 
         ntsTaxCommandService.deleteNtsTax(agency, ntsTaxId);
 
         return ApiResponse.success("Deletion successful");
     }
 
-    @Operation(summary = "세금 계산서 페이지 내 다건 삭제")
+    @Operation(summary = "본사, 대리점 - 세금 계산서 페이지 내 다건 삭제")
     @DeleteMapping("/nts-tax/multiple")
     public ApiResponse<String> deleteNtsTaxList(@RequestBody List<DeleteNtsTaxRequestDTO> request) {
         Agency agency = agencyAuthService.getCurrentAgency();
@@ -121,8 +123,8 @@ public class NtsTaxController {
         return ApiResponse.success("NtsTaxList Deletion successful");
     }
 
-    @Operation(summary = "세금계산서 제출")
-    @PostMapping("/nts-tax/submit-hometax")
+    @Operation(summary = "대리점 - 세금 계산서 제출")
+    @PostMapping("/agency/nts-tax/submit-hometax")
     public ResponseEntity submitNtsTaxList(@RequestBody SubmitNtxTaxRequestDTO request) {
         ntxTaxMappingService.submitNtxTax(request);
         return ResponseEntity.ok().body("세금계산서 제출 완료");
@@ -142,16 +144,34 @@ public class NtsTaxController {
 //        return ApiResponse.success(homeTaxService.verifyMultipleTaxInvoice(requests));
 //    }
 
-    @Operation(summary = "세금 계산서 진위 여부 검증 후, 본사 측 검색")
-    @GetMapping("/nts-tax/search-hometax")
+    @Operation(summary = "본사 - 세금 계산서 이번 달 내역 조회")
+    @GetMapping("/employee/nts-tax/view-hometax/recent")
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxList(@RequestParam(name = "page") Integer page,
+                                                                                       @RequestParam(name = "isSuccess") Status status) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxList(member, page, status));
+    }
+
+    @Operation(summary = "본사 - 세금 계산서 전체 내역 통합 조회")
+    @GetMapping("/employee/nts-tax/view-hometax/history")
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxHistory(@RequestParam(name = "page") Integer page,
+                                                                                          @RequestParam(required = false) Status status) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
+    }
+
+    @Operation(summary = "본사 - 세금 계산서 내역 검색")
+    @GetMapping("/employee/employee/nts-tax/search-hometax")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList (@RequestParam(name = "page") Integer page,
                                                                                            @RequestParam(required = false) LocalDate startMonth,
                                                                                            @RequestParam(required = false) LocalDate endMonth,
-                                                                                           @RequestParam(required = false) String suName,
-                                                                                           @RequestParam(required = false) String ipName) {
+                                                                                           @RequestParam(required = false) List<String> suNameList,
+                                                                                           @RequestParam(required = false) List<String> ipNameList) {
         Member member = memberAuthService.getCurrentMember();
 
-        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suName, ipName);
+        Page<NtsTax> searchHometaxList = ntsTaxQueryService.searchHometaxList(member, page, startMonth, endMonth, suNameList, ipNameList);
 
         return ApiResponse.success(GetHometaxResponseDTO.from(searchHometaxList));
     }
