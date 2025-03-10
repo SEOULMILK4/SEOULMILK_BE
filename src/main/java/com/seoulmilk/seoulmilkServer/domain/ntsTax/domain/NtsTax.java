@@ -94,8 +94,11 @@ public class NtsTax extends BaseEntity {
         this.grandTotal = grandTotal;
     }
 
-    public void modifyNtsTax(String issueId, LocalDate issueDate, String suId, String ipId,
+    public void modifyNtsTax(String suName, String ipName, String issueId, LocalDate issueDate,
+        String suId, String ipId,
         String chargeTotal, String taxTotal, String grandTotal) {
+        this.suName = suName;
+        this.ipName = ipName;
         this.issueId = issueId;
         this.issueDate = issueDate;
         this.suId = suId;
