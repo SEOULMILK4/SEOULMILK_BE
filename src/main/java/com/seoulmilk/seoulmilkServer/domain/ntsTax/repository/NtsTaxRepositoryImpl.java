@@ -6,7 +6,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -101,7 +101,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     @Override
-    public List<GetHometaxResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList, List<NtsTax> ntsTaxList) {
+    public List<GetCsvResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList, List<NtsTax> ntsTaxList) {
         List<NtsTax> results = jpaQueryFactory
                 .selectFrom(ntsTax)
                 .where(
@@ -114,7 +114,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 .fetch();
 
         return results.stream()
-                .map(GetHometaxResponseDTO::from)
+                .map(GetCsvResponseDTO::from)
                 .collect(Collectors.toList());
     }
 

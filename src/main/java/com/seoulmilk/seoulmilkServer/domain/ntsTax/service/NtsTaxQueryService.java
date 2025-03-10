@@ -7,10 +7,8 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -36,5 +34,5 @@ public interface NtsTaxQueryService {
 
     Page<NtsTax> searchHometaxList(Member member, Integer page, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList); // 세금 계산서 진위 여부 검증 후, 검색
 
-    List<GetHometaxResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList, Status status); // csv 추출
+    List<GetCsvResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList, Status status); // csv 추출
 }
