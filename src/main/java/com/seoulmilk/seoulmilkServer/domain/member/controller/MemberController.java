@@ -77,6 +77,19 @@ public class MemberController {
         return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
     }
 
+    @Operation(summary = "세금 계산서 csv 추출")
+    @GetMapping("/nts-tax/csv")
+    public ApiResponse<List<GetHometaxResponseDTO>> getHometaxCsv(
+            @RequestParam(required = false) LocalDate startMonth,
+            @RequestParam(required = false) LocalDate endMonth,
+            @RequestParam(required = false) List<String> suNameList,
+            @RequestParam(required = false) List<String> ipNameList,
+            @RequestParam(required = false) Status status) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxCsv(member, startMonth, endMonth, suNameList, ipNameList, status));
+    }
+
     @Operation(summary = "세금 계산서 내역 검색")
     @GetMapping("/nts-tax/search-hometax")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList(
@@ -112,6 +125,7 @@ public class MemberController {
 
         return ApiResponse.success("All NtsTax Deletion successful");
     }
+
     @Operation(summary = "세금 계산서 다운로드")
     @GetMapping("/nts-tax/download-image")
     public ResponseEntity<byte[]> downloadImage(@RequestParam("imageUrl") String imageUrl) {

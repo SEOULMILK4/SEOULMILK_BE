@@ -6,6 +6,8 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax.ntsTax;
 
@@ -95,6 +98,24 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         ).orElse(0L);
 
         return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public List<GetHometaxResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList, List<NtsTax> ntsTaxList) {
+        List<NtsTax> results = jpaQueryFactory
+                .selectFrom(ntsTax)
+                .where(
+                        ntsTax.member.eq(member),
+                        ntsTax.in(ntsTaxList),
+                        betweenIssueDate(startDate, endDate),
+                        orSearch(suNameList, ipNameList)
+                )
+                .orderBy(ntsTax.createdAt.desc())
+                .fetch();
+
+        return results.stream()
+                .map(GetHometaxResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     private BooleanExpression betweenIssueDate(LocalDate startDate, LocalDate endDate) {
