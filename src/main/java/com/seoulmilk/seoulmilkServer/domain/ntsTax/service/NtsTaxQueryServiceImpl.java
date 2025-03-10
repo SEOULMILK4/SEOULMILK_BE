@@ -41,7 +41,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         IsSuccess isSuccess) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccessAndStatus(agency.getId(),
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccessAndStatus(
+            agency.getId(),
             isSuccess, pageable, Status.WAITING);
 
         // 전체 성공, 실패 건 수 조회
@@ -141,7 +142,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
 
-        ntsTax.modifyNtsTax(requestDTO.getIssueId(), requestDTO.getIssueDate(),
+        ntsTax.modifyNtsTax(requestDTO.getSuName(), requestDTO.getIpName(), requestDTO.getIssueId(),
+            requestDTO.getIssueDate(),
             requestDTO.getSuId(), requestDTO.getIpId(),
             requestDTO.getChargeTotal(), requestDTO.getTaxTotal(), requestDTO.getGrandTotal());
 

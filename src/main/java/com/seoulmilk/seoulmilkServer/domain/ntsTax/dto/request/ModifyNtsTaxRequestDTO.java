@@ -7,6 +7,12 @@ import lombok.Getter;
 @Getter
 public class ModifyNtsTaxRequestDTO {
 
+    @Schema(description = "공급자명", example = "서울우유 대전 대리점")
+    private String suName;
+
+    @Schema(description = "공급받는자명", example = "부산 동구 참외 마트 왕십리점")
+    private String ipName;
+
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
 

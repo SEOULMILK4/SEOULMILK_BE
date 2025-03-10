@@ -18,6 +18,12 @@ public class ModifyNtsTaxResponseDTO {
     @Schema(description = "세금계산서 id", example = "1")
     private final Long ntsTaxId;
 
+    @Schema(description = "공급자명", example = "서울우유 대전 대리점")
+    private String suName;
+
+    @Schema(description = "공급받는자명", example = "부산 동구 참외 마트 왕십리점")
+    private String ipName;
+
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private final String issueId;
 
@@ -55,6 +61,8 @@ public class ModifyNtsTaxResponseDTO {
     public static ModifyNtsTaxResponseDTO from(NtsTax ntsTax) {
         return ModifyNtsTaxResponseDTO.builder()
             .ntsTaxId(ntsTax.getId())
+            .suName(ntsTax.getSuName())
+            .ipName(ntsTax.getIpName())
             .issueId(ntsTax.getIssueId())
             .issueAt(ntsTax.getIssueDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
             .suId(ntsTax.getSuId())
