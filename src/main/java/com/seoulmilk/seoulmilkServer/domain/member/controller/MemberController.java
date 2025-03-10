@@ -43,7 +43,7 @@ public class MemberController {
     private final S3Downloader s3Downloader;
 
     @Operation(summary = "개별 세금계산서 조회")
-    @PostMapping("/nts-tax/{id}")
+    @GetMapping("/nts-tax/{id}")
     public ApiResponse<GetOneNtsTaxResponseDTO> getOneNtsTaxResponse(@PathVariable("id") Long id) {
         return ApiResponse.success(memberService.getOneNtsTax(id));
     }
