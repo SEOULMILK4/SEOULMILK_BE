@@ -104,15 +104,6 @@ public class AgencyController {
         return ResponseEntity.ok().body("전체 세금계산서 제출 완료");
     }
 
-
-    @Operation(summary = "대리점 - 세금 계산서 제출 후 조회")
-    @GetMapping("/nts-tax/submit-hometax/all")
-    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getAllNtsTaxAfterSubmit(
-        @RequestParam(name = "page") Integer page){
-        Agency agency = agencyAuthService.getCurrentAgency();
-        return ApiResponse.success(ntsTaxQueryService.getNtsTaxAfterSubmit(agency, page));
-    }
-
     @Operation(summary = "대리점 - 세금 계산서 페이지 내 다건 삭제")
     @DeleteMapping("/nts-tax/multiple")
     public ApiResponse<String> deleteAgencyNtsTaxList(@RequestBody DeleteNtsTaxRequestDTO request) {

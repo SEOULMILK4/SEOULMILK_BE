@@ -41,8 +41,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         IsSuccess isSuccess) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccess(agency.getId(),
-            isSuccess, pageable);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndIsSuccessAndStatus(agency.getId(),
+            isSuccess, pageable, Status.WAITING);
 
         // 전체 성공, 실패 건 수 조회
         Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
@@ -51,21 +51,6 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         return GetNtsTaxListResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxAfterSubmit(Agency agency,
-        Integer page){
-        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-        Page<NtsTax> ntsTaxPage = ntsTaxRepository.findByAgencyIdAndStatus(agency.getId(),
-            Status.WAITING, pageable);
-
-        // 전체 성공, 실패 건 수 조회
-        Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
-        Long failedCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.FAILED);
-
-        return GetNtsTaxListResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
-    }
 
     @Override
     @Transactional(readOnly = true)
