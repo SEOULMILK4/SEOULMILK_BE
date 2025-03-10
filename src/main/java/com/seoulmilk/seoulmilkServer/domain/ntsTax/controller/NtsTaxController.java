@@ -52,6 +52,9 @@ public class NtsTaxController {
         return ApiResponse.success("NtsTaxList Deletion successful");
     }
 
+
+
+
     //    @Operation(summary = "세금계산서 홈택스 진위 여부 확인 [단건]")
     //    @PostMapping("/nts-tax/hometax")
     //    public ApiResponse<OcrTaxInvoiceResponseDTO> getOneVerify(
