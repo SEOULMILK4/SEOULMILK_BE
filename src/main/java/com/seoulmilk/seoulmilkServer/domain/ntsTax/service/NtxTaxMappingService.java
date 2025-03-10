@@ -7,4 +7,6 @@ public interface NtxTaxMappingService {
 
     void submitNtxTax(SubmitNtxTaxRequestDTO request);
 
+    void submitAllNtsTax();
+
 }
