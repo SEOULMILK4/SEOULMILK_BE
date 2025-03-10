@@ -1,16 +1,17 @@
 package com.seoulmilk.seoulmilkServer.domain.member.controller;
 
-
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,14 +22,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +32,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberAuthService memberAuthService;
+    private final NtsTaxCommandService ntsTaxCommandService;
     private final NtsTaxQueryService ntsTaxQueryService;
 
     @Operation(summary = "개별 세금계산서 조회")
@@ -95,5 +90,23 @@ public class MemberController {
         return ApiResponse.success(GetHometaxResponseDTO.from(searchHometaxList));
     }
 
+    @Operation(summary = "본사 - 세금 계산서 페이지 내 다건 삭제")
+    @DeleteMapping("/employee/nts-tax/multiple")
+    public ApiResponse<String> deleteEmployeeNtsTaxList(@RequestBody DeleteNtsTaxRequestDTO request) {
+        Member member = memberAuthService.getCurrentMember();
 
+        ntsTaxCommandService.deleteEmployeeNtsTaxList(member, request);
+
+        return ApiResponse.success("NtsTaxList Deletion successful");
+    }
+
+    @Operation(summary = "본사 - 세금 계산서 페이지 내 전체 삭제")
+    @DeleteMapping("/employee/nts-tax/multiple/all")
+    public ApiResponse<String> deleteAllEmployeeNtsTax() {
+        Member member = memberAuthService.getCurrentMember();
+
+        ntsTaxCommandService.deleteEmployeeAllNtsTax(member);
+
+        return ApiResponse.success("All NtsTax Deletion successful");
+    }
 }

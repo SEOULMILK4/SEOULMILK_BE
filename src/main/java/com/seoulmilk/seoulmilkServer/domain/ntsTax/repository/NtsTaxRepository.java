@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.repository;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
@@ -13,6 +14,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRepositoryCustom {
+    // 본사, 대리점 - 세금 계산서 전체 삭제
+    List<NtsTax> findByAgencyIdAndStatus(Long agencyId, Status status);
+    List<NtsTax> findByMemberIdAndStatusIn(Long memberId, List<Status> statuses);
+
     // 대리점 - 세금 계산서 목록 조회
     Page<NtsTax> findByAgencyIdAndIsSuccess(Long agencyId, IsSuccess isSuccess, Pageable pageable);
     Long countByIsSuccess(IsSuccess isSuccess);

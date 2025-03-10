@@ -8,9 +8,6 @@ import java.time.LocalDate;
 @Getter
 public class UpdateNtsTaxRequestDTO {
 
-    @Schema(description = "세금계산서 ID", example = "1")
-    private Long ntsTaxId;
-
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
 
