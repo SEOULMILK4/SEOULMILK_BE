@@ -4,6 +4,7 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -90,23 +91,31 @@ public class AgencyController {
     }
 
     @Operation(summary = "대리점 - 선택한 세금 계산서 제출")
-     @PostMapping("/nts-tax/submit-hometax")
-     public ResponseEntity submitNtsTaxList(@RequestBody SubmitNtxTaxRequestDTO request) {
-         ntxTaxMappingService.submitNtxTax(request);
-         return ResponseEntity.ok().body("세금계산서 제출 완료");
-     }
+    @PostMapping("/nts-tax/submit-hometax")
+    public ResponseEntity submitNtsTaxList(@RequestBody SubmitNtxTaxRequestDTO request) {
+        ntxTaxMappingService.submitNtxTax(request);
+        return ResponseEntity.ok().body("세금계산서 제출 완료");
+    }
 
-     @Operation(summary = "대리점 - 전체 세금 계산서 제출")
-     @PostMapping("/nts-tax/submit-hometax/all")
-     public ResponseEntity submitAllNtsTax()
-     {
-         ntxTaxMappingService.submitAllNtsTax();
-         return ResponseEntity.ok().body("전체 세금계산서 제출 완료");
-     }
+    @Operation(summary = "대리점 - 전체 세금 계산서 제출")
+    @PostMapping("/nts-tax/submit-hometax/all")
+    public ResponseEntity submitAllNtsTax() {
+        ntxTaxMappingService.submitAllNtsTax();
+        return ResponseEntity.ok().body("전체 세금계산서 제출 완료");
+    }
 
-     @Operation(summary = "대리점 - 세금 계산서 페이지 내 다건 삭제")
-     @DeleteMapping("/nts-tax/multiple")
-     public ApiResponse<String> deleteAgencyNtsTaxList(@RequestBody DeleteNtsTaxRequestDTO request) {
+
+    @Operation(summary = "대리점 - 세금 계산서 제출 후 조회")
+    @GetMapping("/nts-tax/submit-hometax/all")
+    public ApiResponse<GetNtsTaxListResponseDTO.NtsTaxListResponseDTO> getAllNtsTaxAfterSubmit(
+        @RequestParam(name = "page") Integer page){
+        Agency agency = agencyAuthService.getCurrentAgency();
+        return ApiResponse.success(ntsTaxQueryService.getNtsTaxAfterSubmit(agency, page));
+    }
+
+    @Operation(summary = "대리점 - 세금 계산서 페이지 내 다건 삭제")
+    @DeleteMapping("/nts-tax/multiple")
+    public ApiResponse<String> deleteAgencyNtsTaxList(@RequestBody DeleteNtsTaxRequestDTO request) {
         Agency agency = agencyAuthService.getCurrentAgency();
 
         ntsTaxCommandService.deleteAgencyNtsTaxList(agency, request);
@@ -114,13 +123,13 @@ public class AgencyController {
         return ApiResponse.success("NtsTaxList Deletion successful");
     }
 
-     @Operation(summary = "대리점 - 세금 계산서 페이지 내 전체 삭제")
-     @DeleteMapping("/nts-tax/multiple/all")
-     public ApiResponse<String> deleteAllAgencyNtsTax() {
-         Agency agency = agencyAuthService.getCurrentAgency();
+    @Operation(summary = "대리점 - 세금 계산서 페이지 내 전체 삭제")
+    @DeleteMapping("/nts-tax/multiple/all")
+    public ApiResponse<String> deleteAllAgencyNtsTax() {
+        Agency agency = agencyAuthService.getCurrentAgency();
 
-         ntsTaxCommandService.deleteAgencyAllNtsTax(agency);
+        ntsTaxCommandService.deleteAgencyAllNtsTax(agency);
 
-         return ApiResponse.success("All NtsTax Deletion successful");
+        return ApiResponse.success("All NtsTax Deletion successful");
     }
 }
