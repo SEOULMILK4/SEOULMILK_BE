@@ -94,7 +94,7 @@ public class MemberController {
     }
 
     @Operation(summary = "본사 - 세금 계산서 페이지 내 다건 삭제")
-    @DeleteMapping("/employee/nts-tax/multiple")
+    @DeleteMapping("/nts-tax/multiple")
     public ApiResponse<String> deleteEmployeeNtsTaxList(@RequestBody DeleteNtsTaxRequestDTO request) {
         Member member = memberAuthService.getCurrentMember();
 
@@ -104,7 +104,7 @@ public class MemberController {
     }
 
     @Operation(summary = "본사 - 세금 계산서 페이지 내 전체 삭제")
-    @DeleteMapping("/employee/nts-tax/multiple/all")
+    @DeleteMapping("/nts-tax/multiple/all")
     public ApiResponse<String> deleteAllEmployeeNtsTax() {
         Member member = memberAuthService.getCurrentMember();
 
@@ -118,7 +118,4 @@ public class MemberController {
         Member member = memberAuthService.getCurrentMember();
         return s3Downloader.downloadImage(imageUrl);
     }
-
-
-
 }
