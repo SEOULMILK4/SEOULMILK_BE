@@ -39,4 +39,6 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
                                        Pageable pageable);
     Long countByStatus(Status status);
 
+    List<NtsTax> findAllByAgencyIdAndStatus(Long agencyId,Status status);
+
 }

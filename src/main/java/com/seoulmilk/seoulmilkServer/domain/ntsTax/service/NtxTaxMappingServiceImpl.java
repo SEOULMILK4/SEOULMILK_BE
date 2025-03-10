@@ -48,4 +48,32 @@ public class NtxTaxMappingServiceImpl implements NtxTaxMappingService {
 
         ntsTaxRepository.saveAll(ntxTaxes);
     }
+
+
+    public void submitAllNtsTax() {
+
+            Agency agency = agencyAuthService.getCurrentAgency();
+
+            List<NtsTax> ntxTaxes = ntsTaxRepository.findAllByAgencyIdAndStatus(agency.getId(),Status.WAITING);
+
+            List<OcrTaxInvoiceRequestDTO> ntxTaxRequest = ntxTaxes.stream()
+                .map(OcrTaxInvoiceRequestDTO::from)
+                .toList();
+
+            List<OcrTaxInvoiceResponseDTO> results = homeTaxService.verifyMultipleTaxInvoice(
+                ntxTaxRequest);
+
+            Set<Long> approvedIds = results.stream()
+                .filter(dto -> "1".equals(dto.getResAuthenticity()))
+                .map(OcrTaxInvoiceResponseDTO::getId)
+                .collect(Collectors.toSet());
+
+            ntxTaxes.forEach(ntxTax -> {
+                Status status =
+                    approvedIds.contains(ntxTax.getId()) ? Status.APPROVAL : Status.REJECTION;
+                ntxTax.updateStatus(status);
+            });
+
+            ntsTaxRepository.saveAll(ntxTaxes);
+        }
 }
