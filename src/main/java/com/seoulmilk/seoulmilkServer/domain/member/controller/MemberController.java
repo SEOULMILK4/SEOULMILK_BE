@@ -14,6 +14,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceRes
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
+import com.seoulmilk.seoulmilkServer.global.service.S3Downloader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,9 +35,10 @@ public class MemberController {
     private final MemberAuthService memberAuthService;
     private final NtsTaxCommandService ntsTaxCommandService;
     private final NtsTaxQueryService ntsTaxQueryService;
+    private final S3Downloader s3Downloader;
 
     @Operation(summary = "개별 세금계산서 조회")
-    @PostMapping("/nts-tax/{id}")
+    @GetMapping("/nts-tax/{id}")
     public ApiResponse<GetOneNtsTaxResponseDTO> getOneNtsTaxResponse(@PathVariable("id") Long id) {
         return ApiResponse.success(memberService.getOneNtsTax(id));
     }
@@ -50,7 +52,8 @@ public class MemberController {
 
     @Operation(summary = "개별 세금계산서 재검증")
     @PostMapping("/nts-tax/{id}/revalidate")
-    public ApiResponse<OcrTaxInvoiceResponseDTO> revalidateOneNtsTaxResponse(@PathVariable("id") Long id) {
+    public ApiResponse<OcrTaxInvoiceResponseDTO> revalidateOneNtsTaxResponse(
+        @PathVariable("id") Long id) {
         return ApiResponse.success(memberService.revalidateOneNtsTax(id));
     }
 
@@ -109,4 +112,13 @@ public class MemberController {
 
         return ApiResponse.success("All NtsTax Deletion successful");
     }
+    @Operation(summary = "세금 계산서 다운로드")
+    @GetMapping("/nts-tax/download-image")
+    public ResponseEntity<byte[]> downloadImage(@RequestParam("imageUrl") String imageUrl) {
+        Member member = memberAuthService.getCurrentMember();
+        return s3Downloader.downloadImage(imageUrl);
+    }
+
+
+
 }
