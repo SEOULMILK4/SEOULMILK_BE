@@ -55,6 +55,9 @@ public class GetNtsTaxListResponseDTO {
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
 
+    @Schema(description = "이미지 URL", example = "https://nts-tax.s3.ap-northeast-2.amazonaws.com/ocr-uploads/c6f3ce15-a08d-4c40-8c63-e52f05a9c058.pdf")
+    private String imageUrl;
+
     @Schema(description = "매출", example = "AR")
     private ARAP AR;
 
@@ -104,6 +107,7 @@ public class GetNtsTaxListResponseDTO {
             .grandTotal(removeSpace(ntsTax.getGrandTotal()))
             .chargeTotal(removeSpace(ntsTax.getChargeTotal()))
             .taxTotal(removeSpace(ntsTax.getTaxTotal()))
+            .imageUrl(removeSpace(ntsTax.getImageUrl()))
             .status(ntsTax.getStatus())
             .createdAt(ntsTax.getCreatedAt().toLocalDate())
             .createdTime(ntsTax.getCreatedAt().toLocalTime())
