@@ -8,8 +8,11 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.*;
-
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOneNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.OcrTaxInvoiceResponseDTO;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -22,11 +25,12 @@ public interface NtsTaxQueryService {
     Page<NtsTax> searchNtsTaxList(Agency agency, Integer page, LocalDate startDate,
         LocalDate endDate, List<String> ipNameList); // 세금 계산서 통합 조회 - 조건 기준 탐색
 
-
-    Page<NtsTax> getNtsTaxListByStatusByAdmin(Integer page,
+    GetNtsTaxListResponseDTO.SearchNtsTaxListByAdminResponseDTO getNtsTaxListByStatusByAdmin(
+        Integer page,
         Status status);
 
-    Page<NtsTax> getNtsTaxListByAdmin(Integer page, Status status, LocalDate startDate,
+    GetNtsTaxListResponseDTO.SearchNtsTaxListByAdminResponseDTO getNtsTaxListByAdmin(Integer page,
+        Status status, LocalDate startDate,
         LocalDate endDate, List<String> suNameList, List<String> ipNameList);
 
     GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member);
