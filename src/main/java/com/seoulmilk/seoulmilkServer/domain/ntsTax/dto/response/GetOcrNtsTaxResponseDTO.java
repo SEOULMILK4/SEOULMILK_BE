@@ -75,29 +75,34 @@ public class GetOcrNtsTaxResponseDTO {
 
     public static GetOcrNtsTaxResponseDTO from(Agency agency, NtsTax ntsTax) {
         return GetOcrNtsTaxResponseDTO.builder()
-                .isSuccess(ntsTax.getIsSuccess())
-                .AR(ntsTax.getARAP())
-                .memberId(agency.getMember().getId())
-                .agencyId(agency.getId())
-                .status(ntsTax.getStatus())
-                .ntsTaxId(ntsTax.getId())
-                .issueId(convertToNull(ntsTax.getIssueId()))
-                .issueDate(ntsTax.getIssueDate())
-                .suId(convertToNull(ntsTax.getSuId()))
-                .suName(convertToNull(ntsTax.getSuName()))
-                .ipId(convertToNull(ntsTax.getIpId()))
-                .ipName(convertToNull(ntsTax.getIpName()))
-                .grandTotal(convertToNull(ntsTax.getGrandTotal()))
-                .chargeTotal(convertToNull(ntsTax.getChargeTotal()))
-                .taxTotal(convertToNull(ntsTax.getTaxTotal()))
-                .createdAt(ntsTax.getCreatedAt().toLocalDate())
-                .createdTime(ntsTax.getCreatedAt().toLocalTime())
-                .imageUrl(convertToNull(ntsTax.getImageUrl()))
-                .fileName(convertToNull(ntsTax.getFileName()))
-                .build();
+            .isSuccess(ntsTax.getIsSuccess())
+            .AR(ntsTax.getARAP())
+            .memberId(agency.getMember().getId())
+            .agencyId(agency.getId())
+            .status(ntsTax.getStatus())
+            .ntsTaxId(ntsTax.getId())
+            .issueId(ntsTax.getIssueId())
+            .issueDate(ntsTax.getIssueDate())
+            .suId((ntsTax.getSuId()))
+            .suName(removeSpace(ntsTax.getSuName()))
+            .ipId(removeSpace(ntsTax.getIpId()))
+            .ipName(removeSpace(ntsTax.getIpName()))
+            .grandTotal(removeSpace(ntsTax.getGrandTotal()))
+            .chargeTotal(removeSpace(ntsTax.getChargeTotal()))
+            .taxTotal(removeSpace(ntsTax.getTaxTotal()))
+            .createdAt(ntsTax.getCreatedAt().toLocalDate())
+            .createdTime(ntsTax.getCreatedAt().toLocalTime())
+            .imageUrl(removeSpace(ntsTax.getImageUrl()))
+            .fileName(removeSpace(ntsTax.getFileName()))
+            .build();
     }
 
-    private static String convertToNull(String value) {
-        return (value == null || value.trim().isEmpty()) ? "" : value;
+    private static String removeSpace(String value) {
+        if (value == null || value.chars().allMatch(Character::isWhitespace)) {
+            return "";
+        }
+        return value.trim().replaceAll("\\s+", "");
     }
+
+
 }
