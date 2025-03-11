@@ -43,8 +43,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
             isSuccess, pageable, Status.WAITING);
 
         // 전체 성공, 실패 건 수 조회
-        Long successCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.SUCCESS);
-        Long failedCnt = ntsTaxRepository.countByIsSuccess(IsSuccess.FAILED);
+        Long successCnt = ntsTaxRepository.countByIsSuccessAndStatus(IsSuccess.SUCCESS, Status.WAITING);
+        Long failedCnt = ntsTaxRepository.countByIsSuccessAndStatus(IsSuccess.FAILED, Status.WAITING);
 
         return GetNtsTaxListResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
