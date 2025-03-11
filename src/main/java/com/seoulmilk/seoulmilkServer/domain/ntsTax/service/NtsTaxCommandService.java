@@ -12,4 +12,5 @@ public interface NtsTaxCommandService {
     void deleteEmployeeNtsTaxList(Member member, DeleteNtsTaxRequestDTO request);
     void deleteAgencyAllNtsTax(Agency agency);
     void deleteEmployeeAllNtsTax(Member member);
+    void deleteAdminNtsTaxList(DeleteNtsTaxRequestDTO request);
 }

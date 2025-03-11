@@ -30,9 +30,10 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
     @Override
     @Transactional
-    public UpdateNtsTaxResponseDTO updateNtsTax(Agency agency, Long ntsTaxId, UpdateNtsTaxRequestDTO request) {
+    public UpdateNtsTaxResponseDTO updateNtsTax(Agency agency, Long ntsTaxId,
+        UpdateNtsTaxRequestDTO request) {
         NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
 
         // 담당 대리점일 경우에만 수정 가능
         if (!ntsTax.getAgency().equals(agency)) {
@@ -40,16 +41,16 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
         }
 
         ntsTax.updateNtsTax(
-                IsSuccess.SUCCESS,
-                request.getIssueId(),
-                request.getIssueDate(),
-                request.getSuId(),
-                request.getSuName(),
-                request.getIpId(),
-                request.getIpName(),
-                request.getChargeTotal(),
-                request.getTaxTotal(),
-                request.getGrandTotal()
+            IsSuccess.SUCCESS,
+            request.getIssueId(),
+            request.getIssueDate(),
+            request.getSuId(),
+            request.getSuName(),
+            request.getIpId(),
+            request.getIpName(),
+            request.getChargeTotal(),
+            request.getTaxTotal(),
+            request.getGrandTotal()
         );
 
         return UpdateNtsTaxResponseDTO.from(ntsTax);
@@ -69,8 +70,8 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
         // S3에 저장된 파일명을 추출하여 리스트 생성
         List<String> fileNames = ntsTaxeList.stream()
-                .map(NtsTax::getImageUrl)
-                .collect(Collectors.toList());
+            .map(NtsTax::getImageUrl)
+            .collect(Collectors.toList());
 
         s3Service.deleteFileList(fileNames);
         ntsTaxRepository.deleteAll(ntsTaxeList);
@@ -90,8 +91,8 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
         // S3에 저장된 파일명을 추출하여 리스트 생성
         List<String> fileNames = ntsTaxeList.stream()
-                .map(NtsTax::getImageUrl)
-                .collect(Collectors.toList());
+            .map(NtsTax::getImageUrl)
+            .collect(Collectors.toList());
 
         s3Service.deleteFileList(fileNames);
         ntsTaxRepository.deleteAll(ntsTaxeList);
@@ -100,7 +101,8 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
     @Override
     @Transactional
     public void deleteAgencyAllNtsTax(Agency agency) {
-        List<NtsTax> ntsTaxes = ntsTaxRepository.findByAgencyIdAndStatus(agency.getId(), Status.WAITING);
+        List<NtsTax> ntsTaxes = ntsTaxRepository.findByAgencyIdAndStatus(agency.getId(),
+            Status.WAITING);
 
         if (ntsTaxes.isEmpty()) {
             throw new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND);
@@ -117,8 +119,8 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
     @Transactional
     public void deleteEmployeeAllNtsTax(Member member) {
         List<NtsTax> ntsTaxes = ntsTaxRepository.findByMemberIdAndStatusIn(
-                member.getId(),
-                List.of(Status.APPROVAL, Status.REJECTION)
+            member.getId(),
+            List.of(Status.APPROVAL, Status.REJECTION)
         );
 
         if (ntsTaxes.isEmpty()) {
@@ -130,5 +132,19 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
             s3Service.deleteFile(ntsTax.getImageUrl());
         }
         ntsTaxRepository.deleteAll(ntsTaxes);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAdminNtsTaxList(DeleteNtsTaxRequestDTO request) {
+
+        List<NtsTax> ntsTaxeList = ntsTaxRepository.findAllById(request.getNtsTaxId());
+
+        List<String> fileNames = ntsTaxeList.stream()
+               .map(NtsTax::getImageUrl)
+               .collect(Collectors.toList());
+
+           s3Service.deleteFileList(fileNames);
+           ntsTaxRepository.deleteAll(ntsTaxeList);
     }
 }
