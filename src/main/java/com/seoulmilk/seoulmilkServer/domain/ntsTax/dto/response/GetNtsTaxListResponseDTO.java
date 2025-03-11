@@ -72,7 +72,6 @@ public class GetNtsTaxListResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SearchNtsTaxListResponseDTO {
-
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;
@@ -84,7 +83,6 @@ public class GetNtsTaxListResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NtsTaxListResponseDTO {
-
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;

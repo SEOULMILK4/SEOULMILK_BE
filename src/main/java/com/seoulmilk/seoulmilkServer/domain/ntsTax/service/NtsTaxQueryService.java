@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 
 public interface NtsTaxQueryService {
 
+    GetNtsTaxListResponseDTO getNtsTax(Agency agency, Long ntsTaxId); // 세금 계산서 단건 조회
+
     GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page,
         IsSuccess isSuccess); // 세금 계산서 목록 조회
 

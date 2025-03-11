@@ -34,6 +34,19 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
+    public GetNtsTaxListResponseDTO getNtsTax(Agency agency, Long ntsTaxId) {
+        NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
+
+        if (!ntsTax.getAgency().equals(agency)) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        return GetNtsTaxListResponseDTO.from(ntsTax);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public GetNtsTaxListResponseDTO.NtsTaxListResponseDTO getNtsTaxList(Agency agency, Integer page,
         IsSuccess isSuccess) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));

@@ -4,7 +4,6 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -63,6 +62,14 @@ public class AgencyController {
         Agency agency = agencyAuthService.getCurrentAgency();
 
         return ApiResponse.success(ntsTaxCommandService.updateNtsTax(agency, nts_tax_id, request));
+    }
+
+    @Operation(summary = "대리점 - 세금 계산서 단건 조회")
+    @GetMapping("/nts-tax/{nts_tax_id}")
+    public ApiResponse<GetNtsTaxListResponseDTO> getNtsTax(@PathVariable("nts_tax_id") Long nts_tax_id) {
+        Agency agency = agencyAuthService.getCurrentAgency();
+
+        return ApiResponse.success(ntsTaxQueryService.getNtsTax(agency, nts_tax_id));
     }
 
     @Operation(summary = "대리점 - 세금 계산서 목록 조회")
