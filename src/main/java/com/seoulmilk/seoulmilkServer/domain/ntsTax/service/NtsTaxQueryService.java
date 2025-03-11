@@ -46,9 +46,8 @@ public interface NtsTaxQueryService {
     GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member, Integer page,
         Status status); // 본사 - 세금 계산서 전체 내역 통합 조회
 
-    List<GetHometaxResponseDTO> searchHometaxList(Member member, LocalDate startDate,
-        LocalDate endDate, List<String> suNameList,
-        List<String> ipNameList); // 세금 계산서 진위 여부 검증 후, 검색
+    GetHometaxResponseDTO.SearchHometaxListResponseDTO searchHometaxList(Member member, Integer page, Status status, LocalDate startDate,
+        LocalDate endDate, List<String> suNameList, List<String> ipNameList); // 본사 - 세금 계산서 검색
 
     List<GetCsvResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate,
         List<String> suNameList, List<String> ipNameList, Status status); // 본사 - csv 추출
