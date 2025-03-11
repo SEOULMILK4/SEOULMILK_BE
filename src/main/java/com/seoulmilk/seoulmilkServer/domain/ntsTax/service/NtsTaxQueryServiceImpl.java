@@ -139,10 +139,11 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GetHometaxResponseDTO> searchHometaxList(Member member, LocalDate startDate,
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO searchHometaxList(Member member, Integer page, LocalDate startDate,
         LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+        Pageable pageable = PageRequest.of(page, 13);
 
-        return ntsTaxRepository.searchHometaxList(member, startDate, endDate, suNameList,
+        return ntsTaxRepository.searchHometaxList(member, pageable, startDate, endDate, suNameList,
             ipNameList);
     }
 

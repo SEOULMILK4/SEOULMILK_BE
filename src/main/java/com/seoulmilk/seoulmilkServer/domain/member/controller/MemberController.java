@@ -93,14 +93,15 @@ public class MemberController {
 
     @Operation(summary = "세금 계산서 내역 검색")
     @GetMapping("/nts-tax/search-hometax")
-    public ApiResponse<List<GetHometaxResponseDTO>> searchHometaxList(
+    public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> searchHometaxList(
+        @RequestParam(name = "page") Integer page,
         @RequestParam(required = false) LocalDate startMonth,
         @RequestParam(required = false) LocalDate endMonth,
         @RequestParam(required = false) List<String> suNameList,
         @RequestParam(required = false) List<String> ipNameList) {
         Member member = memberAuthService.getCurrentMember();
 
-        return ApiResponse.success(ntsTaxQueryService.searchHometaxList(member,
+        return ApiResponse.success(ntsTaxQueryService.searchHometaxList(member, page,
                 startMonth, endMonth, suNameList, ipNameList));
     }
 

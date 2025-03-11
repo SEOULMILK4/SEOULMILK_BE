@@ -41,6 +41,8 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 betweenIssueDate(startDate, endDate),
                 inIpNames(ipNameList)
             )
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
             .orderBy(ntsTax.createdAt.desc())
             .fetch();
 
@@ -68,7 +70,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     @Override
-    public List<GetHometaxResponseDTO> searchHometaxList(Member member, LocalDate startDate,
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO searchHometaxList(Member member, Pageable pageable, LocalDate startDate,
                                                          LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
 
         List<NtsTax> results = jpaQueryFactory
@@ -79,12 +81,25 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 betweenIssueDate(startDate, endDate),
                 orSearch(suNameList, ipNameList)
             )
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
             .orderBy(ntsTax.createdAt.desc())
-            .fetch();;
+            .fetch();
 
-        return results.stream()
-                .map(GetHometaxResponseDTO::from)
-                .collect(Collectors.toList());
+        long total = Optional.ofNullable(
+                jpaQueryFactory
+                        .select(ntsTax.count())
+                        .from(ntsTax)
+                        .where(
+                                ntsTax.member.eq(member),
+                                ntsTax.status.ne(Status.WAITING),
+                                betweenIssueDate(startDate, endDate),
+                                orSearch(suNameList, ipNameList)
+                        )
+                        .fetchOne()
+        ).orElse(0L);
+
+        return null;
     }
 
     @Override
