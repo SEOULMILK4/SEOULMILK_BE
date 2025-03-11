@@ -73,8 +73,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
             pageable);
 
         // 전체 일치, 불일치 건 수 조회
-        Long successCnt = ntsTaxRepository.countByStatusThisMonth(Status.APPROVAL);
-        Long failedCnt = ntsTaxRepository.countByStatusThisMonth(Status.REJECTION);
+        Long successCnt = ntsTaxRepository.countByMemberAndStatusThisMonth(member, Status.APPROVAL);
+        Long failedCnt = ntsTaxRepository.countByMemberAndStatusThisMonth(member, Status.REJECTION);
 
         return GetHometaxResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
@@ -99,8 +99,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         }
 
         // 전체 일치, 불일치 건 수 조회
-        Long successCnt = ntsTaxRepository.countByStatus(Status.APPROVAL);
-        Long failedCnt = ntsTaxRepository.countByStatus(Status.REJECTION);
+        Long successCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(), Status.APPROVAL);
+        Long failedCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(), Status.REJECTION);
 
         return GetHometaxResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
