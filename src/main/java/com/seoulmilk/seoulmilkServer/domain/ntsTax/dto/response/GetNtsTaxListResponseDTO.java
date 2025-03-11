@@ -72,6 +72,7 @@ public class GetNtsTaxListResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SearchNtsTaxListResponseDTO {
+
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;
@@ -83,6 +84,7 @@ public class GetNtsTaxListResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NtsTaxListResponseDTO {
+
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;
@@ -92,48 +94,56 @@ public class GetNtsTaxListResponseDTO {
 
     public static GetNtsTaxListResponseDTO from(NtsTax ntsTax) {
         return GetNtsTaxListResponseDTO.builder()
-                .isSuccess(ntsTax.getIsSuccess())
-                .AR(ARAP.AR)
-                .ntsTaxId(ntsTax.getId())
-                .issueId(ntsTax.getIssueId())
-                .issueDate(ntsTax.getIssueDate())
-                .suId(ntsTax.getSuId())
-                .suName(ntsTax.getSuName())
-                .ipId(ntsTax.getIpId())
-                .ipName(ntsTax.getIpName())
-                .grandTotal(ntsTax.getGrandTotal())
-                .chargeTotal(ntsTax.getChargeTotal())
-                .taxTotal(ntsTax.getTaxTotal())
-                .status(ntsTax.getStatus())
-                .createdAt(ntsTax.getCreatedAt().toLocalDate())
-                .createdTime(ntsTax.getCreatedAt().toLocalTime())
-                .build();
+            .isSuccess(ntsTax.getIsSuccess())
+            .AR(ARAP.AR)
+            .ntsTaxId((ntsTax.getId()))
+            .issueId(removeSpace(ntsTax.getIssueId()))
+            .issueDate(ntsTax.getIssueDate())
+            .suId(removeSpace(ntsTax.getSuId()))
+            .suName(removeSpace(ntsTax.getSuName()))
+            .ipId(removeSpace(ntsTax.getIpId()))
+            .ipName(removeSpace(ntsTax.getIpName()))
+            .grandTotal(removeSpace(ntsTax.getGrandTotal()))
+            .chargeTotal(removeSpace(ntsTax.getChargeTotal()))
+            .taxTotal(removeSpace(ntsTax.getTaxTotal()))
+            .status(ntsTax.getStatus())
+            .createdAt(ntsTax.getCreatedAt().toLocalDate())
+            .createdTime(ntsTax.getCreatedAt().toLocalTime())
+            .build();
     }
 
-    public static NtsTaxListResponseDTO of(Page<NtsTax> ntsTaxList, Long successCnt, Long failedCnt) {
+    private static String removeSpace(String value) {
+        if (value == null || value.chars().allMatch(Character::isWhitespace)) {
+            return "";
+        }
+        return value.trim().replaceAll("\\s+", "");
+    }
+
+    public static NtsTaxListResponseDTO of(Page<NtsTax> ntsTaxList, Long successCnt,
+        Long failedCnt) {
         List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
-                .map(GetNtsTaxListResponseDTO::from)
-                .collect(Collectors.toList());
+            .map(GetNtsTaxListResponseDTO::from)
+            .collect(Collectors.toList());
 
         return NtsTaxListResponseDTO.builder()
-                .ntsTaxList(getNtsTaxList)
-                .listSize(getNtsTaxList.size())
-                .totalPage(ntsTaxList.getTotalPages())
-                .successElements(successCnt)
-                .failedElements(failedCnt)
-                .build();
+            .ntsTaxList(getNtsTaxList)
+            .listSize(getNtsTaxList.size())
+            .totalPage(ntsTaxList.getTotalPages())
+            .successElements(successCnt)
+            .failedElements(failedCnt)
+            .build();
     }
 
     public static SearchNtsTaxListResponseDTO from(Page<NtsTax> ntsTaxList) {
         List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
-                .map(GetNtsTaxListResponseDTO::from)
-                .collect(Collectors.toList());
+            .map(GetNtsTaxListResponseDTO::from)
+            .collect(Collectors.toList());
 
         return SearchNtsTaxListResponseDTO.builder()
-                .ntsTaxList(getNtsTaxList)
-                .listSize(getNtsTaxList.size())
-                .totalPage(ntsTaxList.getTotalPages())
-                .totalElements(ntsTaxList.getTotalElements())
-                .build();
+            .ntsTaxList(getNtsTaxList)
+            .listSize(getNtsTaxList.size())
+            .totalPage(ntsTaxList.getTotalPages())
+            .totalElements(ntsTaxList.getTotalElements())
+            .build();
     }
 }
