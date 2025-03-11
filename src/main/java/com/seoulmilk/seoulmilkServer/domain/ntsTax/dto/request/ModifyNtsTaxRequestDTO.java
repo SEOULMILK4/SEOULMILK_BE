@@ -33,6 +33,4 @@ public class ModifyNtsTaxRequestDTO {
 
     @Schema(description = "합계금액", example = "26,323,542")
     private String grandTotal;
-
-
 }

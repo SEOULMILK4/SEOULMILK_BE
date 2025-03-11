@@ -17,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,14 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
         // 담당 대리점일 경우에만 수정 가능
         if (!ntsTax.getAgency().equals(agency)) {
             throw new BusinessException(ErrorCode.NTS_TAX_UPDATE_UNAUTHORIZED);
+        }
+
+        // 하나라도 형식에 맞지 않을 경우, 오류 발생
+        if (!isInValidIssueId(request.getIssueId()) ||
+            !isInValidSuId(request.getSuId()) ||
+            !isInValidIpId(request.getIpId()) ||
+            !isInValidDate(request.getIssueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
+            throw new BusinessException(ErrorCode.NTS_TAX_MOT_MODIFIED);
         }
 
         ntsTax.updateNtsTax(
@@ -130,5 +141,27 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
             s3Service.deleteFile(ntsTax.getImageUrl());
         }
         ntsTaxRepository.deleteAll(ntsTaxes);
+    }
+
+    private boolean isInValidIssueId(String issueId) {
+        return issueId.matches("\\d{8}-\\d{8}-\\d{8}");
+    }
+
+    private boolean isInValidSuId(String suId) {
+        return suId.matches("\\d{3}-\\d{2}-\\d{5}");
+    }
+
+    private boolean isInValidIpId(String ipId) {
+        return ipId.matches("\\d{3}-\\d{2}-\\d{5}");
+    }
+
+    private boolean isInValidDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate.parse(date, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 }
