@@ -75,6 +75,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
             .selectFrom(ntsTax)
             .where(
                 ntsTax.member.eq(member),
+                ntsTax.status.ne(Status.WAITING),
                 betweenIssueDate(startDate, endDate),
                 orSearch(suNameList, ipNameList)
             )
@@ -136,6 +137,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
             .selectFrom(ntsTax)
             .where(
                 ntsTax.member.eq(member),
+                ntsTax.status.ne(Status.WAITING),
                 ntsTax.in(ntsTaxList),
                 betweenIssueDate(startDate, endDate),
                 orSearch(suNameList, ipNameList)
