@@ -11,11 +11,12 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class UpdateNtsTaxResponseDTO {
+public class ModifyNtsTaxResponseDTO {
 
     @Schema(description = "OCR 성공/실패 여부", example = "SUCCESS")
     private IsSuccess isSuccess;
@@ -23,8 +24,8 @@ public class UpdateNtsTaxResponseDTO {
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
 
-    @Schema(description = "세금 계산서 작성일자", example = "2025-02-01")
-    private LocalDate issueDate;
+    @Schema(description = "세금 계산서 작성일자", example = "2025.02.01")
+    private String issueDate;
 
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
     private String suId;
@@ -50,20 +51,20 @@ public class UpdateNtsTaxResponseDTO {
     @Schema(description = "총 세액", example = "305,000")
     private String taxTotal;
 
-    @Schema(description = "생성일")
-    private LocalDate createdAt;
+    @Schema(description = "생성일", example = "2025.02.22")
+    private String createdDate;
 
-    @Schema(description = "생성시간")
-    private LocalTime createdTime;
+    @Schema(description = "생성시간", example = "13:00:55")
+    private String createdTime;
 
     @Schema(description = "수정일")
     private LocalDateTime updatedAt;
 
-    public static UpdateNtsTaxResponseDTO from(NtsTax ntsTax) {
-        return UpdateNtsTaxResponseDTO.builder()
+    public static ModifyNtsTaxResponseDTO from(NtsTax ntsTax) {
+        return ModifyNtsTaxResponseDTO.builder()
                 .isSuccess(IsSuccess.SUCCESS)
                 .issueId(ntsTax.getIssueId())
-                .issueDate(ntsTax.getIssueDate())
+                .issueDate(ntsTax.getIssueDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
                 .suId(ntsTax.getSuId())
                 .suName(ntsTax.getSuName())
                 .ipId(ntsTax.getIpId())
@@ -72,8 +73,10 @@ public class UpdateNtsTaxResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
-                .createdAt(ntsTax.getCreatedAt().toLocalDate())
-                .createdTime(ntsTax.getCreatedAt().toLocalTime())
+                .createdDate(ntsTax.getCreatedAt().toLocalDate()
+                        .format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
+                .createdTime(
+                        ntsTax.getCreatedAt().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

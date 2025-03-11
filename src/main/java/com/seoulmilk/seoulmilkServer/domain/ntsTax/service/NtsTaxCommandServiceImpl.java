@@ -7,7 +7,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.repository.NtsTaxRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
 import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
@@ -33,7 +33,7 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
 
     @Override
     @Transactional
-    public UpdateNtsTaxResponseDTO updateNtsTax(Agency agency, Long ntsTaxId, UpdateNtsTaxRequestDTO request) {
+    public ModifyNtsTaxResponseDTO updateNtsTax(Agency agency, Long ntsTaxId, UpdateNtsTaxRequestDTO request) {
         NtsTax ntsTax = ntsTaxRepository.findById(ntsTaxId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NTS_TAX_NOT_FOUND));
 
@@ -63,7 +63,7 @@ public class NtsTaxCommandServiceImpl implements NtsTaxCommandService {
                 request.getGrandTotal()
         );
 
-        return UpdateNtsTaxResponseDTO.from(ntsTax);
+        return ModifyNtsTaxResponseDTO.from(ntsTax);
     }
 
     @Override

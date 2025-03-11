@@ -9,7 +9,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxReque
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetOcrNtsTaxListResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.UpdateNtsTaxResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtxTaxMappingService;
@@ -55,7 +55,7 @@ public class AgencyController {
 
     @Operation(summary = "대리점 - 세금 계산서 수정")
     @PutMapping("/nts-tax/{nts_tax_id}")
-    public ApiResponse<UpdateNtsTaxResponseDTO> updateNtsTax(
+    public ApiResponse<ModifyNtsTaxResponseDTO> updateNtsTax(
         @RequestBody UpdateNtsTaxRequestDTO request,
         @PathVariable("nts_tax_id") Long nts_tax_id) {
 

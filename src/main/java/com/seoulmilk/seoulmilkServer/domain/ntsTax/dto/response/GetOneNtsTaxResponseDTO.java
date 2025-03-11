@@ -51,7 +51,7 @@ public class GetOneNtsTaxResponseDTO {
     @Schema(description = "생성일", example = "2025.02.22")
     private final String createdDate;
 
-    @Schema(description = "생성시간", example = "13:00")
+    @Schema(description = "생성시간", example = "13:00:55")
     private final String createdTime;
 
     @Schema(description = "이미지", example = "https://nts-tax.s3.ap-northeast-2.amazonaws.com/ocr-uploads/c6f3ce15-a08d-4c40-8c63-e52f05a9c058.pdf")
@@ -74,7 +74,7 @@ public class GetOneNtsTaxResponseDTO {
             .createdDate(ntsTax.getCreatedAt().toLocalDate()
                 .format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
             .createdTime(
-                ntsTax.getCreatedAt().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")))
+                ntsTax.getCreatedAt().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
             .imageUrl(ntsTax.getImageUrl())
             .build();
 
