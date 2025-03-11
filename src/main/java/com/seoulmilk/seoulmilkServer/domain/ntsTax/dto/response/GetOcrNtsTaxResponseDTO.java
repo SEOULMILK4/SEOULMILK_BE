@@ -81,19 +81,23 @@ public class GetOcrNtsTaxResponseDTO {
                 .agencyId(agency.getId())
                 .status(ntsTax.getStatus())
                 .ntsTaxId(ntsTax.getId())
-                .issueId(ntsTax.getIssueId())
+                .issueId(convertToNull(ntsTax.getIssueId()))
                 .issueDate(ntsTax.getIssueDate())
-                .suId(ntsTax.getSuId())
-                .suName(ntsTax.getSuName())
-                .ipId(ntsTax.getIpId())
-                .ipName(ntsTax.getIpName())
-                .grandTotal(ntsTax.getGrandTotal())
-                .chargeTotal(ntsTax.getChargeTotal())
-                .taxTotal(ntsTax.getTaxTotal())
+                .suId(convertToNull(ntsTax.getSuId()))
+                .suName(convertToNull(ntsTax.getSuName()))
+                .ipId(convertToNull(ntsTax.getIpId()))
+                .ipName(convertToNull(ntsTax.getIpName()))
+                .grandTotal(convertToNull(ntsTax.getGrandTotal()))
+                .chargeTotal(convertToNull(ntsTax.getChargeTotal()))
+                .taxTotal(convertToNull(ntsTax.getTaxTotal()))
                 .createdAt(ntsTax.getCreatedAt().toLocalDate())
                 .createdTime(ntsTax.getCreatedAt().toLocalTime())
-                .imageUrl(ntsTax.getImageUrl())
-                .fileName(ntsTax.getFileName())
+                .imageUrl(convertToNull(ntsTax.getImageUrl()))
+                .fileName(convertToNull(ntsTax.getFileName()))
                 .build();
+    }
+
+    private static String convertToNull(String value) {
+        return (value == null || value.trim().isEmpty()) ? "" : value;
     }
 }
