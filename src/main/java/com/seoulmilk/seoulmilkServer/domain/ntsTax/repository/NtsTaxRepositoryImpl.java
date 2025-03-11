@@ -9,6 +9,7 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
@@ -41,8 +42,6 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 inIpNames(ipNameList)
             )
             .orderBy(ntsTax.createdAt.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
             .fetch();
 
         long total = Optional.ofNullable(
@@ -69,11 +68,8 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     @Override
-    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, LocalDate startDate,
-        LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
-        if (pageable == null) {
-            pageable = PageRequest.of(0, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
-        }
+    public List<GetHometaxResponseDTO> searchHometaxList(Member member, LocalDate startDate,
+                                                         LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
 
         List<NtsTax> results = jpaQueryFactory
             .selectFrom(ntsTax)
@@ -83,23 +79,11 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
                 orSearch(suNameList, ipNameList)
             )
             .orderBy(ntsTax.createdAt.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
+            .fetch();;
 
-        long total = Optional.ofNullable(
-            jpaQueryFactory
-                .select(ntsTax.count())
-                .from(ntsTax)
-                .where(
-                    ntsTax.member.eq(member),
-                    betweenIssueDate(startDate, endDate),
-                    orSearch(suNameList, ipNameList)
-                )
-                .fetchOne()
-        ).orElse(0L);
-
-        return new PageImpl<>(results, pageable, total);
+        return results.stream()
+                .map(GetHometaxResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     @Override
