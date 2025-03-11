@@ -4,8 +4,10 @@ package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxCommandService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final NtsTaxQueryService ntsTaxQueryService;
+    private final NtsTaxCommandService ntsTaxCommandService;
     private final AdminAuthService adminAuthService;
 
     @Operation(summary = "세금 계산서 통합 조회")
@@ -37,7 +42,6 @@ public class AdminController {
 
         return ApiResponse.success(ntsTaxQueryService.getNtsTaxListByStatusByAdmin(page, status));
 
-//        return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
     }
 
     @Operation(summary = "세금계산서 통합 조회 - 검색")
@@ -55,20 +59,32 @@ public class AdminController {
         return ApiResponse.success(ntsTaxQueryService.getNtsTaxListByAdmin(page, status, startDate,
             endDate, suNameList, ipNameList));
 
-//        return ApiResponse.success(GetNtsTaxListResponseDTO.of(ntsTaxList));
     }
 
     @Operation(summary = "세금 계산서 csv 추출")
     @GetMapping("/nts-tax/csv")
     public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
-            @RequestParam(required = false) LocalDate startMonth,
-            @RequestParam(required = false) LocalDate endMonth,
-            @RequestParam(required = false) List<String> suNameList,
-            @RequestParam(required = false) List<String> ipNameList,
-            @RequestParam(required = false) Status status) {
+        @RequestParam(required = false) LocalDate startMonth,
+        @RequestParam(required = false) LocalDate endMonth,
+        @RequestParam(required = false) List<String> suNameList,
+        @RequestParam(required = false) List<String> ipNameList,
+        @RequestParam(required = false) Status status) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
-        return ApiResponse.success(ntsTaxQueryService.getHometaxCsvByAdmin(admin, startMonth, endMonth, suNameList, ipNameList, status));
+        return ApiResponse.success(
+            ntsTaxQueryService.getHometaxCsvByAdmin(admin, startMonth, endMonth, suNameList,
+                ipNameList, status));
+    }
+
+    @Operation(summary = "세금 계산서 삭제")
+    @DeleteMapping("/nts-tax")
+    public ApiResponse<String> deleteNtsTaxByAdmin(@RequestBody DeleteNtsTaxRequestDTO request){
+
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        ntsTaxCommandService.deleteAdminNtsTaxList(request);
+
+        return ApiResponse.success("세금계산서 삭제가 완료되었습니다.");
     }
 }
