@@ -10,7 +10,6 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.QNtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetHometaxResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
@@ -71,36 +70,45 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
     }
 
     @Override
-    public GetHometaxResponseDTO.GetHometaxListResponseDTO searchHometaxList(Member member, Pageable pageable, LocalDate startDate,
-                                                         LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+    public Page<NtsTax> searchHometaxList(Member member, Pageable pageable, Status status, LocalDate startDate,
+                                          LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(ntsTax.member.eq(member));
+        builder.and(betweenIssueDate(startDate, endDate));
+        builder.and(orSearch(suNameList, ipNameList));
+
+        if (status == null) {
+            builder.and(ntsTax.status.ne(Status.WAITING));
+        } else {
+            builder.and(ntsTax.status.eq(status));
+        }
+
+        if (suNameList != null && !suNameList.isEmpty()) {
+            builder.and(ntsTax.suName.in(suNameList));
+        }
+        if (ipNameList != null && !ipNameList.isEmpty()) {
+            builder.and(ntsTax.ipName.in(ipNameList));
+        }
 
         List<NtsTax> results = jpaQueryFactory
-            .selectFrom(ntsTax)
-            .where(
-                ntsTax.member.eq(member),
-                ntsTax.status.ne(Status.WAITING),
-                betweenIssueDate(startDate, endDate),
-                orSearch(suNameList, ipNameList)
-            )
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .orderBy(ntsTax.createdAt.desc())
-            .fetch();
+                .selectFrom(ntsTax)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(ntsTax.createdAt.desc())
+                .fetch();
 
         long total = Optional.ofNullable(
                 jpaQueryFactory
                         .select(ntsTax.count())
                         .from(ntsTax)
-                        .where(
-                                ntsTax.member.eq(member),
-                                ntsTax.status.ne(Status.WAITING),
-                                betweenIssueDate(startDate, endDate),
-                                orSearch(suNameList, ipNameList)
-                        )
+                        .where(builder)
                         .fetchOne()
         ).orElse(0L);
 
-        return null;
+        return new PageImpl<>(results, pageable, total);
     }
 
     @Override

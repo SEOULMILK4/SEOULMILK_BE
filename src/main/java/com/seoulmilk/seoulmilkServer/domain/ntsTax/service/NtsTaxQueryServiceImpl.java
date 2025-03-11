@@ -167,12 +167,24 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetHometaxResponseDTO.GetHometaxListResponseDTO searchHometaxList(Member member, Integer page, LocalDate startDate,
-        LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
-        Pageable pageable = PageRequest.of(page, 13);
+    public GetHometaxResponseDTO.SearchHometaxListResponseDTO searchHometaxList(Member member, Integer page,
+        Status status, LocalDate startDate, LocalDate endDate, List<String> suNameList, List<String> ipNameList) {
+        Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return ntsTaxRepository.searchHometaxList(member, pageable, startDate, endDate, suNameList,
-            ipNameList);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.searchHometaxList(
+                member, pageable, status, startDate, endDate, suNameList, ipNameList
+        );
+        long approvedCnt = ntsTaxPage.getContent()
+                .stream()
+                .filter(tax -> tax.getStatus() == Status.APPROVAL)
+                .count();
+
+        long rejectedCnt = ntsTaxPage.getContent()
+                .stream()
+                .filter(tax -> tax.getStatus() == Status.REJECTION)
+                .count();
+
+        return GetHometaxResponseDTO.ofSearch(ntsTaxPage, approvedCnt, rejectedCnt);
     }
 
     public GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member) {
