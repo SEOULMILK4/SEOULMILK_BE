@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
+import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
@@ -250,5 +251,25 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
         return ntsTaxRepository.getHometaxCsv(member, startDate, endDate, suNameList, ipNameList,
             ntsTaxList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GetCsvResponseDTO> getHometaxCsvByAdmin(Admin admin, LocalDate startDate, LocalDate endDate,
+                                                        List<String> suNameList, List<String> ipNameList, Status status) {
+        if (status == Status.WAITING) {
+            throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
+        }
+        List<NtsTax> ntsTaxList;
+
+        if (status == null) {
+            List<Status> validStatuses = Arrays.asList(Status.APPROVAL, Status.REJECTION);
+            ntsTaxList = ntsTaxRepository.findByStatusIn(validStatuses);
+        } else {
+            ntsTaxList = ntsTaxRepository.findByStatus(status);
+        }
+
+        return ntsTaxRepository.getHometaxCsvByAdmin(admin, startDate, endDate, suNameList, ipNameList,
+                ntsTaxList);
     }
 }

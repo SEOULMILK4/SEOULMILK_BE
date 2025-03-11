@@ -4,6 +4,7 @@ package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.service.NtsTaxQueryService;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
@@ -57,5 +58,17 @@ public class AdminController {
 //        return ApiResponse.success(GetNtsTaxListResponseDTO.of(ntsTaxList));
     }
 
+    @Operation(summary = "세금 계산서 csv 추출")
+    @GetMapping("/nts-tax/csv")
+    public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
+            @RequestParam(required = false) LocalDate startMonth,
+            @RequestParam(required = false) LocalDate endMonth,
+            @RequestParam(required = false) List<String> suNameList,
+            @RequestParam(required = false) List<String> ipNameList,
+            @RequestParam(required = false) Status status) {
 
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxCsvByAdmin(admin, startMonth, endMonth, suNameList, ipNameList, status));
+    }
 }

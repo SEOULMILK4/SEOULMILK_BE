@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
@@ -148,6 +149,26 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         return results.stream()
             .map(GetCsvResponseDTO::from)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GetCsvResponseDTO> getHometaxCsvByAdmin(Admin admin, LocalDate startDate,
+                                                        LocalDate endDate, List<String> suNameList, List<String> ipNameList,
+                                                        List<NtsTax> ntsTaxList) {
+        List<NtsTax> results = jpaQueryFactory
+                .selectFrom(ntsTax)
+                .where(
+                        ntsTax.status.ne(Status.WAITING),
+                        ntsTax.in(ntsTaxList),
+                        betweenIssueDate(startDate, endDate),
+                        orSearch(suNameList, ipNameList)
+                )
+                .orderBy(ntsTax.createdAt.desc())
+                .fetch();
+
+        return results.stream()
+                .map(GetCsvResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     private BooleanExpression betweenIssueDate(LocalDate startDate, LocalDate endDate) {
