@@ -1,5 +1,6 @@
 package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 
+import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
@@ -57,27 +58,52 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> getNtsTaxListByStatusByAdmin(Integer page,
+    public GetNtsTaxListResponseDTO.SearchNtsTaxListByAdminResponseDTO getNtsTaxListByStatusByAdmin(
+        Integer page,
         Status status) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
+        Long totalCnt = ntsTaxRepository.countAll();
+        Long approvedCnt = ntsTaxRepository.countByStatus(Status.APPROVAL);
+        Long rejectedCnt = ntsTaxRepository.countByStatus(Status.REJECTION);
+
+        Page<NtsTax> ntsTaxPage;
+
         if (status == null) {
-            return ntsTaxRepository.findAll(pageable);
+            ntsTaxPage = ntsTaxRepository.findAll(pageable);
         } else {
-            return ntsTaxRepository.findByStatus(status, pageable);
+            ntsTaxPage = ntsTaxRepository.findByStatus(status, pageable);
         }
+
+        return GetNtsTaxListResponseDTO.of(ntsTaxPage, totalCnt, approvedCnt, rejectedCnt);
+
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NtsTax> getNtsTaxListByAdmin(Integer page,
+    public GetNtsTaxListResponseDTO.SearchNtsTaxListByAdminResponseDTO getNtsTaxListByAdmin(
+        Integer page,
         Status status, LocalDate startDate, LocalDate endDate, List<String> suNameList,
         List<String> ipNameList) {
-
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return ntsTaxRepository.searchHometaxListByAdmin(pageable, status,
-            startDate, endDate, suNameList, ipNameList);
+        Page<NtsTax> ntsTaxPage = ntsTaxRepository.searchHometaxListByAdmin(
+            pageable, status, startDate, endDate, suNameList, ipNameList
+        );
+
+        long totalCnt = ntsTaxPage.getTotalElements();
+
+        long approvedCnt = ntsTaxPage.getContent()
+            .stream()
+            .filter(tax -> tax.getStatus() == Status.APPROVAL)
+            .count();
+
+        long rejectedCnt = ntsTaxPage.getContent()
+            .stream()
+            .filter(tax -> tax.getStatus() == Status.REJECTION)
+            .count();
+
+        return GetNtsTaxListResponseDTO.of(ntsTaxPage, totalCnt, approvedCnt, rejectedCnt);
 
     }
 
@@ -131,8 +157,10 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         }
 
         // 전체 일치, 불일치 건 수 조회
-        Long successCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(), Status.APPROVAL);
-        Long failedCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(), Status.REJECTION);
+        Long successCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(),
+            Status.APPROVAL);
+        Long failedCnt = ntsTaxRepository.countByMemberIdAndStatus(member.getId(),
+            Status.REJECTION);
 
         return GetHometaxResponseDTO.of(ntsTaxPage, successCnt, failedCnt);
     }
@@ -224,5 +252,25 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
         return ntsTaxRepository.getHometaxCsv(member, startDate, endDate, suNameList, ipNameList,
             ntsTaxList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GetCsvResponseDTO> getHometaxCsvByAdmin(Admin admin, LocalDate startDate, LocalDate endDate,
+                                                        List<String> suNameList, List<String> ipNameList, Status status) {
+        if (status == Status.WAITING) {
+            throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
+        }
+        List<NtsTax> ntsTaxList;
+
+        if (status == null) {
+            List<Status> validStatuses = Arrays.asList(Status.APPROVAL, Status.REJECTION);
+            ntsTaxList = ntsTaxRepository.findByStatusIn(validStatuses);
+        } else {
+            ntsTaxList = ntsTaxRepository.findByStatus(status);
+        }
+
+        return ntsTaxRepository.getHometaxCsvByAdmin(admin, startDate, endDate, suNameList, ipNameList,
+                ntsTaxList);
     }
 }

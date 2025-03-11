@@ -24,6 +24,12 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
 
     Long countByAgencyIdAndIsSuccessAndStatus(Long agencyId, IsSuccess isSuccess, Status status);
 
+    Long countByStatus(Status status);
+
+    @Query("SELECT COUNT(n) FROM NtsTax n")
+    Long countAll();
+
+
     // 본사 - 세금 계산서 이번 달 내역 조회
     @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status " +
         "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
@@ -34,10 +40,10 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
 
 
     @Query("SELECT COUNT(n) FROM NtsTax n WHERE n.member = :member AND n.status = :status " +
-           "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
-           "AND EXTRACT(MONTH FROM n.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
+        "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+        "AND EXTRACT(MONTH FROM n.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
     Long countByMemberAndStatusThisMonth(@Param("member") Member member,
-                                         @Param("status") Status status);
+        @Param("status") Status status);
 
 
     // 본사 - 세금 계산서 전체 내역 통합 조회
@@ -47,18 +53,24 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
 
     @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status ")
     Page<NtsTax> findByMemberAndStatus(@Param("member") Member member,
-                                       @Param("status") Status status,
-                                       Pageable pageable);
+        @Param("status") Status status,
+        Pageable pageable);
+
     Long countByMemberIdAndStatus(Long memberId, Status status);
 
 
     List<NtsTax> findAllByAgencyIdAndStatus(Long agencyId, Status status);
 
-    // 세금 계산서 csv 추출
-    List<NtsTax> findByMemberAndStatusIn(Member member, List<Status> statuseList);
+    // 본사 - 세금 계산서 csv 추출
+    List<NtsTax> findByMemberAndStatusIn(Member member, List<Status> statusList);
 
     @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status ")
     List<NtsTax> findByMemberAndStatus(@Param("member") Member member,
         @Param("status") Status status);
 
+    // 관리자 - 세금 계산서 csv 추출
+    List<NtsTax> findByStatusIn(List<Status> statusList);
+
+    @Query("SELECT n FROM NtsTax n WHERE n.status = :status")
+    List<NtsTax> findByStatus(@Param("status") Status status);
 }

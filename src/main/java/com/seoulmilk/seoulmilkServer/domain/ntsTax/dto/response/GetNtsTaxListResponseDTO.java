@@ -5,16 +5,15 @@ import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.ARAP;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -86,6 +85,20 @@ public class GetNtsTaxListResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class SearchNtsTaxListByAdminResponseDTO {
+
+        List<GetNtsTaxListResponseDTO> ntsTaxList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalCnt;
+        Long approvedCnt;
+        Long rejectedCnt;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class NtsTaxListResponseDTO {
 
         List<GetNtsTaxListResponseDTO> ntsTaxList;
@@ -150,4 +163,23 @@ public class GetNtsTaxListResponseDTO {
             .totalElements(ntsTaxList.getTotalElements())
             .build();
     }
+
+    public static SearchNtsTaxListByAdminResponseDTO of(Page<NtsTax> ntsTaxList, Long totalCnt,
+        Long approvedCnt, Long rejectedCnt) {
+
+        List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
+            .map(GetNtsTaxListResponseDTO::from)
+            .collect(Collectors.toList());
+
+        return SearchNtsTaxListByAdminResponseDTO.builder()
+            .ntsTaxList(getNtsTaxList)
+            .listSize(getNtsTaxList.size())
+            .totalPage(ntsTaxList.getTotalPages())
+            .totalCnt(totalCnt)
+            .approvedCnt(approvedCnt)
+            .rejectedCnt((rejectedCnt))
+            .build();
+
+    }
+
 }
