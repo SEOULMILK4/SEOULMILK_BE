@@ -1,22 +1,20 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminEmployeeService;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -29,8 +27,10 @@ public class AdminEmployeeController {
 
     @Operation(summary = "사원 목록 조회")
     @GetMapping("")
-    public ApiResponse<List<GetEmployeeWithAgencyResponseDTO>> getEmployeeList() {
-        return ApiResponse.success(adminEmployeeService.getEmployeeList());
+    public ApiResponse<GetEmployeeListResponseDTO> getEmployeeList(@RequestParam(name = "page") Integer page) {
+        Page<GetEmployeeWithAgencyResponseDTO> members = adminEmployeeService.getEmployeeList(page);
+
+        return ApiResponse.success(GetEmployeeListResponseDTO.from(members));
     }
 
     @Operation(summary = "개별 사원 조회")

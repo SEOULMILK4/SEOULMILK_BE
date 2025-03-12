@@ -13,6 +13,9 @@ import com.seoulmilk.seoulmilkServer.global.etc.MemberProperties;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +30,13 @@ public class AdminEmployeeService {
     private final PasswordEncoder encoder;
 
     @Transactional(readOnly = true)
-    public List<GetEmployeeWithAgencyResponseDTO> getEmployeeList() {
+    public Page<GetEmployeeWithAgencyResponseDTO> getEmployeeList(Integer page) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
-        List<GetEmployeeWithAgencyResponseDTO> employees = memberRepository.findAllMembersWithAgencyCount();
+        Pageable pageable = PageRequest.of(page, 13);
 
-        return employees;
+        return memberRepository.findAllMembersWithAgencyCount(pageable);
     }
 
     @Transactional(readOnly = true)
