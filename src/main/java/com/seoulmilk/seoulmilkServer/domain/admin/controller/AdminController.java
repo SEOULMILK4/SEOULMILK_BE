@@ -64,16 +64,16 @@ public class AdminController {
     @Operation(summary = "세금 계산서 csv 추출")
     @GetMapping("/nts-tax/csv")
     public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
-        @RequestParam(required = false) LocalDate startMonth,
-        @RequestParam(required = false) LocalDate endMonth,
-        @RequestParam(required = false) List<String> suNameList,
-        @RequestParam(required = false) List<String> ipNameList,
-        @RequestParam(required = false) Status status) {
+        @RequestParam(name = "startAt",required = false) LocalDate startDate,
+        @RequestParam(name = "endAt",required = false) LocalDate endDate,
+        @RequestParam(name = "suNameList",required = false) List<String> suNameList,
+        @RequestParam(name = "ipNameList",required = false) List<String> ipNameList,
+        @RequestParam(name = "status", required = false) Status status) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
         return ApiResponse.success(
-            ntsTaxQueryService.getHometaxCsvByAdmin(admin, startMonth, endMonth, suNameList,
+            ntsTaxQueryService.getHometaxCsvByAdmin(admin, startDate, endDate, suNameList,
                 ipNameList, status));
     }
 
