@@ -103,14 +103,14 @@ public class MemberController {
     public ApiResponse<GetHometaxResponseDTO.SearchHometaxListResponseDTO> searchHometaxList(
         @RequestParam(name = "page") Integer page,
         @RequestParam(name = "status", required = false) Status status,
-        @RequestParam(required = false) LocalDate startMonth,
-        @RequestParam(required = false) LocalDate endMonth,
-        @RequestParam(required = false) List<String> suNameList,
-        @RequestParam(required = false) List<String> ipNameList) {
+        @RequestParam(name = "startAt", required = false) LocalDate startDate,
+        @RequestParam(name = "endAt", required = false) LocalDate endDate,
+        @RequestParam(name = "suNameList", required = false) List<String> suNameList,
+        @RequestParam(name = "ipNameList", required = false) List<String> ipNameList) {
         Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ntsTaxQueryService.searchHometaxList(member, page,
-                status, startMonth, endMonth, suNameList, ipNameList));
+                status, startDate, endDate, suNameList, ipNameList));
     }
 
     @Operation(summary = "본사 - 세금 계산서 페이지 내 다건 삭제")
