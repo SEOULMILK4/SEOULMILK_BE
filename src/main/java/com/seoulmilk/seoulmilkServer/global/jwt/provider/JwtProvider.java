@@ -55,7 +55,6 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        System.out.println("현재 토큰:"+ token);
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(jwtDTO.getSecretKey().getBytes(
