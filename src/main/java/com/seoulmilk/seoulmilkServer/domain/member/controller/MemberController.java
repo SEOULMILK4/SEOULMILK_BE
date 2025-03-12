@@ -3,9 +3,9 @@ package com.seoulmilk.seoulmilkServer.domain.member.controller;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberAuthService;
 import com.seoulmilk.seoulmilkServer.domain.member.service.MemberService;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetCsvRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
@@ -22,7 +22,6 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,7 +64,7 @@ public class MemberController {
         @RequestParam(name = "isSuccess") Status status) {
         Member member = memberAuthService.getCurrentMember();
 
-        return ApiResponse.success(ntsTaxQueryService.getHometaxList(member, page, status));
+        return ApiResponse.success(ntsTaxQueryService.getHometaxCsvByIdList(member, page, status));
     }
 
     @Operation(summary = "세금 계산서 전체 내역 통합 조회")
@@ -78,7 +77,7 @@ public class MemberController {
         return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
     }
 
-    @Operation(summary = "세금 계산서 csv 추출")
+    @Operation(summary = "조회 조건 설정 - 세금 계산서 csv 추출")
     @GetMapping("/nts-tax/csv")
     public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
             @RequestParam(required = false) LocalDate startMonth,
@@ -89,6 +88,14 @@ public class MemberController {
         Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ntsTaxQueryService.getHometaxCsv(member, startMonth, endMonth, suNameList, ipNameList, status));
+    }
+
+    @Operation(summary = "선택한 ID - 세금 계산서 csv 추출")
+    @PostMapping("/nts-tax/csv")
+    public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsvList(@RequestBody GetCsvRequestDTO request) {
+        Member member = memberAuthService.getCurrentMember();
+
+        return ApiResponse.success(ntsTaxQueryService.getHometaxCsvByIdList(member, request));
     }
 
     @Operation(summary = "세금 계산서 내역 검색")

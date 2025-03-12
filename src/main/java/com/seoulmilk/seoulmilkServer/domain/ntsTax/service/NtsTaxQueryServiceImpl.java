@@ -121,8 +121,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member,
-        Integer page, Status status) {
+    public GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxCsvByIdList(Member member,
+                                                                                 Integer page, Status status) {
         if (status.equals(Status.WAITING)) {
             throw new BusinessException(ErrorCode.WAITING_NOT_SELECTED);
         }
@@ -266,6 +266,16 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
         return ntsTaxRepository.getHometaxCsv(member, startDate, endDate, suNameList, ipNameList,
             ntsTaxList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GetCsvResponseDTO> getHometaxCsvByIdList(Member member, GetCsvRequestDTO request) {
+        List<NtsTax> ntsTaxList = ntsTaxRepository.findAllByMemberIdAndIdIn(member.getId(), request.getNtsTaxId());
+
+        return ntsTaxList.stream()
+                .map(GetCsvResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     @Override
