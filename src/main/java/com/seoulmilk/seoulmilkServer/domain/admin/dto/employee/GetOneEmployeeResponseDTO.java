@@ -1,7 +1,9 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.dto.employee;
 
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,13 +26,20 @@ public class GetOneEmployeeResponseDTO {
     @Schema(description = "이메일", example = "milksago@gmail.com")
     private final String email;
 
-    public static GetOneEmployeeResponseDTO from(Member member) {
+    @Schema(description = "담당 대리점 목록")
+    private final List<GetOneAgencyByEmployeeResponseDTO> agencies;
+
+
+    public static GetOneEmployeeResponseDTO from(Member member,List<GetOneAgencyByEmployeeResponseDTO> agencies) {
         return GetOneEmployeeResponseDTO.builder()
             .id(member.getId())
             .name(member.getName())
             .employeeNum(member.getEmployeeNum())
             .email(member.getEmail())
+            .agencies(agencies)
             .build();
     }
+
+
 
 }
