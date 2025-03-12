@@ -6,6 +6,7 @@ import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetCsvRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
@@ -20,6 +21,7 @@ import com.seoulmilk.seoulmilkServer.global.error.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -284,5 +286,17 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
 
         return ntsTaxRepository.getHometaxCsvByAdmin(admin, startDate, endDate, suNameList, ipNameList,
                 ntsTaxList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GetCsvResponseDTO> getHometaxCsvByIdList(GetCsvRequestDTO ntsTaxIdList){
+
+        List<NtsTax> list =  ntsTaxRepository.findAllById(ntsTaxIdList.getNtsTaxId());
+
+        return list.stream()
+            .map(GetCsvResponseDTO::from)
+            .collect(Collectors.toList());
+
     }
 }
