@@ -90,9 +90,9 @@ public class GetNtsTaxListResponseDTO {
         List<GetNtsTaxListResponseDTO> ntsTaxList;
         Integer listSize;
         Integer totalPage;
-        Long totalCnt;
-        Long approvedCnt;
-        Long rejectedCnt;
+        Long totalElements;
+        Long successElements;
+        Long failedElements;
     }
 
     @Getter
@@ -164,8 +164,8 @@ public class GetNtsTaxListResponseDTO {
             .build();
     }
 
-    public static SearchNtsTaxListByAdminResponseDTO of(Page<NtsTax> ntsTaxList, Long totalCnt,
-        Long approvedCnt, Long rejectedCnt) {
+    public static SearchNtsTaxListByAdminResponseDTO of(Page<NtsTax> ntsTaxList, Long totalElements,
+        Long successElements, Long failedElements) {
 
         List<GetNtsTaxListResponseDTO> getNtsTaxList = ntsTaxList.stream()
             .map(GetNtsTaxListResponseDTO::from)
@@ -175,11 +175,10 @@ public class GetNtsTaxListResponseDTO {
             .ntsTaxList(getNtsTaxList)
             .listSize(getNtsTaxList.size())
             .totalPage(ntsTaxList.getTotalPages())
-            .totalCnt(totalCnt)
-            .approvedCnt(approvedCnt)
-            .rejectedCnt((rejectedCnt))
+            .totalElements(totalElements)
+            .successElements(successElements)
+            .failedElements(failedElements)
             .build();
 
     }
-
 }

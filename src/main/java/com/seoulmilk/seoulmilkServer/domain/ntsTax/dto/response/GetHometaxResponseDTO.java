@@ -103,8 +103,8 @@ public class GetHometaxResponseDTO {
         List<GetHometaxResponseDTO> hometaxList;
         Integer listSize;
         Integer totalPage;
-        Long approvedElements;
-        Long rejectedElements;
+        Long successElements;
+        Long failedElements;
         Long totalElements;
     }
 
@@ -136,7 +136,7 @@ public class GetHometaxResponseDTO {
                 .build();
     }
 
-    public static SearchHometaxListResponseDTO ofSearch(Page<NtsTax> hometaxList, Long approvedCnt, Long rejectedCnt) {
+    public static SearchHometaxListResponseDTO ofSearch(Page<NtsTax> hometaxList, Long successCnt, Long failedCnt) {
         List<GetHometaxResponseDTO> searchHometaxList = hometaxList.stream()
                 .map(GetHometaxResponseDTO::from)
                 .collect(Collectors.toList());
@@ -145,9 +145,9 @@ public class GetHometaxResponseDTO {
                 .hometaxList(searchHometaxList)
                 .listSize(searchHometaxList.size())
                 .totalPage(hometaxList.getTotalPages())
-                .approvedElements(approvedCnt)
-                .rejectedElements(rejectedCnt)
-                .totalElements(approvedCnt + rejectedCnt)
+                .successElements(successCnt)
+                .failedElements(failedCnt)
+                .totalElements(successCnt + failedCnt)
                 .build();
     }
 }
