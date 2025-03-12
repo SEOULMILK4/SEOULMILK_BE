@@ -72,6 +72,7 @@ public class AdminEmployeeService {
         List<PostEmployeeRequestDTO> employees) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
+        System.out.println("초기비번"+memberProperties.getDefaultPassword());
         String encodePassword = encoder.encode(memberProperties.getDefaultPassword());
 
         List<Member> newEmployees = employees.stream()

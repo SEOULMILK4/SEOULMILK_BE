@@ -18,8 +18,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetCsvResponseDTO {
-    @Schema(description = "세금 계산서 ID", example = "1")
-    private Long ntsTaxId;
 
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     @JsonProperty("승인번호")
@@ -62,20 +60,11 @@ public class GetCsvResponseDTO {
     private ARAP ar;
 
     @Schema(description = "승인상태")
-    @JsonProperty("승인 상태")
-    private Status status;
-
-    @Schema(description = "생성일")
-    @JsonProperty("생성일")
-    private LocalDate createdAt;
-
-    @Schema(description = "생성시간")
-    @JsonProperty("생성 시간")
-    private LocalTime createdTime;
+    @JsonProperty("검증 결과")
+    private String status;
 
     public static GetCsvResponseDTO from(NtsTax ntsTax) {
         return GetCsvResponseDTO.builder()
-                .ntsTaxId(ntsTax.getId())
                 .ar(ntsTax.getARAP())
                 .issueId(ntsTax.getIssueId())
                 .issueDate(ntsTax.getIssueDate())
@@ -86,9 +75,7 @@ public class GetCsvResponseDTO {
                 .grandTotal(ntsTax.getGrandTotal())
                 .chargeTotal(ntsTax.getChargeTotal())
                 .taxTotal(ntsTax.getTaxTotal())
-                .status(ntsTax.getStatus())
-                .createdAt(ntsTax.getCreatedAt().toLocalDate())
-                .createdTime(ntsTax.getCreatedAt().toLocalTime())
+                .status(ntsTax.getStatus().getName())
                 .build();
     }
 }
