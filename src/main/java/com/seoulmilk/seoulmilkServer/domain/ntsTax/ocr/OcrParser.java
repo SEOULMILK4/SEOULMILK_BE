@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Slf4j
@@ -66,6 +67,21 @@ public class OcrParser {
                     case "합계금액" -> extractedData.put("합계금액", normalizedText);
                 }
             }
+            boolean isValid = extractedData.containsKey("승인번호") && !extractedData.get("승인번호").isBlank()
+                    && extractedData.containsKey("발행일자") && !extractedData.get("발행일자").isBlank()
+                    && extractedData.containsKey("공급자 등록번호") && !extractedData.get("공급자 등록번호").isBlank()
+                    && extractedData.containsKey("공급받는자 등록번호") && !extractedData.get("공급받는자 등록번호").isBlank();
+
+            if (!isValid) {
+                return null; // 필수 필드 하나라도 누락 시, 실패 처리
+            }
+
+            LocalDate issueDate;
+            try {
+                issueDate = LocalDate.parse(extractedData.get("발행일자"));
+            } catch (DateTimeParseException e) {
+                issueDate = LocalDate.now(); // 날짜 형식이 누락 시, 현재 시간 = 기본 값
+            }
 
             return NtsTax.builder()
                     .isSuccess(IsSuccess.SUCCESS)
@@ -74,7 +90,7 @@ public class OcrParser {
                     .agency(agency)
                     .member(agency.getMember())
                     .issueId(extractedData.getOrDefault("승인번호", " "))
-                    .issueDate(extractedData.containsKey("발행일자") ? LocalDate.parse(extractedData.get("발행일자")) : LocalDate.now())
+                    .issueDate(issueDate)
                     .suId(extractedData.getOrDefault("공급자 등록번호", " "))
                     .suName(extractedData.getOrDefault("공급자 사업체명", " "))
                     .ipId(extractedData.getOrDefault("공급받는자 등록번호", " "))

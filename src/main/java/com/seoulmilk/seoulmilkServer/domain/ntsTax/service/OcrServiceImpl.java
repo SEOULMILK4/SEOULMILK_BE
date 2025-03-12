@@ -109,7 +109,7 @@ public class OcrServiceImpl implements OcrService{
                         break;
                     }
                 }
-                if (ntsTax == null || isInvalidNtsTax(ntsTax)) {
+                if (ntsTax == null) {
                     ntsTax = NtsTax.builder()
                             .isSuccess(IsSuccess.FAILED)
                             .imageUrl(imageUrl)
@@ -128,11 +128,29 @@ public class OcrServiceImpl implements OcrService{
                             .member(agency.getMember())
                             .agency(agency)
                             .build();
+                } else {
+                    ntsTax = NtsTax.builder()
+                            .isSuccess(isInvalidNtsTax(ntsTax) ? IsSuccess.FAILED : IsSuccess.SUCCESS)
+                            .imageUrl(imageUrl)
+                            .fileName(fileName)
+                            .issueId(!isEmpty(ntsTax.getIssueId()) ? ntsTax.getIssueId() : " ")
+                            .issueDate(ntsTax.getIssueDate() != null ? ntsTax.getIssueDate() : LocalDate.now())
+                            .suId(!isEmpty(ntsTax.getSuId()) ? ntsTax.getSuId() : " ")
+                            .suName(!isEmpty(ntsTax.getSuName()) ? ntsTax.getSuName() : " ")
+                            .ipId(!isEmpty(ntsTax.getIpId()) ? ntsTax.getIpId() : " ")
+                            .ipName(!isEmpty(ntsTax.getIpName()) ? ntsTax.getIpName() : " ")
+                            .grandTotal(!isEmpty(ntsTax.getGrandTotal()) ? ntsTax.getGrandTotal() : " ")
+                            .chargeTotal(!isEmpty(ntsTax.getChargeTotal()) ? ntsTax.getChargeTotal() : " ")
+                            .taxTotal(!isEmpty(ntsTax.getTaxTotal()) ? ntsTax.getTaxTotal() : " ")
+                            .ARAP(ARAP.AR)
+                            .status(Status.WAITING)
+                            .member(agency.getMember())
+                            .agency(agency)
+                            .build();
                 }
                 ntsTax = ntsTaxRepository.save(ntsTax);
 
                 // 성공 여부 판별 후 DTO 변환
-                boolean success = !(ntsTax.getIssueId() == null || " ".equals(ntsTax.getIssueId()));
                 responseList.add(GetOcrNtsTaxResponseDTO.from(agency, ntsTax));
 
                 LocalDateTime endTime = LocalDateTime.now();
@@ -159,14 +177,18 @@ public class OcrServiceImpl implements OcrService{
     }
 
     private boolean isInvalidNtsTax(NtsTax ntsTax) {
-        return ntsTax.getIssueId() == null ||
+        return isEmpty(ntsTax.getIssueId()) ||
                 ntsTax.getIssueDate() == null ||
-                ntsTax.getSuId() == null ||
-                ntsTax.getSuName() == null ||
-                ntsTax.getIpId() == null ||
-                ntsTax.getIpName() == null ||
-                ntsTax.getGrandTotal() == null ||
-                ntsTax.getChargeTotal() == null ||
-                ntsTax.getTaxTotal() == null;
+                isEmpty(ntsTax.getSuId()) ||
+                isEmpty(ntsTax.getSuName()) ||
+                isEmpty(ntsTax.getIpId()) ||
+                isEmpty(ntsTax.getIpName()) ||
+                isEmpty(ntsTax.getGrandTotal()) ||
+                isEmpty(ntsTax.getChargeTotal()) ||
+                isEmpty(ntsTax.getTaxTotal());
+    }
+
+    private boolean isEmpty(String value) {
+        return value == null || value.isBlank() || value.isEmpty();
     }
 }

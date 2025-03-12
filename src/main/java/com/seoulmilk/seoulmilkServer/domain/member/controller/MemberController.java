@@ -78,7 +78,7 @@ public class MemberController {
         return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
     }
 
-    @Operation(summary = "세금 계산서 csv 추출")
+    @Operation(summary = "조회 조건 설정 - 세금 계산서 csv 추출")
     @GetMapping("/nts-tax/csv")
     public ApiResponse<List<GetCsvResponseDTO>> getHometaxCsv(
             @RequestParam(required = false) LocalDate startMonth,
