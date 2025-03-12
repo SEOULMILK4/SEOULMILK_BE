@@ -26,11 +26,15 @@ public class GetAgencyResponseDTO {
     @Schema(description = "이메일", example = "milksago@gmail.com")
     private final String email;
 
+    @Schema(description = "가입상태", example = "승인")
+    private final String status;
+
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetAgencyListResponseDTO {
+
         private List<GetAgencyResponseDTO> agencyList;
         private Integer listSize;
         private Integer totalPage;
@@ -43,19 +47,20 @@ public class GetAgencyResponseDTO {
             .agencyName(agency.getAgencyName())
             .agencyId(agency.getAgencyId())
             .email(agency.getEmail())
+            .status(agency.getAgencyId() == null ? "미승인" : "승인")
             .build();
     }
 
     public static GetAgencyListResponseDTO from(Page<Agency> agencies) {
         List<GetAgencyResponseDTO> getAgencyList = agencies.stream()
-                .map(GetAgencyResponseDTO::from)
-                .collect(Collectors.toList());
+            .map(GetAgencyResponseDTO::from)
+            .collect(Collectors.toList());
 
         return GetAgencyListResponseDTO.builder()
-                .agencyList(getAgencyList)
-                .listSize(getAgencyList.size())
-                .totalPage(agencies.getTotalPages())
-                .totalElements(agencies.getTotalElements())
-                .build();
+            .agencyList(getAgencyList)
+            .listSize(getAgencyList.size())
+            .totalPage(agencies.getTotalPages())
+            .totalElements(agencies.getTotalElements())
+            .build();
     }
 }
