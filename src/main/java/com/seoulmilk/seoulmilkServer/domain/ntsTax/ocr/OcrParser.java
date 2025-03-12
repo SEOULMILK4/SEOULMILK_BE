@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -67,20 +68,28 @@ public class OcrParser {
                     case "합계금액" -> extractedData.put("합계금액", normalizedText);
                 }
             }
-            boolean isValid = extractedData.containsKey("승인번호") && !extractedData.get("승인번호").isBlank()
-                    && extractedData.containsKey("발행일자") && !extractedData.get("발행일자").isBlank()
-                    && extractedData.containsKey("공급자 등록번호") && !extractedData.get("공급자 등록번호").isBlank()
-                    && extractedData.containsKey("공급받는자 등록번호") && !extractedData.get("공급받는자 등록번호").isBlank();
+            String issueIdPattern= "^\\d{8}-\\d{8}-\\d{8}$";
+            String registeredPattern = "^\\d{3}-\\d{2}-\\d{5}$";
+            String amountPattern = "^[0-9,]+$";
 
-            if (!isValid) {
-                return null; // 필수 필드 하나라도 누락 시, 실패 처리
-            }
+            // ocr 추출 데이터 전처리
+            String issueId = isValid(extractedData.get("승인번호"), issueIdPattern)
+                    ? extractedData.get("승인번호") : "";
+
+            String suId = isValid(extractedData.get("공급자 등록번호"), registeredPattern)
+                    ? extractedData.get("공급자 등록번호").replaceAll("[^0-9-]", "") : "";
+
+            String ipId = isValid(extractedData.get("공급받는자 등록번호"), registeredPattern)
+                    ? extractedData.get("공급받는자 등록번호").replaceAll("[^0-9-]", "") : "";
+
+            String chargeTotal = isValid(extractedData.get("공급가액"), amountPattern)
+                    ? extractedData.get("공급가액") : "";
 
             LocalDate issueDate;
             try {
                 issueDate = LocalDate.parse(extractedData.get("발행일자"));
             } catch (DateTimeParseException e) {
-                issueDate = LocalDate.now(); // 날짜 형식이 누락 시, 현재 시간 = 기본 값
+                issueDate = LocalDate.now();
             }
 
             return NtsTax.builder()
@@ -89,15 +98,15 @@ public class OcrParser {
                     .status(Status.WAITING)
                     .agency(agency)
                     .member(agency.getMember())
-                    .issueId(extractedData.getOrDefault("승인번호", " "))
+                    .issueId(issueId)
                     .issueDate(issueDate)
-                    .suId(extractedData.getOrDefault("공급자 등록번호", " "))
-                    .suName(extractedData.getOrDefault("공급자 사업체명", " "))
-                    .ipId(extractedData.getOrDefault("공급받는자 등록번호", " "))
-                    .ipName(extractedData.getOrDefault("공급받는자 사업체명", " "))
-                    .chargeTotal(extractedData.getOrDefault("공급가액", " "))
-                    .taxTotal(extractedData.getOrDefault("세액", " "))
-                    .grandTotal(extractedData.getOrDefault("합계금액", " "))
+                    .suId(suId)
+                    .suName(extractedData.getOrDefault("공급자 사업체명", ""))
+                    .ipId(ipId)
+                    .ipName(extractedData.getOrDefault("공급받는자 사업체명", ""))
+                    .chargeTotal(chargeTotal)
+                    .taxTotal(extractedData.getOrDefault("세액", ""))
+                    .grandTotal(extractedData.getOrDefault("합계금액", ""))
                     .imageUrl(imageUrl)
                     .fileName(fileName)
                     .build();
@@ -105,5 +114,9 @@ public class OcrParser {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static boolean isValid(String value, String pattern) {
+        return value != null && Pattern.matches(pattern, value);
     }
 }

@@ -81,9 +81,9 @@ public class GetOcrNtsTaxResponseDTO {
             .agencyId(agency.getId())
             .status(ntsTax.getStatus())
             .ntsTaxId(ntsTax.getId())
-            .issueId(ntsTax.getIssueId())
+            .issueId(removeSpace(ntsTax.getIssueId()))
             .issueDate(ntsTax.getIssueDate())
-            .suId((ntsTax.getSuId()))
+            .suId(removeSpace(ntsTax.getSuId()))
             .suName(removeSpace(ntsTax.getSuName()))
             .ipId(removeSpace(ntsTax.getIpId()))
             .ipName(removeSpace(ntsTax.getIpName()))
@@ -103,6 +103,4 @@ public class GetOcrNtsTaxResponseDTO {
         }
         return value.trim().replaceAll("\\s+", "");
     }
-
-
 }
