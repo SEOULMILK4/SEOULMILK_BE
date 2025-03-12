@@ -4,7 +4,6 @@ import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
-import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.DeleteNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.UpdateNtsTaxRequestDTO;
@@ -26,7 +25,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -79,13 +86,13 @@ public class AgencyController {
     @GetMapping("/nts-tax/search")
     public ApiResponse<GetNtsTaxListResponseDTO.SearchNtsTaxListResponseDTO> searchNtsTaxList(
         @RequestParam(name = "page") Integer page,
-        @RequestParam(required = false) LocalDate startDate,
-        @RequestParam(required = false) LocalDate endDate,
-        @RequestParam(required = false) List<String> ipNameList) {
+        @RequestParam(name = "startAt", required = false) LocalDate startAt,
+        @RequestParam(name = "endAt", required = false) LocalDate endAt,
+        @RequestParam(name = "ipNameList", required = false) List<String> ipNameList) {
         Agency agency = agencyAuthService.getCurrentAgency();
 
-        Page<NtsTax> ntsTaxList = ntsTaxQueryService.searchNtsTaxList(agency, page, startDate,
-            endDate, ipNameList);
+        Page<NtsTax> ntsTaxList = ntsTaxQueryService.searchNtsTaxList(agency, page, startAt,
+            endAt, ipNameList);
 
         return ApiResponse.success(GetNtsTaxListResponseDTO.from(ntsTaxList));
     }
