@@ -16,6 +16,10 @@ import com.seoulmilk.seoulmilkServer.global.mail.service.EmailService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +33,12 @@ public class AdminAgencyService {
     private final EmailService emailService;
 
     @Transactional(readOnly = true)
-    public List<GetAgencyResponseDTO> getAgencyList() {
+    public Page<Agency> getAgencyList(Integer page) {
+        Pageable pageable = PageRequest.of(0, 13);
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
-        List<Agency> agency = agencyRepository.findAll();
-
-        return agency.stream()
-            .map(GetAgencyResponseDTO::from)
-            .toList();
+        return agencyRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)

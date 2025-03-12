@@ -1,11 +1,13 @@
 package com.seoulmilk.seoulmilkServer.domain.admin.dto.agency;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetNtsTaxListResponseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -24,6 +26,17 @@ public class GetAgencyResponseDTO {
     @Schema(description = "이메일", example = "milksago@gmail.com")
     private final String email;
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetAgencyListResponseDTO {
+        private List<GetAgencyResponseDTO> agencyList;
+        private Integer listSize;
+        private Integer totalPage;
+        private Long totalElements;
+    }
+
     public static GetAgencyResponseDTO from(Agency agency) {
         return GetAgencyResponseDTO.builder()
             .id(agency.getId())
@@ -33,4 +46,16 @@ public class GetAgencyResponseDTO {
             .build();
     }
 
+    public static GetAgencyListResponseDTO from(Page<Agency> agencies) {
+        List<GetAgencyResponseDTO> getAgencyList = agencies.stream()
+                .map(GetAgencyResponseDTO::from)
+                .collect(Collectors.toList());
+
+        return GetAgencyListResponseDTO.builder()
+                .agencyList(getAgencyList)
+                .listSize(getAgencyList.size())
+                .totalPage(agencies.getTotalPages())
+                .totalElements(agencies.getTotalElements())
+                .build();
+    }
 }
