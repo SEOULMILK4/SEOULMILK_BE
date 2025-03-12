@@ -41,8 +41,8 @@ public interface NtsTaxQueryService {
 
     OcrTaxInvoiceResponseDTO revalidateOneNtsTax(Long ntsTaxId, Member member);
 
-    GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxList(Member member, Integer page,
-        Status status); // 본사 - 세금 계산서 이번 달 내역 조회
+    GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxCsvByIdList(Member member, Integer page,
+                                                                          Status status); // 본사 - 세금 계산서 이번 달 내역 조회
 
     GetHometaxResponseDTO.GetHometaxListResponseDTO getHometaxHistory(Member member, Integer page,
         Status status); // 본사 - 세금 계산서 전체 내역 통합 조회
@@ -53,7 +53,10 @@ public interface NtsTaxQueryService {
     List<GetCsvResponseDTO> getHometaxCsv(Member member, LocalDate startDate, LocalDate endDate,
         List<String> suNameList, List<String> ipNameList, Status status); // 본사 - csv 추출
 
+    List<GetCsvResponseDTO> getHometaxCsvByIdList(Member member, GetCsvRequestDTO request); // 본사 - 선택한 ID만 csv 추출
+
     List<GetCsvResponseDTO> getHometaxCsvByAdmin(Admin admin, LocalDate startDate, LocalDate endDate,
                                                  List<String> suNameList, List<String> ipNameList, Status status); // 관리자 - csv 추출
+
     List<GetCsvResponseDTO> getHometaxCsvByIdList(GetCsvRequestDTO ntsTaxIdList);
 }
