@@ -6,6 +6,7 @@ import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.GetCsvRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.ModifyNtsTaxResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.response.GetCsvResponseDTO;
@@ -54,4 +55,5 @@ public interface NtsTaxQueryService {
 
     List<GetCsvResponseDTO> getHometaxCsvByAdmin(Admin admin, LocalDate startDate, LocalDate endDate,
                                                  List<String> suNameList, List<String> ipNameList, Status status); // 관리자 - csv 추출
+    List<GetCsvResponseDTO> getHometaxCsvByIdList(GetCsvRequestDTO ntsTaxIdList);
 }
