@@ -2,9 +2,11 @@ package com.seoulmilk.seoulmilkServer.domain.admin.service;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneAgencyByEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
 import com.seoulmilk.seoulmilkServer.global.error.ErrorCode;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminEmployeeService {
 
     private final MemberRepository memberRepository;
+    private final AgencyRepository agencyRepository;
     private final AdminAuthService adminAuthService;
     private final MemberProperties memberProperties;
     private final PasswordEncoder encoder;
@@ -47,7 +50,11 @@ public class AdminEmployeeService {
         Member member = memberRepository.findById(employeeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return GetOneEmployeeResponseDTO.from(member);
+        List<GetOneAgencyByEmployeeResponseDTO> agencies = member.getAgencies().stream()
+            .map(GetOneAgencyByEmployeeResponseDTO::from)
+            .toList();
+
+        return GetOneEmployeeResponseDTO.from(member, agencies);
     }
 
     // 사원 등록
@@ -75,7 +82,7 @@ public class AdminEmployeeService {
         List<PostEmployeeRequestDTO> employees) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
-        System.out.println("초기비번"+memberProperties.getDefaultPassword());
+        System.out.println("초기비번" + memberProperties.getDefaultPassword());
         String encodePassword = encoder.encode(memberProperties.getDefaultPassword());
 
         List<Member> newEmployees = employees.stream()
