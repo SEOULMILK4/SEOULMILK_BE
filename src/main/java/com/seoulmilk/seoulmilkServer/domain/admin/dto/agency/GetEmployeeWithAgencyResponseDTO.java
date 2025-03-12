@@ -25,10 +25,9 @@ public class GetEmployeeWithAgencyResponseDTO {
     private final String email;
 
     @Schema(description = "담당 대리점 수 ", example = "10")
-    private final long agencyNum;
+    private final Long agencyNum;
 
-
-    public static GetEmployeeWithAgencyResponseDTO of(Member member,long agencyNum) {
+    public static GetEmployeeWithAgencyResponseDTO of(Member member,Long agencyNum) {
         return GetEmployeeWithAgencyResponseDTO.builder()
             .id(member.getId())
             .name(member.getName())
