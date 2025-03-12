@@ -3,6 +3,7 @@ package com.seoulmilk.seoulmilkServer.domain.ntsTax.service;
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.service.AgencyAuthService;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.NtsTax;
+import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.IsSuccess;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.domain.enums.Status;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.OcrTaxInvoiceRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.ntsTax.dto.request.SubmitNtxTaxRequestDTO;
@@ -54,7 +55,8 @@ public class NtxTaxMappingServiceImpl implements NtxTaxMappingService {
 
             Agency agency = agencyAuthService.getCurrentAgency();
 
-            List<NtsTax> ntxTaxes = ntsTaxRepository.findAllByAgencyIdAndStatus(agency.getId(),Status.WAITING);
+            List<NtsTax> ntxTaxes = ntsTaxRepository.findAllByAgencyIdAndStatusAndIsSuccess(agency.getId(),Status.WAITING,
+                IsSuccess.SUCCESS);
 
             List<OcrTaxInvoiceRequestDTO> ntxTaxRequest = ntxTaxes.stream()
                 .map(OcrTaxInvoiceRequestDTO::from)

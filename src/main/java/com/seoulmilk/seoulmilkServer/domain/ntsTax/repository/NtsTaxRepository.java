@@ -58,7 +58,8 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
     Long countByMemberIdAndStatus(Long memberId, Status status);
 
 
-    List<NtsTax> findAllByAgencyIdAndStatus(Long agencyId, Status status);
+    List<NtsTax> findAllByAgencyIdAndStatusAndIsSuccess(Long agencyId, Status status,
+        IsSuccess success);
 
     // 본사 - 세금 계산서 csv 추출
     List<NtsTax> findByMemberAndStatusIn(Member member, List<Status> statusList);
