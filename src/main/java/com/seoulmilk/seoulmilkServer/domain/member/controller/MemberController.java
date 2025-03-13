@@ -61,7 +61,7 @@ public class MemberController {
     @GetMapping("/nts-tax/view-hometax/recent")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxList(
         @RequestParam(name = "page") Integer page,
-        @RequestParam(name = "isSuccess") Status status) {
+        @RequestParam(name = "Status") Status status) {
         Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ntsTaxQueryService.getHometaxCsvByIdList(member, page, status));
@@ -71,7 +71,7 @@ public class MemberController {
     @GetMapping("/nts-tax/view-hometax/history")
     public ApiResponse<GetHometaxResponseDTO.GetHometaxListResponseDTO> getHometaxHistory(
         @RequestParam(name = "page") Integer page,
-        @RequestParam(required = false) Status status) {
+        @RequestParam(name = "Status", required = false) Status status) {
         Member member = memberAuthService.getCurrentMember();
 
         return ApiResponse.success(ntsTaxQueryService.getHometaxHistory(member, page, status));
