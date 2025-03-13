@@ -2,7 +2,9 @@ package com.seoulmilk.seoulmilkServer.domain.admin.controller;
 
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeListResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneAgencyByEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostAssignAgeciesRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.service.AdminEmployeeService;
@@ -27,7 +29,8 @@ public class AdminEmployeeController {
 
     @Operation(summary = "사원 목록 조회")
     @GetMapping("")
-    public ApiResponse<GetEmployeeListResponseDTO> getEmployeeList(@RequestParam(name = "page") Integer page) {
+    public ApiResponse<GetEmployeeListResponseDTO> getEmployeeList(
+        @RequestParam(name = "page") Integer page) {
         Page<GetEmployeeWithAgencyResponseDTO> members = adminEmployeeService.getEmployeeList(page);
 
         return ApiResponse.success(GetEmployeeListResponseDTO.from(members));
@@ -39,6 +42,22 @@ public class AdminEmployeeController {
         @PathVariable("employeeId") Long employeeId) {
         return ApiResponse.success(adminEmployeeService.getOneEmployee(employeeId));
     }
+
+    @Operation(summary = "개별 사원 - 담당 가능 대리점 조회")
+    @GetMapping("/{employeeId}/assign-agency")
+    public ApiResponse<List<GetOneAgencyByEmployeeResponseDTO>> getPossibleAgencyList(
+        @PathVariable("employeeId") Long employeeId) {
+        return ApiResponse.success(adminEmployeeService.getPossibleAgencyList(employeeId));
+    }
+
+    @Operation(summary = "개별 사원 - 담당 대리점 배정")
+       @PostMapping("/{employeeId}/assign-agency")
+       public ApiResponse<List<GetOneAgencyByEmployeeResponseDTO>> assignAgencies(
+           @PathVariable("employeeId") Long employeeId, @RequestBody @Valid
+        PostAssignAgeciesRequestDTO requestDTO) {
+           return ApiResponse.success(adminEmployeeService.assignAgencies(employeeId,requestDTO));
+       }
+
 
     // 사원 등록
     @Operation(summary = "사원 신규 등록")
