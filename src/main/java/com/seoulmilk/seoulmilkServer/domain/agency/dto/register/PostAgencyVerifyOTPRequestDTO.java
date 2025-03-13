@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class PostAgencyVerifyOTPRequestDTO {
     @NotBlank
-    @Schema(description = "대리점 아이디", example = "milksajo4")
-    private String agencyId;
+    @Schema(description = "이메일", example = "milksajo@gmail.com")
+    private String email;
 
     @NotBlank
     @Schema(description = "인증코드", example = "384855")

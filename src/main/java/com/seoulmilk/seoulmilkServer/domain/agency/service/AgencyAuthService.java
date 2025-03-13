@@ -63,13 +63,13 @@ public class AgencyAuthService {
             throw new BusinessException(ErrorCode.AGENCY_NOT_VERIFIED);
         }
 
-        removeVerifiedUser(agency.getEmail());
+        removeVerifiedUser(agency.getAgencyId());
         return PostAgencyRegisterResponseDTO.from(agency);
     }
 
 
-    private void removeVerifiedUser(String email) {
-        authVerifyRepository.deleteById(email);
+    private void removeVerifiedUser(String agencyId) {
+        authVerifyRepository.deleteById(agencyId);
     }
 
     @Transactional
@@ -152,20 +152,20 @@ public class AgencyAuthService {
         String createdOtp = otpService.generateOtp(agencyEmail);
         emailService.sendOtp(agencyEmail, createdOtp);
 
-        storeVerifiedUser(agency.getAgencyId(), createdOtp);
+        storeVerifiedUser(agency.getEmail(), createdOtp);
     }
 
-    private void storeVerifiedUser(String agencyId, String otpCode) {
-        authVerifyRepository.save(new AuthVerifiedMember(agencyId, otpCode));
+    private void storeVerifiedUser(String email, String otpCode) {
+        authVerifyRepository.save(new AuthVerifiedMember(email, otpCode));
     }
 
     @Transactional
     public void postVerifyOtp(PostAgencyVerifyOTPRequestDTO requestDTO) {
 
-        String agencyId = requestDTO.getAgencyId();
+        String email = requestDTO.getEmail();
         String otpNum = requestDTO.getOtpNumber();
 
-        verifyUser(agencyId, otpNum);
+        verifyUser(email, otpNum);
     }
 
     private void verifyUser(String email, String otpCode) {
