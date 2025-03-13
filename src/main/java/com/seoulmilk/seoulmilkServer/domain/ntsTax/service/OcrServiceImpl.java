@@ -104,8 +104,8 @@ public class OcrServiceImpl implements OcrService{
                     // OCR 파싱
                     ntsTax = OcrParser.parseOcrResponse(agency, objectMapper.writeValueAsString(getOcrResponse), imageUrl, fileName);
 
-                    // 유효한 데이터 -> 종료
-                    if (ntsTax != null && !isInvalidNtsTax(ntsTax)) {
+                    // 유효한 데이터 & OCR 신뢰도 90% 이상 -> 성공 처리
+                    if (ntsTax != null && isHighConfidence(getOcrResponse)) {
                         break;
                     }
                 }
@@ -115,7 +115,7 @@ public class OcrServiceImpl implements OcrService{
                             .imageUrl(imageUrl)
                             .fileName(fileName)
                             .issueId(" ")
-                            .issueDate(LocalDate.now())
+                            .issueDate(LocalDate.of(1, 1, 1))
                             .suId(" ")
                             .suName(" ")
                             .ipId(" ")
@@ -134,7 +134,7 @@ public class OcrServiceImpl implements OcrService{
                             .imageUrl(imageUrl)
                             .fileName(fileName)
                             .issueId(!isEmpty(ntsTax.getIssueId()) ? ntsTax.getIssueId() : " ")
-                            .issueDate(ntsTax.getIssueDate() != null ? ntsTax.getIssueDate() : LocalDate.now())
+                            .issueDate(ntsTax.getIssueDate() != null ? ntsTax.getIssueDate() : LocalDate.of(1, 1, 1))
                             .suId(!isEmpty(ntsTax.getSuId()) ? ntsTax.getSuId() : " ")
                             .suName(!isEmpty(ntsTax.getSuName()) ? ntsTax.getSuName() : " ")
                             .ipId(!isEmpty(ntsTax.getIpId()) ? ntsTax.getIpId() : " ")
@@ -190,5 +190,24 @@ public class OcrServiceImpl implements OcrService{
 
     private boolean isEmpty(String value) {
         return value == null || value.isBlank() || value.isEmpty();
+    }
+
+    private boolean isHighConfidence(OcrResponseDTO response) {
+        if (response.getImages() == null || response.getImages().isEmpty()) {
+            return false;
+        }
+
+        OcrResponseDTO.ImageResult imageResult = response.getImages().get(0);
+        if (imageResult.getFields() == null || imageResult.getFields().isEmpty()) {
+            return false;
+        }
+
+        // 모든 필드의 신뢰도가 90% 이상인지 확인
+        for (OcrResponseDTO.Field field : imageResult.getFields()) {
+            if (field.getInferConfidence() < 0.9) {
+                return false;
+            }
+        }
+        return true;
     }
 }
