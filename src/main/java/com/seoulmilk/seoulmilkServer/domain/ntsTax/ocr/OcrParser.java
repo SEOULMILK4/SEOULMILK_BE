@@ -88,9 +88,9 @@ public class OcrParser {
             LocalDate issueDate;
             try {
                 String rawDate = extractedData.get("발행일자");
-                String formatDate = rawDate != null ? rawDate.replaceAll("\\s+", "-") : "";
+                String formattedDate = rawDate != null ? rawDate.replaceAll("\\s+", "-") : "";
 
-                issueDate = LocalDate.parse(formatDate);
+                issueDate = LocalDate.parse(formattedDate);
             } catch (DateTimeParseException e) {
                 issueDate = LocalDate.of(1, 1, 1);
             }
