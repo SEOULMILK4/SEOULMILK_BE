@@ -136,7 +136,7 @@ public class GetHometaxResponseDTO {
                 .build();
     }
 
-    public static SearchHometaxListResponseDTO ofSearch(Page<NtsTax> hometaxList, Long successCnt, Long failedCnt) {
+    public static SearchHometaxListResponseDTO ofSearch(Page<NtsTax> hometaxList, Long successCnt, Long failedCnt, Long totalCnt) {
         List<GetHometaxResponseDTO> searchHometaxList = hometaxList.stream()
                 .map(GetHometaxResponseDTO::from)
                 .collect(Collectors.toList());
@@ -147,7 +147,7 @@ public class GetHometaxResponseDTO {
                 .totalPage(hometaxList.getTotalPages())
                 .successElements(successCnt)
                 .failedElements(failedCnt)
-                .totalElements(successCnt + failedCnt)
+                .totalElements(totalCnt)
                 .build();
     }
 }
