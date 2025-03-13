@@ -87,9 +87,12 @@ public class OcrParser {
 
             LocalDate issueDate;
             try {
-                issueDate = LocalDate.parse(extractedData.get("발행일자"));
+                String rawDate = extractedData.get("발행일자");
+                String formatDate = rawDate != null ? rawDate.replaceAll("\\s+", "-") : "";
+
+                issueDate = LocalDate.parse(formatDate);
             } catch (DateTimeParseException e) {
-                issueDate = LocalDate.now();
+                issueDate = LocalDate.of(1, 1, 1);
             }
 
             return NtsTax.builder()
