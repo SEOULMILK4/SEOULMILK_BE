@@ -56,6 +56,10 @@ public class Agency {
         this.password = password;
     }
 
+    public void assignMember(Member member) {
+        this.member = member;
+    }
+
     public void updateAgencyEmail(String email) {
         this.email = email;
     }

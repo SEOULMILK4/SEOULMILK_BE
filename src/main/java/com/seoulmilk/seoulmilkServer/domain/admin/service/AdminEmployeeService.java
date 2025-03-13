@@ -4,8 +4,10 @@ import com.seoulmilk.seoulmilkServer.domain.admin.domain.Admin;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.agency.GetEmployeeWithAgencyResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneAgencyByEmployeeResponseDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.GetOneEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostAssignAgeciesRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeRequestDTO;
 import com.seoulmilk.seoulmilkServer.domain.admin.dto.employee.PostEmployeeResponseDTO;
+import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
 import com.seoulmilk.seoulmilkServer.domain.agency.repository.AgencyRepository;
 import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
 import com.seoulmilk.seoulmilkServer.domain.member.repository.MemberRepository;
@@ -97,6 +99,39 @@ public class AdminEmployeeService {
             .map(PostEmployeeResponseDTO::of)
             .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetOneAgencyByEmployeeResponseDTO> getPossibleAgencyList(Long employeeId) {
+
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        Member member = memberRepository.findById(employeeId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return agencyRepository.findByMemberIsNull().stream()
+            .map(GetOneAgencyByEmployeeResponseDTO::from)
+            .collect(Collectors.toList());
+
+    }
+
+    @Transactional
+    public List<GetOneAgencyByEmployeeResponseDTO> assignAgencies(Long employeeId,
+        PostAssignAgeciesRequestDTO requestDTO) {
+
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        Member member = memberRepository.findById(employeeId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<Agency> agencies = agencyRepository.findAllByIdInAndMemberIsNull(requestDTO.getIdList());
+
+        return agencies.stream()
+            .map(agency -> {
+                agency.assignMember(member);
+                return GetOneAgencyByEmployeeResponseDTO.from(agency);
+            })
+            .collect(Collectors.toList());
     }
 }
 

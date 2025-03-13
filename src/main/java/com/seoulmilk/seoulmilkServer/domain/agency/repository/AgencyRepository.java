@@ -1,6 +1,8 @@
 package com.seoulmilk.seoulmilkServer.domain.agency.repository;
 
 import com.seoulmilk.seoulmilkServer.domain.agency.domain.Agency;
+import com.seoulmilk.seoulmilkServer.domain.member.domain.Member;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,5 +17,11 @@ public interface AgencyRepository extends JpaRepository<Agency,Long> {
     boolean existsByAgencyName(String agencyName);
 
     boolean existsByEmail(String email);
+
+    List<Agency> findByMember(Member member);
+
+    List<Agency> findByMemberIsNull();
+
+    List<Agency> findAllByIdInAndMemberIsNull(List<Long> ids);
 
 }
