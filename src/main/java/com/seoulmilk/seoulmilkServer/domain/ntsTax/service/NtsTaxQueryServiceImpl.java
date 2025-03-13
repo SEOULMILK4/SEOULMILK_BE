@@ -176,6 +176,8 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         Page<NtsTax> ntsTaxPage = ntsTaxRepository.searchHometaxList(
                 member, pageable, status, startDate, endDate, suNameList, ipNameList
         );
+        long totalCnt = ntsTaxPage.getTotalElements();
+
         long approvedCnt = ntsTaxPage.getContent()
                 .stream()
                 .filter(tax -> tax.getStatus() == Status.APPROVAL)
@@ -186,7 +188,7 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
                 .filter(tax -> tax.getStatus() == Status.REJECTION)
                 .count();
 
-        return GetHometaxResponseDTO.ofSearch(ntsTaxPage, approvedCnt, rejectedCnt);
+        return GetHometaxResponseDTO.ofSearch(ntsTaxPage, approvedCnt, rejectedCnt, totalCnt);
     }
 
     public GetOneNtsTaxResponseDTO getOneNtsTaxInfo(Long ntsTaxId, Member member) {

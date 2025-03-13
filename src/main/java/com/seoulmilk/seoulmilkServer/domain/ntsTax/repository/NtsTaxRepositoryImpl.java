@@ -78,12 +78,7 @@ public class NtsTaxRepositoryImpl implements NtsTaxRepositoryCustom {
         builder.and(ntsTax.member.eq(member));
         builder.and(betweenIssueDate(startDate, endDate));
         builder.and(orSearch(suNameList, ipNameList));
-
-        if (status == null) {
-            builder.and(ntsTax.status.ne(Status.WAITING));
-        } else {
-            builder.and(ntsTax.status.eq(status));
-        }
+        builder.and(ntsTax.status.ne(Status.WAITING));
 
         if (suNameList != null && !suNameList.isEmpty()) {
             builder.and(ntsTax.suName.in(suNameList));
