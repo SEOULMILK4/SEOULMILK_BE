@@ -29,6 +29,8 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
     @Query("SELECT COUNT(n) FROM NtsTax n")
     Long countAll();
 
+    Long countByStatusNot(Status status);
+
     // 본사 - 세금 계산서 이번 달 내역 조회
     @Query("SELECT n FROM NtsTax n WHERE n.member = :member AND n.status = :status " +
         "AND EXTRACT(YEAR FROM n.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
@@ -75,4 +77,6 @@ public interface NtsTaxRepository extends JpaRepository<NtsTax, Long>, NtsTaxRep
 
     @Query("SELECT n FROM NtsTax n WHERE n.status = :status")
     List<NtsTax> findByStatus(@Param("status") Status status);
+
+    Page<NtsTax> findAllByStatusNot(Status status,Pageable page);
 }
