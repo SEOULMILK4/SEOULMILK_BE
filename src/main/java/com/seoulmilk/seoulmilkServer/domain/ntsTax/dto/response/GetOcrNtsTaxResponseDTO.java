@@ -12,7 +12,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
@@ -32,7 +31,7 @@ public class GetOcrNtsTaxResponseDTO {
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
 
-    @Schema(description = "세금 계산서 작성일자", example = "2025.02.01")
+    @Schema(description = "세금 계산서 작성일자", example = "2025-02-01")
     private String issueDate;
 
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
@@ -109,6 +108,6 @@ public class GetOcrNtsTaxResponseDTO {
         if (issueDate == null || issueDate.equals(LocalDate.of(1, 1, 1))) {
             return "";
         }
-        return issueDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        return issueDate.toString();
     }
 }
