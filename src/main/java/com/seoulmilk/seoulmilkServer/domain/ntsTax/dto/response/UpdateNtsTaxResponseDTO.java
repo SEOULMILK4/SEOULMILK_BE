@@ -11,6 +11,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
@@ -23,8 +24,8 @@ public class UpdateNtsTaxResponseDTO {
     @Schema(description = "승인번호", example = "20240630-06300630-06300201")
     private String issueId;
 
-    @Schema(description = "세금 계산서 작성일자", example = "2025-02-01")
-    private LocalDate issueDate;
+    @Schema(description = "세금 계산서 작성일자", example = "2025.02.01")
+    private String issueDate;
 
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
     private String suId;
@@ -63,7 +64,7 @@ public class UpdateNtsTaxResponseDTO {
         return UpdateNtsTaxResponseDTO.builder()
                 .isSuccess(IsSuccess.SUCCESS)
                 .issueId(ntsTax.getIssueId())
-                .issueDate(ntsTax.getIssueDate())
+                .issueDate(ntsTax.getIssueDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
                 .suId(ntsTax.getSuId())
                 .suName(ntsTax.getSuName())
                 .ipId(ntsTax.getIpId())
