@@ -44,14 +44,14 @@ public class AdminEmployeeController {
     }
 
     @Operation(summary = "개별 사원 - 담당 가능 대리점 조회")
-    @GetMapping("/{employeeId}/agency")
+    @GetMapping("/{employeeId}/assign-agency")
     public ApiResponse<List<GetOneAgencyByEmployeeResponseDTO>> getPossibleAgencyList(
         @PathVariable("employeeId") Long employeeId) {
         return ApiResponse.success(adminEmployeeService.getPossibleAgencyList(employeeId));
     }
 
     @Operation(summary = "개별 사원 - 담당 대리점 배정")
-       @PostMapping("/{employeeId}/agency")
+       @PostMapping("/{employeeId}/assign-agency")
        public ApiResponse<List<GetOneAgencyByEmployeeResponseDTO>> assignAgencies(
            @PathVariable("employeeId") Long employeeId, @RequestBody @Valid
         PostAssignAgeciesRequestDTO requestDTO) {
