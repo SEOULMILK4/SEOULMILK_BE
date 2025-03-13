@@ -32,7 +32,7 @@ public class GetOcrNtsTaxResponseDTO {
     private String issueId;
 
     @Schema(description = "세금 계산서 작성일자", example = "2025-02-01")
-    private LocalDate issueDate;
+    private String issueDate;
 
     @Schema(description = "공급자 사업등록번호", example = "305-04-02042")
     private String suId;
@@ -82,7 +82,7 @@ public class GetOcrNtsTaxResponseDTO {
             .status(ntsTax.getStatus())
             .ntsTaxId(ntsTax.getId())
             .issueId(removeSpace(ntsTax.getIssueId()))
-            .issueDate(ntsTax.getIssueDate())
+            .issueDate(formatIssueDate(ntsTax.getIssueDate()))
             .suId(removeSpace(ntsTax.getSuId()))
             .suName(removeSpace(ntsTax.getSuName()))
             .ipId(removeSpace(ntsTax.getIpId()))
@@ -102,5 +102,12 @@ public class GetOcrNtsTaxResponseDTO {
             return "";
         }
         return value.trim().replaceAll("\\s+", "");
+    }
+
+    private static String formatIssueDate(LocalDate issueDate) {
+        if (issueDate == null || issueDate.equals(LocalDate.of(1, 1, 1))) {
+            return "";
+        }
+        return issueDate.toString();
     }
 }
