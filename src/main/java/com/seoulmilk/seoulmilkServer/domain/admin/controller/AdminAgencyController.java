@@ -28,8 +28,18 @@ public class AdminAgencyController {
 
     @Operation(summary = "대리점 목록 조회")
     @GetMapping("")
-    public ApiResponse<GetAgencyResponseDTO.GetAgencyListResponseDTO> getAgencyList(@RequestParam(name = "page") Integer page) {
+    public ApiResponse<GetAgencyResponseDTO.GetAgencyListResponseDTO> getAgencyList(
+        @RequestParam(name = "page") Integer page) {
         Page<Agency> agencies = adminAgencyService.getAgencyList(page);
+
+        return ApiResponse.success(GetAgencyResponseDTO.from(agencies));
+    }
+
+    @Operation(summary = "가입된 대리점 목록 조회")
+    @GetMapping("/registered")
+    public ApiResponse<GetAgencyResponseDTO.GetAgencyListResponseDTO> getJoinedAgencyList(
+        @RequestParam(name = "page") Integer page) {
+        Page<Agency> agencies = adminAgencyService.getJoinedAgencyList(page);
 
         return ApiResponse.success(GetAgencyResponseDTO.from(agencies));
     }
@@ -44,8 +54,9 @@ public class AdminAgencyController {
     @Operation(summary = "개별 대리점 이메일 수정")
     @PatchMapping("/{agencyId}")
     public ApiResponse<UpdateAgencyResponseDTO> updateAgencyInfo(
-        @PathVariable("agencyId") Long agencyId, @RequestBody @Valid UpdateAgencyRequestDTO requestDTO) {
-        return ApiResponse.success(adminAgencyService.updateAgencyInfo(agencyId,requestDTO));
+        @PathVariable("agencyId") Long agencyId,
+        @RequestBody @Valid UpdateAgencyRequestDTO requestDTO) {
+        return ApiResponse.success(adminAgencyService.updateAgencyInfo(agencyId, requestDTO));
     }
 
     // 대리점 등록

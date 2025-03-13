@@ -41,6 +41,16 @@ public class AdminAgencyService {
         return agencyRepository.findAll(pageable);
     }
 
+
+    @Transactional(readOnly = true)
+    public Page<Agency> getJoinedAgencyList(Integer page) {
+        Pageable pageable = PageRequest.of(0, 13);
+
+        Admin admin = adminAuthService.getCurrentAdmin();
+
+        return agencyRepository.findAllByAgencyIdIsNotNull(pageable);
+    }
+
     @Transactional(readOnly = true)
     public GetAgencyResponseDTO getOneAgency(Long agencyId) {
 
@@ -54,7 +64,8 @@ public class AdminAgencyService {
 
 
     @Transactional
-    public UpdateAgencyResponseDTO updateAgencyInfo(Long agencyId, UpdateAgencyRequestDTO requestDTO) {
+    public UpdateAgencyResponseDTO updateAgencyInfo(Long agencyId,
+        UpdateAgencyRequestDTO requestDTO) {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 

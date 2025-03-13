@@ -47,7 +47,7 @@ public class GetAgencyResponseDTO {
             .agencyName(agency.getAgencyName())
             .agencyId(agency.getAgencyId())
             .email(agency.getEmail())
-            .status(agency.getAgencyId() == null ? "미승인" : "승인")
+            .status(agency.getAgencyId() == null ? "미가입" : "가입")
             .build();
     }
 
