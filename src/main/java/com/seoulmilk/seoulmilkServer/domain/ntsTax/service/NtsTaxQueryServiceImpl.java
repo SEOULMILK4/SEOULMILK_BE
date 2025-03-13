@@ -65,14 +65,14 @@ public class NtsTaxQueryServiceImpl implements NtsTaxQueryService {
         Status status) {
         Pageable pageable = PageRequest.of(page, 13, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Long totalCnt = ntsTaxRepository.countAll();
+        Long totalCnt = ntsTaxRepository.countByStatusNot(Status.WAITING);
         Long approvedCnt = ntsTaxRepository.countByStatus(Status.APPROVAL);
         Long rejectedCnt = ntsTaxRepository.countByStatus(Status.REJECTION);
 
         Page<NtsTax> ntsTaxPage;
 
         if (status == null) {
-            ntsTaxPage = ntsTaxRepository.findAll(pageable);
+            ntsTaxPage = ntsTaxRepository.findAllByStatusNot(Status.WAITING, pageable);
         } else {
             ntsTaxPage = ntsTaxRepository.findByStatus(status, pageable);
         }
