@@ -28,5 +28,7 @@ public interface AgencyRepository extends JpaRepository<Agency,Long> {
 
     Page<Agency> findAllByAgencyIdIsNotNull(Pageable pageable);
 
+    Page<Agency> findAllByAgencyIdIsNull(Pageable pageable);
+
 
 }

@@ -38,7 +38,7 @@ public class AdminAgencyService {
 
         Admin admin = adminAuthService.getCurrentAdmin();
 
-        return agencyRepository.findAll(pageable);
+        return agencyRepository.findAllByAgencyIdIsNull(pageable);
     }
 
 
